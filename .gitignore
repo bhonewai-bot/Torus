@@ -96,10 +96,6 @@ temp/
 *.tar.gz
 
 # Docker
-.dockerignore
-Dockerfile
-docker-compose.yml
-docker-compose.*.yml
 
 # Miscellaneous
 *.tsbuildinfo
