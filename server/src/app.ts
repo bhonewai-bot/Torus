@@ -4,7 +4,9 @@ import cors from 'cors';
 const app = express();
 
 // CORS configuration
-app.use(cors());
+app.use(cors({
+    credentials: true
+}));
 
 // Body parsing middleware with size limits
 app.use(express.json());
