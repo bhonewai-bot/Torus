@@ -1,13 +1,14 @@
 import * as dotenv from 'dotenv';
-import app from "@src/app";
+import app from '@src/app'; // adjust alias/path if needed
 
 dotenv.config();
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || '8000';
 
+// Listen on 0.0.0.0 so Docker exposes port correctly
 const server = app.listen(port, () => {
     console.log(`🚀 Server running on http://localhost:${port}`);
-    console.log(`🔗 Health check: http://localhost:${port}/health`);
+    console.log(`🔗 Health check available at http://localhost:${port}/health`);
 });
 
 // Graceful shutdown
