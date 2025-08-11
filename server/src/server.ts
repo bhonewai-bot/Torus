@@ -1,9 +1,10 @@
 import * as dotenv from 'dotenv';
-import app from '@src/app'; // adjust alias/path if needed
+import app from '@src/app';
+import env from '@config/env';
 
 dotenv.config();
 
-const port = process.env.PORT || '8000';
+const port = env.PORT;
 
 // Listen on 0.0.0.0 so Docker exposes port correctly
 const server = app.listen(port, () => {
