@@ -1,6 +1,6 @@
 import prisma from "@config/prisma";
-import {CreateProductDto} from "@src/types/dto/CreateProductDto";
-import {UpdateProductDto} from "@src/types/dto/UpdateProductDto";
+import {CreateProductDto} from "@src/types/dto/product/CreateProductDto";
+import {UpdateProductDto} from "@src/types/dto/product/UpdateProductDto";
 import {ProductResponse} from "@src/types/ProductResponse";
 
 const productInclude = {
