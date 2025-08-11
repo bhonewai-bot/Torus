@@ -1,7 +1,9 @@
 import {Request, Response, NextFunction} from "express";
 import * as productService from '@services/productService';
-import {CreateProductDto} from "@src/types/dto/CreateProductDto";
-import {UpdateProductDto} from "@src/types/dto/UpdateProductDto";
+import {CreateProductDto} from "@src/types/dto/product/CreateProductDto";
+import {UpdateProductDto} from "@src/types/dto/product/UpdateProductDto";
+import { createSuccessResponse, calculatePagination } from '@utils/helpers';
+import { notFoundError } from '@middlewares/errorHandlers';
 
 export async function getAllProducts(req: Request, res: Response, next: NextFunction) {
     try {
@@ -9,12 +11,13 @@ export async function getAllProducts(req: Request, res: Response, next: NextFunc
         const limit = parseInt(req.query.limit as string) || 10;
 
         const result = await productService.getAllProducts(page, limit);
+        const pagination = calculatePagination(result.pagination.total, page, limit);
 
-        res.status(200).json({
-            success: true,
-            message: "operation completed successfully",
-            ...result,
-        });
+        res.status(200).json(createSuccessResponse(
+            "Products fetched successfully",
+            result.data,
+            pagination
+        ));
     } catch (error) {
         next(error);
     }
@@ -25,11 +28,10 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
         const createProductDto: CreateProductDto = res.locals.validatedData;
         const result = await productService.createProduct(createProductDto);
 
-        res.status(201).json({
-            success: true,
-            message: 'product created successfully',
-            data: result
-        });
+        res.status(201).json(createSuccessResponse(
+            'Product created successfully',
+            result
+        ));
     } catch (error) {
         next(error);
     }
@@ -42,17 +44,13 @@ export async function getProductById(req: Request, res: Response, next: NextFunc
         const result = await productService.getProductById(id);
 
         if (!result) {
-            res.status(404).json({
-                success: false,
-                message: "product not found"
-            })
+            throw notFoundError('Product');
         }
 
-        res.status(200).json({
-            success: true,
-            message: 'product retrieved successfully',
-            data: result,
-        });
+        res.status(200).json(createSuccessResponse(
+            'Product retrieved successfully',
+            result
+        ));
     } catch (error) {
         next(error);
     }
@@ -65,11 +63,10 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
 
         const result = await productService.updateProduct(id, updateProductDto);
 
-        res.status(200).json({
-            success: true,
-            message: 'product updated successfully',
-            result,
-        });
+        res.status(200).json(createSuccessResponse(
+            'Product updated successfully',
+            result
+        ));
     } catch (error) {
         next(error);
     }
@@ -82,17 +79,13 @@ export async function deleteProduct(req: Request, res: Response, next: NextFunct
         const result = await productService.deleteProduct(id);
 
         if (!result) {
-            return res.status(404).json({
-                success: 404,
-                message: "product not found",
-            });
+            throw notFoundError('Product');
         }
 
-        res.status(200).json({
-            success: 200,
-            message: "product deleted successfully",
-            data: result,
-        });
+        res.status(200).json(createSuccessResponse(
+            'Product deleted successfully',
+            result
+        ));
     } catch (error) {
         next(error);
     }
@@ -106,11 +99,10 @@ export async function addProductImage(req: Request, res: Response, next: NextFun
 
         const result = await productService.addProductImage(id, images);
 
-        res.status(201).json({
-            success: true,
-            message: "images added successfully",
-            data: result,
-        });
+        res.status(201).json(createSuccessResponse(
+            'Images added successfully',
+            result
+        ));
     } catch (error) {
         next(error);
     }
