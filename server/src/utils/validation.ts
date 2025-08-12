@@ -1,4 +1,5 @@
 import {z} from "zod";
+import {OrderStatus} from "@prisma/client";
 
 // Common
 export const postgresIdPathSchema = z.object({
@@ -69,3 +70,13 @@ export const bulkInventoryUpdateSchema = z.object({
         })
     )
 });
+
+// User
+export const updateUserStatusSchema = z.object({
+    enabled: z.boolean(),
+});
+
+// Order
+export const updateOrderStatusSchema = z.object({
+    status: z.nativeEnum(OrderStatus),
+})
