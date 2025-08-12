@@ -1,3 +1,3 @@
-export interface UpdateUserDto {
-    enabled?: boolean;
+export interface UpdateUserStatusDto {
+    enabled: boolean;
 }
