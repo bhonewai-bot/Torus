@@ -2,12 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import routes from "@src/routes";
 import { errorHandler, notFoundHandler } from '@middlewares/errorHandlers';
+import env from "@config/env";
 
 const app = express();
 
 // CORS configuration
 app.use(cors({
-    credentials: true
+    origin: env.CLIENT_URL || "localhost://8000",
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 
 // Body parsing middleware with size limits
