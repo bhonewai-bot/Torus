@@ -14,7 +14,7 @@ import {Button} from "@/components/ui/button";
 import {useTheme} from "next-themes";
 import {SidebarTrigger} from "@/components/ui/sidebar";
 
-export function Navbar() {
+export function AdminNavbar() {
     const { theme, setTheme } = useTheme();
     return (
         <nav className={'p-4 flex items-center justify-between sticky top-0 bg-background z-10'}>

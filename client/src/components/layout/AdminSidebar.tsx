@@ -99,7 +99,7 @@ export function AdminSidebar() {
                                     <SidebarMenuItem>
                                         {/* Products list */}
                                         <SidebarMenuButton asChild>
-                                            <Link href={"/#"}>
+                                            <Link href={"/public#"}>
                                                 <Boxes />
                                                 Inventory
                                             </Link>

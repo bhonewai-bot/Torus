@@ -1,22 +1,18 @@
-import {DataTable} from "@/features/admin/components/products/table/data-table";
-import {columns, Products} from "@/features/admin/components/products/table/columns";
+"use client";
 
-const getData = async (): Promise<Products[]> => {
-    return [
-        {
-            name: "Temu",
-            sku: "PD-1",
-            price: 69.00,
-            categories: ["snack"],
-            images: ["temu.jepg"],
-            quantity: 21,
-        }
-    ];
-}
+import {DataTable} from "@/features/products/components/admin/table/data-table";
+import {columns} from "@/features/products/components/admin/table/columns";
+import {useProducts} from "@/features/products/hooks/useProducts";
 
-export async function ProductTable() {
-    const data = await getData();
+export function ProductTable() {
+    const { data, isLoading, error } = useProducts();
+    console.log(data);
+
+    if (isLoading) return <div>Loading...</div>
+
+    if (error) return <div>{JSON.stringify(error)}</div>;
+
     return (
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data ?? []} />
     )
 }
