@@ -1,7 +1,8 @@
 import {Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList,
     BreadcrumbPage, BreadcrumbSeparator} from "@/components/ui/breadcrumb";
+import {ReactNode} from "react";
 
-export function ProductBreadcrumb() {
+export function ProductBreadcrumb({item}: { item: ReactNode }) {
     return (
         <Breadcrumb>
             <BreadcrumbList>
@@ -10,7 +11,7 @@ export function ProductBreadcrumb() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                    <BreadcrumbPage>Products</BreadcrumbPage>
+                    <BreadcrumbPage>{item}</BreadcrumbPage>
                 </BreadcrumbItem>
             </BreadcrumbList>
         </Breadcrumb>

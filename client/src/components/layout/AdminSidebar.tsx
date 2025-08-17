@@ -88,7 +88,7 @@ export function AdminSidebar() {
                                             <SidebarMenuSubItem>
                                                 {/* Add Product */}
                                                 <SidebarMenuSubButton asChild>
-                                                    <Link href={'/products'}>
+                                                    <Link href={'/admin/products/create'}>
                                                         <Plus />
                                                         Add Product
                                                     </Link>

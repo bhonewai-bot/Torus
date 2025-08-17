@@ -9,8 +9,19 @@ type Props = {
 
 export function QueryProvider({ children }: Props) {
     const [queryClient] = useState(() => new QueryClient({
-        defaultOptions: { queries: { staleTime: 1000 * 60  } }
+        defaultOptions: {
+            queries: {
+                staleTime: 1000 * 60,
+                gcTime: 1000 * 6 * 5,
+                retry: 3,
+            },
+            mutations: {
+                retry: 1,
+            }
+        }
     }));
 
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    return <QueryClientProvider client={queryClient}>
+        {children}
+    </QueryClientProvider>
 }

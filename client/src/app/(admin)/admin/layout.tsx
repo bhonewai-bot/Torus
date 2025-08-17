@@ -8,6 +8,8 @@ import {AdminSidebar} from "@/components/layout/AdminSidebar";
 import {cookies} from "next/headers";
 import {AdminNavbar} from "@/components/layout/AdminNavbar";
 import {QueryProvider} from "@/components/providers/query-provider";
+import {ConfirmDialogProvider} from "@/components/providers/confirm-dialog-provider";
+import {Toaster} from "sonner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -45,13 +47,21 @@ export default async function RootLayout({
                 disableTransitionOnChange
             >
                 <QueryProvider>
-                    <SidebarProvider defaultOpen={defaultOpen}>
-                        <AdminSidebar />
-                        <main className={"w-full"}>
-                            <AdminNavbar />
-                            <div className={"px-4"}>{children}</div>
-                        </main>
-                    </SidebarProvider>
+                    <ConfirmDialogProvider>
+                        <SidebarProvider defaultOpen={defaultOpen}>
+                            <AdminSidebar />
+                            <main className={"w-full"}>
+                                <AdminNavbar />
+                                <div className={"px-4"}>
+                                    {children}
+                                    <Toaster
+                                        position={"bottom-right"}
+                                        richColors
+                                    />
+                                </div>
+                            </main>
+                        </SidebarProvider>
+                    </ConfirmDialogProvider>
                 </QueryProvider>
             </ThemeProvider>
         </body>
