@@ -1,24 +1,40 @@
-import {QueryClient, useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {productKeys} from "@/features/products/lib/queryKeys";
-import {ProductFilters, productService} from "@/features/products/services/productService";
+import {productService} from "@/features/products/services/productService";
 import {showError, showSuccess} from "@/lib/utils/toast";
-import {CreateProductDto} from "@/features/products/types/product.types";
+import {
+    CreateProductDto,
+    Product,
+    ProductFilters,
+    ProductsListResponse,
+    UpdateProductDto
+} from "@/features/products/types/product.types";
+import {ProductServiceError} from "@/features/products/lib/error";
 
 export function useProducts(filters: ProductFilters = {}) {
     return useQuery({
         queryKey: productKeys.list(filters),
         queryFn: () => productService.getProducts(filters),
         staleTime: 1000 * 30,
-        placeholderData: (previousData) => previousData,
-        retry: 3,
+        gcTime: 1000 * 60 * 5,
+        retry: (failureCount, error) => {
+            // Don't retry on client errors (4xx)
+            if (error instanceof ProductServiceError && error.statusCode && error.statusCode >= 400 && error.statusCode < 500) {
+                return false;
+            }
+            return failureCount < 3;
+        },
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+        select: (data) => data.products,
     });
 }
 
-export function useGetProduct(id: string) {
+export function useProduct(id: string) {
     return useQuery({
         queryKey: productKeys.detail(id),
         queryFn: () => productService.getProduct(id),
+        enabled: !!id.trim(),
+        staleTime: 1000 * 60 * 5,
     });
 }
 
@@ -26,21 +42,65 @@ export function useCreateProduct() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: productService.createProduct,
-        onMutate: async (data: CreateProductDto) => {
-            return { data };
-        },
-        onSuccess: (_, data: CreateProductDto) => {
+        mutationFn: (data: CreateProductDto) => productService.createProduct(data),
+        onSuccess: (newProduct: Product) => {
+            // Update the detail cache with the new product
+            queryClient.setQueryData(productKeys.detail(newProduct.id), newProduct);
+
+            // Invalidate and refetch product lists to show the new product
             queryClient.invalidateQueries({ queryKey: productKeys.lists() });
 
             showSuccess("Product created successfully");
         },
-        onError: (error, variables, context) => {
-            console.error("Create product error:", error);
-            showError(error.message || "Failed to delete product");
+        onError: (error: ProductServiceError) => {
+            const message = error instanceof ProductServiceError
+                ? error.message
+                : "Failed to create product";
 
-            queryClient.invalidateQueries({ queryKey: productKeys.all });
+            showError(message);
         }
+    });
+}
+
+export function useUpdateProduct() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: UpdateProductDto }) =>
+            productService.updateProduct(id, data),
+        onSuccess: (updatedProduct: Product) => {
+            // Update the detail cache
+            queryClient.setQueryData(productKeys.detail(updatedProduct.id), updatedProduct);
+
+            // Update any list caches that contain this product
+            queryClient.getQueryCache().findAll({
+                queryKey: productKeys.lists(),
+            }).forEach((query) => {
+                queryClient.setQueryData(query.queryKey, (old: ProductsListResponse | undefined) => {
+                    if (!old || !Array.isArray(old.products)) return old;
+
+                    return {
+                        ...old,
+                        products: old.products.map((product) =>
+                            product.id === updatedProduct.id ? updatedProduct : product
+                        ),
+                    }
+                });
+            });
+
+            showSuccess("Product updated successfully");
+        },
+        onError: (error: ProductServiceError) => {
+            const message = error instanceof ProductServiceError
+                ? error.message
+                : "Failed to update product";
+
+            showError(message);
+        },
+        onSettled: (data) => {
+            // Optionally invalidate if you want to ensure data freshness
+            // queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+        },
     });
 }
 
@@ -48,23 +108,34 @@ export function useDeleteProduct() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: productService.deleteProduct,
-        onMutate: async (productId) => {
-            await queryClient.cancelQueries({ queryKey: productKeys.all });
-
-            return { productId };
-        },
+        mutationFn: (id: string) => productService.deleteProduct(id),
         onSuccess: (_, deletedId) => {
+            // Remove the product from detail cache
             queryClient.removeQueries({ queryKey: productKeys.detail(deletedId) });
-            queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+
+            // Remove from all list caches
+            queryClient.getQueryCache().findAll({
+                queryKey: productKeys.lists(),
+            }).forEach((query) => {
+                queryClient.setQueryData(query.queryKey, (old: ProductsListResponse | undefined) => {
+                    if (!old || !Array.isArray(old.products)) return old;
+
+                    return {
+                        ...old,
+                        products: old.products.filter((product) => product.id !== deletedId),
+                        total: Math.max(0, old.total - 1),
+                    };
+                });
+            });
 
             showSuccess("Product deleted successfully");
         },
-        onError: (error, variables, context) => {
-            console.error("Delete product error:", error);
-            showError(error.message || "Failed to delete product");
+        onError: (error: ProductServiceError) => {
+            const message = error instanceof ProductServiceError
+                ? error.message
+                : "Failed to delete product";
 
-            queryClient.invalidateQueries({ queryKey: productKeys.all });
-        }
+            showError(message);
+        },
     });
 }

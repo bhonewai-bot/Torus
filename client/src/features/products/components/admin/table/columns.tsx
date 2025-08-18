@@ -23,7 +23,7 @@ type TableHeaderCellProps = {
 
 export function TableHeaderCell({ children }: TableHeaderCellProps) {
     return (
-        <div className="font-semibold text-foreground">
+        <div className="text-[15px] font-medium text-foreground">
             {children}
         </div>
     );

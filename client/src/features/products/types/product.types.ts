@@ -21,4 +21,27 @@ export interface CreateProductDto {
     quantity: number;
 }
 
-export interface UpdateProductDto extends Partial<CreateProductDto> {};
+export interface UpdateProductDto extends Partial<CreateProductDto> {}
+
+export interface ProductsListResponse {
+    products: Product;
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
+export interface ProductFilters {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+}
+
+export interface ApiResponse<T> {
+    data: T;
+    message?: string;
+    success: boolean;
+}

@@ -11,6 +11,8 @@ export function ProductTable() {
         error,
     } = useProducts();
 
+    console.log("data from useProducts", data);
+
     if (isLoading) return <div>Loading...</div>;
 
     if (error) return <div>{JSON.stringify(error)}</div>;

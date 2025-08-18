@@ -13,6 +13,7 @@ import {CreateProductDto} from "@/features/products/types/product.types";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, X } from "lucide-react";
+import {Label} from "@/components/ui/label";
 
 const formSchema = z.object({
     name: z.string()
@@ -118,17 +119,13 @@ export function ProductForm({ onSuccess, onCancel }: ProductFormProps) {
     const isLoading = createProductMutation.isPending;
 
     return (
-        <Card className={"w-full max-w-4xl mx-auto"}>
-            <CardHeader>
-                <CardTitle>Create New Product</CardTitle>
-            </CardHeader>
+        <Card className={""}>
             <CardContent>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 
                         {/* Basic Information */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Basic Information</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <FormField
                                     control={form.control}
@@ -169,14 +166,13 @@ export function ProductForm({ onSuccess, onCancel }: ProductFormProps) {
 
                         {/* Pricing & Inventory */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Pricing & Inventory</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <FormField
                                     control={form.control}
                                     name="price"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Price ($) *</FormLabel>
+                                            <FormLabel>Price (฿) *</FormLabel>
                                             <FormControl>
                                                 <Input 
                                                     type="number"
@@ -215,15 +211,15 @@ export function ProductForm({ onSuccess, onCancel }: ProductFormProps) {
 
                         {/* Categories */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Categories *</h3>
                             <div className="flex gap-2">
-                                <Input
-                                    placeholder="Add category"
-                                    value={categoryInput}
-                                    onChange={(e) => setCategoryInput(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCategory())}
-                                    disabled={isLoading}
-                                />
+                                    <Label>Categories</Label>
+                                    <Input
+                                        placeholder="Add category"
+                                        value={categoryInput}
+                                        onChange={(e) => setCategoryInput(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCategory())}
+                                        disabled={isLoading}
+                                    />
                                 <Button 
                                     type="button" 
                                     variant="outline" 
@@ -300,7 +296,6 @@ export function ProductForm({ onSuccess, onCancel }: ProductFormProps) {
 
                         {/* Description */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium">Description</h3>
                             <FormField
                                 control={form.control}
                                 name="description"
