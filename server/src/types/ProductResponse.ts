@@ -41,7 +41,7 @@ export interface ProductListItem {
     isActive: boolean;
 }
 
-export interface ProductDetail {
+export interface ProductDetailItem {
     id: string;
     sku: string;
     title: string;
@@ -79,7 +79,7 @@ export interface ProductListResponse extends BaseApiResponse {
 }
 
 export interface ProductDetailResponse extends BaseApiResponse {
-    data: ProductDetail,
+    data: ProductDetailItem,
 }
 
 export type ProductResponse = ProductListResponse | ProductDetailResponse;

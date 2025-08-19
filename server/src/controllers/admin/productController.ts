@@ -7,22 +7,91 @@ import { notFoundError } from '@middlewares/errorHandlers';
 
 export async function getAllProducts(req: Request, res: Response, next: NextFunction) {
     try {
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 10;
+        const {
+            page,
+            limit,
+            categoryId,
+            brand,
+            isActive,
+            search,
+            sortBy,
+            sortOrder,
+        } = req.query;
 
-        const result = await productService.getAllProducts(page, limit);
-        const pagination = calculatePagination(result.pagination.total, page, limit);
+        const params = {
+            page: page ? parseInt(page as string) : undefined,
+            limit: limit ? parseInt(page as string) : undefined,
+            categoryId: categoryId as string,
+            brand: brand as string,
+            isActive: isActive === "false" ? false : true,
+            search: search as string,
+            sortBy: sortBy as "title" | "price" | "createdAt" | "updatedAt",
+            sortOrder: sortOrder as "asc" | "desc",
+        }
+
+        const result = await productService.getAllProducts(params);
 
         res.status(200).json(createSuccessResponse(
-            "Products fetched successfully",
-            result.data,
-            pagination
+            'Products fetched successfully', {
+                products: result.products,
+                pagination: result.pagination,
+            }
+        ));
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function getProductById(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { id } = req.params;
+
+        const result = await productService.getProductById(id);
+
+        if (!result) {
+            throw notFoundError('Product');
+        }
+
+        res.status(200).json(createSuccessResponse(
+            'Product retrieved successfully',
+            result
         ));
     } catch (error) {
         next(error);
     }
 }
 
+export async function createProduct(req: Request, res: Response, next: NextFunction) {
+    try {
+        const createProductDto: CreateProductDto = res.locals.validatedData;
+        const result = await productService.createProduct(createProductDto);
+
+        res.status(201).json(createSuccessResponse(
+            "Product created successfully",
+            result
+        ));
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function updateProduct(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { id } = req.params;
+        const updateProductDto: UpdateProductDto = res.locals.validatedData;
+
+        const result = await productService.updateProduct(id, updateProductDto);
+
+        res.status(200).json(createSuccessResponse(
+            "Product updated successfully",
+            result,
+        ));
+    } catch (error) {
+        next(error);
+    }
+}
+
+/*
 export async function createProduct(req: Request, res: Response, next: NextFunction) {
     try {
         const createProductDto: CreateProductDto = res.locals.validatedData;
@@ -106,4 +175,4 @@ export async function addProductImage(req: Request, res: Response, next: NextFun
     } catch (error) {
         next(error);
     }
-}
+}*/
