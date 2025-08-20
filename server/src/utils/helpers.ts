@@ -1,23 +1,4 @@
 import {PaginationInfo} from "@src/types/ProductResponse";
-import { Prisma } from "../../generated/prisma";
-
-/**
- * Calculates pagination metadata
- */
-/*export const calculatePagination = (total: number, page: number, limit: number) => {
-    const totalPages = Math.ceil(total / limit);
-    const hasNextPage = page < totalPages;
-    const hasPreviousPage = page > 1;
-
-    return {
-        total,
-        page,
-        limit,
-        totalPages,
-        hasNextPage,
-        hasPreviousPage,
-    };
-};*/
 
 export const calculatePagination = (total: number, page: number, limit: number): PaginationInfo => {
     const totalPages = Math.ceil(total / limit);

@@ -111,55 +111,14 @@ export async function updateProduct(id: string, data: UpdateProductDto): Promise
     return formatProductDetail(updatedProduct);
 }
 
-/*export async function createProduct(data: CreateProductDto): Promise<ProductListResponse | null> {
-    const { quantity, ...productData } = data;
-
-    const product = await prisma.product.create({
-        data: {
-            ...productData,
-            inventory: {
-                create: {
-                    quantity
-                }
-            }
-        },
-        include: productInclude,
-    });
-
-    return formatProduct(product);
-}*/
-
-/*export async function getProductById(id: string): Promise<ProductResponse | null> {
-    const product = await prisma.product.findUnique({
+export async function deleteProduct(id: string) {
+     const product = await prisma.product.delete({
         where: { id },
-        include: productInclude,
-    });
+        include: productDetailInclude,
+     });
 
-    return formatProduct(product);
+     return formatProductDetail(product);
 }
-
-export async function updateProduct(id: string, data: UpdateProductDto): Promise<ProductResponse | null> {
-    const { quantity, ...productData } = data;
-
-    const product = await prisma.product.update({
-        where: { id },
-        data: {
-            ...productData,
-            ...(quantity !== undefined
-                ? {
-                    inventory: {
-                        update: {
-                            quantity,
-                        },
-                    },
-                }
-                : {}),
-        },
-        include: productInclude,
-    });
-
-    return formatProduct(product);
-}*/
 
 /*export async function deleteProduct(id: string): Promise<ProductResponse | null> {
     const product = await prisma.product.delete({

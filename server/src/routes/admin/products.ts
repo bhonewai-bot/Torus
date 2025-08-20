@@ -3,7 +3,8 @@ import {
     getAllProducts,
     getProductById,
     createProduct,
-    updateProduct
+    updateProduct,
+    deleteProduct
 } from "@controllers/admin/productController";
 import {validateBody, validateParams, validateQuery} from "@middlewares/validation";
 import {
@@ -20,7 +21,7 @@ router.get('/', validateQuery(paginationQuerySchema), getAllProducts);
 router.get('/:id', validateParams(postgresIdPathSchema), getProductById);
 router.post('/', validateBody(createProductSchema), createProduct);
 router.put('/:id', validateParams(postgresIdPathSchema), validateBody(updateProductSchema), updateProduct);
-//router.delete('/:id', validateParams(postgresIdPathSchema), deleteProduct);
+router.delete('/:id', validateParams(postgresIdPathSchema), deleteProduct);
 //router.post('/:id/images', validateParams(postgresIdPathSchema), validateBody(addProductImagesSchema), addProductImage);*/
 
 export default router;

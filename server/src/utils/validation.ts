@@ -71,6 +71,11 @@ export const addProductImagesSchema = z.object({
     }, z.array(z.string())),
 });
 
+// Category
+export const createCategorySchema = z.object({
+    title: z.string().min(1, "Title is required").trim(),
+});
+
 // Inventory
 export const updateInventorySchema = z.object({
     quantity: z.coerce.number(),
