@@ -1,34 +1,59 @@
+interface CategoryInfo {
+    id: string;
+    title: string;
+}
+
 export interface Product {
     id: string;
-    name: string;
     sku: string;
+    title: string;
+    brand?: string;
     description?: string;
     price: number;
-    categories: string[];
-    images?: string[];
-    quantity: number
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-export interface CreateProductDto {
-    name: string;
-    sku: string;
-    description?: string;
-    price: number;
-    categories: string[];
-    images?: string[];
     quantity: number;
+    mainImage: string;
+    category?: CategoryInfo;
+    isActive: boolean;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
-export interface UpdateProductDto extends Partial<CreateProductDto> {}
+export interface ProductDetails extends Product {
+    dimensions?: {
+        length: number;
+        width: number;
+        height: number;
+        weight: number;
+    },
+    pricing: {
+        price: number;
+        regularPrice?: number;
+        salePrice?: number;
+        taxRate?: number;
+        taxIncluded?: boolean;
+    },
+    inventory: {
+        quantity: number;
+    },
+    images: Array<{
+        id: string;
+        url: string;
+        isMain: boolean;
+    }>;
+}
 
-export interface ProductsListResponse {
-    products: Product;
+export interface Pagination {
     total: number;
     page: number;
     limit: number;
     totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+}
+
+export interface ProductListResponse {
+    products: Product[];
+    pagination: Pagination;
 }
 
 export interface ProductFilters {
@@ -36,12 +61,14 @@ export interface ProductFilters {
     limit?: number;
     search?: string;
     category?: string;
+    brand?: string;
+    isActive?: string;
     sortBy?: string;
-    sortOrder?: 'asc' | 'desc';
+    sortOrder?: "asc" | "desc";
 }
 
 export interface ApiResponse<T> {
-    data: T;
-    message?: string;
     success: boolean;
+    message: string;
+    data: T;
 }

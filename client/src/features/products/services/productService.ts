@@ -1,5 +1,97 @@
 import {
     ApiResponse,
+    ProductDetails,
+    ProductFilters,
+    ProductListResponse
+} from "@/features/products/types/product.types";
+import {ProductServiceError} from "@/features/products/lib/error";
+import {API_ENDPOINTS} from "@/lib/api/endpoints";
+import api from "@/lib/api/client";
+
+function buildQueryString(filters: ProductFilters): string {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+            params.append(key, String(value));
+        }
+    });
+
+    return params.toString();
+}
+
+function handleApiError(error: unknown, context: string): never {
+    console.error(`${context}:`, error);
+
+    if (error instanceof Error) {
+        if ("response" in error && typeof error.response === "object" && error.response) {
+            const response = error.response as any;
+            const message = response.data?.message || response.statusText || error.message;
+            const statusCode = response.status;
+
+            throw new ProductServiceError(message, statusCode, error);
+        }
+        throw new ProductServiceError(error.message, undefined, error);
+    }
+    throw new ProductServiceError(`Unknown error occurred in ${context}`, undefined, error);
+}
+
+export async function getProducts(filters: ProductFilters = {}): Promise<ProductListResponse> {
+    try {
+        const queryString = buildQueryString(filters);
+        const url = queryString
+            ? `${API_ENDPOINTS.admin.products.list}?${queryString}`
+            : API_ENDPOINTS.admin.products.list;
+
+        const response = await api.get<ApiResponse<ProductListResponse>>(url);
+
+        if (response.data.success && response.data.data) {
+            return response.data.data;
+        }
+
+        return {
+            products: response.data.data?.products || [],
+            pagination: response.data.data?.pagination || {
+                total: 0,
+                page: 1,
+                limit: 10,
+                totalPages: 0,
+                hasNextPage: false,
+                hasPreviousPage: false,
+            }
+        }
+    } catch (error) {
+        handleApiError(error, "Error fetching products");
+    }
+}
+
+export async function getProduct(id: string): Promise<ProductDetails> {
+    if (!id) {
+        throw new ProductServiceError("Product ID is required");
+    }
+
+    try {
+        const response = await api.get<ApiResponse<ProductDetails>>(
+            API_ENDPOINTS.admin.products.get(id)
+        );
+
+        if (response.data.success && response.data.data) {
+            return response.data.data;
+        }
+
+        throw new ProductServiceError("Product not found", 404);
+    } catch (error) {
+        handleApiError(error, "Error fetching product");
+    }
+}
+
+export const productService = {
+    getProducts,
+    getProduct,
+}
+
+/*import {
+    ApiResponse,
     CreateProductDto,
     Product,
     ProductFilters,
@@ -53,7 +145,7 @@ class ProductService {
             const data = response.data.data || response.data;
 
             return {
-                products: data || [],
+                products: data.products || [],
                 total: data?.total || 0,
                 page: data?.page || 1,
                 limit: data?.limit || 10,
@@ -157,7 +249,7 @@ class ProductService {
     }
 }
 
-export const productService = new ProductService();
+export const productService = new ProductService();*/
 
 
 /*

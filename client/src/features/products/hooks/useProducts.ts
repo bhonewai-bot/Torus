@@ -1,6 +1,8 @@
+"use client";
+
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {productKeys} from "@/features/products/lib/queryKeys";
-import {productService} from "@/features/products/services/productService";
+import {getProduct, getProducts, productService} from "@/features/products/services/productService";
 import {showError, showSuccess} from "@/lib/utils/toast";
 import {
     CreateProductDto,
@@ -14,26 +16,20 @@ import {ProductServiceError} from "@/features/products/lib/error";
 export function useProducts(filters: ProductFilters = {}) {
     return useQuery({
         queryKey: productKeys.list(filters),
-        queryFn: () => productService.getProducts(filters),
+        queryFn: () => getProducts(filters),
         staleTime: 1000 * 30,
-        gcTime: 1000 * 60 * 5,
-        retry: (failureCount, error) => {
-            // Don't retry on client errors (4xx)
-            if (error instanceof ProductServiceError && error.statusCode && error.statusCode >= 400 && error.statusCode < 500) {
-                return false;
-            }
-            return failureCount < 3;
-        },
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-        select: (data) => data.products,
-    });
+        select: (data) => ({
+            products: data.products,
+            pagination: data.pagination,
+        }),
+    })
 }
 
 export function useProduct(id: string) {
     return useQuery({
         queryKey: productKeys.detail(id),
-        queryFn: () => productService.getProduct(id),
-        enabled: !!id.trim(),
+        queryFn: () => getProduct(id),
+        enabled: !!id,
         staleTime: 1000 * 60 * 5,
     });
 }

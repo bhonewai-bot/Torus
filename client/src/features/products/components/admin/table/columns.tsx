@@ -16,6 +16,8 @@ import {Product} from "@/features/products/types/product.types";
 import {useDeleteProduct} from "@/features/products/hooks/useProducts";
 import {useConfirmDialog} from "@/hooks/useConfirmDialog";
 import {toast} from "sonner";
+import Image from "next/image";
+import {cn} from "@/lib/utils";
 
 type TableHeaderCellProps = {
     children: ReactNode;
@@ -51,20 +53,50 @@ export const columns: ColumnDef<Product>[] = [
         ),
     },
     {
+        id: "mainImage",
+        cell: ({ row }) => {
+            const product = row.original;
+            return (
+                <div className={"w-10 h-10 relative"}>
+                    <Image
+                        src={product.mainImage}
+                        alt={product.title}
+                        fill
+                        className={"object-cover rounded-md"}
+                        sizes={"48px"}
+                    />
+                </div>
+            );
+        }
+
+    },
+    {
         accessorKey: "sku",
         header: () => <TableHeaderCell>SKU</TableHeaderCell>
     },
     {
-        accessorKey: "name",
+        accessorKey: "title",
         header: () => <TableHeaderCell>Name</TableHeaderCell>
     },
     {
-        accessorKey: "categories",
-        header: () => <TableHeaderCell>Category</TableHeaderCell>
+        accessorKey: "brand",
+        header: () => <TableHeaderCell>Brand</TableHeaderCell>,
+        cell: ({ row }) => {
+            const product = row.original;
+            return (
+                <div>{product?.brand || "-"}</div>
+            )
+        }
     },
     {
-        accessorKey: "images",
-        header: () => <TableHeaderCell>Image</TableHeaderCell>
+        accessorKey: "category",
+        header: () => <TableHeaderCell>Category</TableHeaderCell>,
+        cell: ({ row }) => {
+            const product = row.original;
+            return (
+                <div>{product?.category?.title || "-"}</div>
+            )
+        }
     },
     {
         accessorKey: "price",
@@ -81,7 +113,35 @@ export const columns: ColumnDef<Product>[] = [
     },
     {
         accessorKey: "quantity",
-        header: () => <TableHeaderCell>Qty</TableHeaderCell>
+        header: () => <TableHeaderCell>Inventory</TableHeaderCell>,
+        cell: ({ row }) => {
+            const quantity = row.getValue("quantity") as number;
+            return (
+                /*<div className={`${quantity === 0 ? 'text-red-500 font-medium' : ''}`}>
+                    {quantity}
+                    {quantity === 0 && <span className="ml-1 text-xs">(Out of stock)</span>}
+                </div>*/
+                <div>
+                    {quantity === 0 ? "out of stock" : quantity}
+                </div>
+            );
+        }
+    },
+    {
+        accessorKey: "isActive",
+        header: () => <TableHeaderCell>Status</TableHeaderCell>,
+        cell: ({ row }) => {
+            const isActive = row.getValue("isActive") as boolean;
+            return (
+                <div className={`inline-flex items-center px-2 py-1 rounded-full text-foreground text-xs font-medium ${
+                    isActive
+                        ? 'bg-green-100 text-green-800 border-1 dark:bg-green-900/30 dark:text-green-200'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                }`}>
+                    {isActive ? 'Active' : 'Inactive'}
+                </div>
+            );
+        },
     },
     {
         id: "actions",
@@ -96,7 +156,7 @@ export const columns: ColumnDef<Product>[] = [
                 try {
                     const confirmed = await confirm({
                         title: "Delete Product",
-                        message: `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
+                        message: `Are you sure you want to delete "${product.title}"? This action cannot be undone.`,
                         confirmText: 'Delete',
                         cancelText: 'Cancel',
                     });
