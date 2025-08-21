@@ -119,27 +119,3 @@ export async function deleteProduct(id: string) {
 
      return formatProductDetail(product);
 }
-
-/*export async function deleteProduct(id: string): Promise<ProductResponse | null> {
-    const product = await prisma.product.delete({
-        where: { id },
-        include: productInclude,
-    });
-
-    return formatProduct(product);
-}*/
-
-/*
-export async function addProductImage(id: string, newImages: string[]): Promise<ProductResponse | null> {
-    const product = await prisma.product.update({
-        where: { id },
-        data: {
-            images: {
-                push: newImages,
-            }
-        },
-        include: productInclude,
-    });
-
-    return formatProduct(product);
-}*/
