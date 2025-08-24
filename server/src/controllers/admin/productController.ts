@@ -20,7 +20,7 @@ export async function getAllProducts(req: Request, res: Response, next: NextFunc
 
         const params = {
             page: page ? parseInt(page as string) : undefined,
-            limit: limit ? parseInt(page as string) : undefined,
+            limit: limit ? parseInt(limit as string) : undefined,
             categoryId: categoryId as string,
             brand: brand as string,
             isActive: isActive === "false" ? false : true,

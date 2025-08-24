@@ -1,25 +1,10 @@
 "use client"
 
-import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-} from "@tanstack/react-table"
-
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
 import {useEffect, useState} from "react";
-import {Pagination, ProductFilters} from "@/features/products/types/product.types";
+import {ProductFilters} from "@/features/products/types/product.types";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X} from "lucide-react";
+import {Search, X} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import {useDebounce} from "use-debounce";
 
@@ -45,10 +30,11 @@ export function ProductTableFilters({
     const [debouncedSearch] = useDebounce(searchTerm, 500);
 
     useEffect(() => {
-        onFilterChange({
-            search: debouncedSearch || undefined
-        })
-    }, [debouncedSearch, onFilterChange]);
+        const newSearchValue = debouncedSearch || undefined;
+        if (newSearchValue !== filters.search) {
+            onFilterChange({ search: newSearchValue });
+        }
+    }, [debouncedSearch]);
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value);
@@ -56,7 +42,6 @@ export function ProductTableFilters({
 
     const clearSearch = () => {
         setSearchTerm("");
-        onFilterChange({ search: undefined });
     }
 
     const handleCategoryChange = (categoryId: string) => {
@@ -65,11 +50,11 @@ export function ProductTableFilters({
         });
     }
 
-    const handleStatusChange = (status: string) => {
+    /*const handleStatusChange = (status: boolean) => {
         onFilterChange({
-            isActive: status === "all" ? undefined : status
+            isActive: status === false ? undefined : status
         });
-    }
+    }*/
 
     return (
         <div className={"space-y-4"}>
@@ -91,6 +76,7 @@ export function ProductTableFilters({
                         {searchTerm && (
                             <button
                                 onClick={clearSearch}
+                                className={"absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"}
                             >
                                 <X className={"h-4 w-4"} />
                             </button>
@@ -118,12 +104,19 @@ export function ProductTableFilters({
                     </Select>
 
                     {/* Status Filter */}
-                    <Select
+                    {/*<Select
                         onValueChange={handleStatusChange}
                         value={filters.isActive || "all"}
                     >
-
-                    </Select>
+                        <SelectTrigger className="w-32">
+                            <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Status</SelectItem>
+                            <SelectItem value="true">Active</SelectItem>
+                            <SelectItem value="false">Inactive</SelectItem>
+                        </SelectContent>
+                    </Select>*/}
                 </div>
             </div>
         </div>

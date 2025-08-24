@@ -8,6 +8,9 @@ export const API_ENDPOINTS = {
             delete: (id: string) => `/admin/products/${id}`,
             get: (id: string) => `/admin/products/${id}`,
         },
+        categories: {
+            list: "/admin/categories",
+        },
         inventory: {
             get: "",
             update: (productId: string) => `/admin/inventory/${productId}`,

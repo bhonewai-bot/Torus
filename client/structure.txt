@@ -1,0 +1,104 @@
+src
+├── app
+│ ├── (admin)
+│ │ └── admin
+│ │     ├── inventory
+│ │     │ └── ProductDataTable.tsx
+│ │     ├── layout.tsx
+│ │     ├── orders
+│ │     │ ├── [id]
+│ │     │ │ └── ProductDataTable.tsx
+│ │     │ └── ProductDataTable.tsx
+│ │     ├── overview
+│ │     │ └── ProductDataTable.tsx
+│ │     ├── ProductDataTable.tsx
+│ │     ├── products
+│ │     │ ├── [id]
+│ │     │ │ └── ProductDataTable.tsx
+│ │     │ ├── create
+│ │     │ │ └── ProductDataTable.tsx
+│ │     │ └── ProductDataTable.tsx
+│ │     └── users
+│ │         └── ProductDataTable.tsx
+│ ├── (store)
+│ │ ├── cart
+│ │ ├── checkout
+│ │ ├── layout.tsx
+│ │ ├── orders
+│ │ │ └── ProductDataTable.tsx
+│ │ └── products
+│ │     └── ProductDataTable.tsx
+│ ├── auth
+│ │ ├── login
+│ │ │ └── ProductDataTable.tsx
+│ │ └── register
+│ │     └── ProductDataTable.tsx
+│ ├── editor
+│ │ └── ProductDataTable.tsx
+│ ├── error.tsx
+│ ├── globals.css
+│ ├── layout.tsx
+│ ├── loading.tsx
+│ ├── not-found.tsx
+│ └── ProductDataTable.tsx
+├── components
+│ ├── common
+│ │ └── DataTablePagination.tsx
+│ ├── layout
+│ │ ├── AdminNavbar.tsx
+│ │ └── AdminSidebar.tsx
+│ ├── providers
+│ │ ├── confirm-dialog-provider.tsx
+│ │ ├── query-provider.tsx
+│ │ └── theme-provider.tsx
+├── features
+│ ├── admin
+│ │ ├── components
+│ │ ├── hooks
+│ │ ├── services
+│ │ └── types
+│ ├── auth
+│ ├── cart
+│ ├── categories
+│ │ ├── hooks
+│ │ │ └── useCategories.ts
+│ │ ├── lib
+│ │ │ ├── error.ts
+│ │ │ └── queryKeys.ts
+│ │ ├── services
+│ │ │ └── categoryService.ts
+│ │ └── types
+│ │     └── category.types.ts
+│ ├── orders
+│ └── products
+│     ├── components
+│     │ └── admin
+│     │     ├── ProductBreadcrumb.tsx
+│     │     ├── ProductDescriptionEditor.tsx
+│     │     ├── ProductForm.tsx
+│     │     └── table
+│     │         ├── Columns.tsx
+│     │         ├── ProductTableFilters.tsx
+│     │         └── ProductDataTable.tsx
+│     ├── hooks
+│     │ └── useProducts.ts
+│     ├── lib
+│     │ ├── error.ts
+│     │ └── queryKeys.ts
+│     ├── services
+│     │ └── productService.ts
+│     └── types
+│         └── product.types.ts
+├── hooks
+│ ├── use-mobile.ts
+│ └── useConfirmDialog.ts
+└── lib
+    ├── api
+    │ ├── client.ts
+    │ └── endpoints.ts
+    ├── config
+    │ └── env.ts
+    ├── utils
+    │ ├── error.ts
+    │ └── toast.ts
+    └── utils.ts

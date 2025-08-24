@@ -60,9 +60,9 @@ export interface ProductFilters {
     page?: number;
     limit?: number;
     search?: string;
-    category?: string;
+    categoryId?: string;
     brand?: string;
-    isActive?: string;
+    isActive?: boolean;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
 }

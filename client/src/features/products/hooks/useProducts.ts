@@ -18,10 +18,6 @@ export function useProducts(filters: ProductFilters = {}) {
         queryKey: productKeys.list(filters),
         queryFn: () => getProducts(filters),
         staleTime: 1000 * 30,
-        select: (data) => ({
-            products: data.products,
-            pagination: data.pagination,
-        }),
     })
 }
 
