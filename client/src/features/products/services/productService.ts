@@ -1,5 +1,5 @@
 import {
-    ApiResponse,
+    ApiResponse, CreateProductDto,
     ProductDetails,
     ProductFilters,
     ProductListResponse
@@ -88,126 +88,29 @@ export async function getProduct(id: string): Promise<ProductDetails> {
 export const productService = {
     getProducts,
     getProduct,
+    createProduct
 }
 
-/*import {
-    ApiResponse,
-    CreateProductDto,
-    Product,
-    ProductFilters,
-    ProductsListResponse,
-    UpdateProductDto
-} from "@/features/products/types/product.types";
-import api from "@/lib/api/client";
-import {API_ENDPOINTS} from "@/lib/api/endpoints";
-import {ProductServiceError} from "@/features/products/lib/error";
+export async function createProduct(data: CreateProductDto): Promise<ProductDetails> {
+    try {
+        const response = await api.post<ApiResponse<ProductDetails>>(
+            API_ENDPOINTS.admin.products.create,
+            data
+        );
 
-class ProductService {
-    private buildQueryString(filters: ProductFilters): string {
-        const params = new URLSearchParams();
+        const product = response.data.data || response.data;
 
-        Object.entries(filters).forEach(([key, value]) => {
-            if (value !== undefined && value !== null && value !== "") {
-                params.append(key, String(value));
-            }
-        });
+        if (!product) {
+            throw new ProductServiceError("Invalid response format");
+        }
 
-        return params.toString();
+        return product
+    } catch (error) {
+        handleApiError(error, "Error creating product");
     }
+}
 
-    private handleApiError(error: unknown, context: string): never {
-        console.error(`${context}:`, error);
-
-        if (error instanceof Error) {
-            // Handle specific API errors
-            if ('response' in error && typeof error.response === 'object' && error.response) {
-                const response = error.response as any;
-                const message = response.data?.message || response.statusText || error.message;
-                const statusCode = response.status;
-
-                throw new ProductServiceError(message, statusCode, error);
-            }
-            throw new ProductServiceError(error.message, undefined, error);
-        }
-
-        throw new ProductServiceError(`Unknown error occurred in ${context}`, undefined, error);
-    }
-
-    async getProducts(filters: ProductFilters = {}): Promise<ProductsListResponse> {
-        try {
-            const queryString = this.buildQueryString(filters);
-            const url = queryString
-                ? `${API_ENDPOINTS.admin.products.list}?${queryString}`
-                : API_ENDPOINTS.admin.products.list;
-
-            const response = await api.get<ApiResponse<ProductsListResponse>>(url);
-
-            const data = response.data.data || response.data;
-
-            return {
-                products: data.products || [],
-                total: data?.total || 0,
-                page: data?.page || 1,
-                limit: data?.limit || 10,
-                totalPages: data?.totalPages || 0,
-            }
-        } catch (error) {
-            this.handleApiError(error, "Error fetching products");
-        }
-    }
-
-    async getProduct(id: string): Promise<Product> {
-        if (!id?.trim()) {
-            throw new ProductServiceError("Product ID is required");
-        }
-
-        try {
-            const response = await api.get<ApiResponse<Product>>(
-                API_ENDPOINTS.admin.products.get(id)
-            );
-
-            const product = response.data.data || response.data;
-
-            if (!product) {
-                throw new ProductServiceError("Product not found", 404);
-            }
-
-            return product;
-        } catch (error) {
-            this.handleApiError(error, "Error fetching product");
-        }
-    }
-
-    async createProduct(data: CreateProductDto): Promise<Product> {
-        // Basic validation
-        if (!data.name) {
-            throw new ProductServiceError("Product name is required");
-        }
-        if (!data.sku?.trim()) {
-            throw new ProductServiceError("Product SKU is required");
-        }
-        if (data.price < 0) {
-            throw new ProductServiceError("Product price cannot be negative");
-        }
-
-        try {
-            const response = await api.post<ApiResponse<Product>>(
-                API_ENDPOINTS.admin.products.create,
-                data
-            );
-
-            const product = response.data.data || response.data;
-
-            if (!product) {
-                throw new ProductServiceError("Invalid response format");
-            }
-
-            return product;
-        } catch (error) {
-            this.handleApiError(error, "Error creating product");
-        }
-    }
-
+/*
     async updateProduct(id: string, data: UpdateProductDto): Promise<Product> {
         if (!id?.trim()) {
             throw new ProductServiceError("Product ID is required");
