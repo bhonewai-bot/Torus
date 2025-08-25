@@ -46,7 +46,8 @@ export function ProductTableFilters({
 
     const handleCategoryChange = (categoryId: string) => {
         onFilterChange({
-            categoryId: categoryId === "all" ? undefined : categoryId
+            categoryId: categoryId === "all" ? undefined : categoryId,
+            page: 1
         });
     }
 
@@ -68,6 +69,7 @@ export function ProductTableFilters({
                     <div className={"relative flex-1 max-w-sm"}>
                         <Search className={"absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
                         <Input
+                            key={"product-search"}
                             placeholder={"Search products..."}
                             value={searchTerm}
                             onChange={(e) => handleSearchChange(e.target.value)}
@@ -96,7 +98,7 @@ export function ProductTableFilters({
                         <SelectContent>
                             <SelectItem value={"all"}>All Categories</SelectItem>
                             {categories.map((category) => (
-                                <SelectItem key={category.id} value={category.title}>
+                                <SelectItem key={category.id} value={category.id}>
                                     {category.title}
                                 </SelectItem>
                             ))}
