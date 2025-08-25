@@ -52,7 +52,7 @@ export default async function RootLayout({
                             <AdminSidebar />
                             <main className={"w-full"}>
                                 <AdminNavbar />
-                                <div className={"px-4"}>
+                                <div className={"px-6"}>
                                     {children}
                                     <Toaster
                                         position={"bottom-right"}
