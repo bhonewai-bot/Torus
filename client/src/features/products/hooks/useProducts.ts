@@ -51,7 +51,7 @@ export function useCreateProduct() {
 
             showError(message);
         }
-    });
+    })
 }
 
 export function useUpdateProduct() {
