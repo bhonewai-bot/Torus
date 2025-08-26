@@ -1,4 +1,4 @@
-export interface InventoryResponse {
+export interface InventoryTypes {
     id: string;
     product: {
         id: string;

@@ -82,36 +82,4 @@ export interface ProductDetailResponse extends BaseApiResponse {
     data: ProductDetailItem,
 }
 
-export type ProductResponse = ProductListResponse | ProductDetailResponse;
-
-// Helper type for transforming database models
-export interface ProductWithRelations {
-    id: string;
-    sku: string;
-    title: string;
-    brand?: string;
-    description?: string;
-    length?: number;
-    width?: number;
-    height?: number;
-    weight?: number;
-    price: number;
-    regularPrice?: number;
-    salePrice?: number;
-    taxRate?: number;
-    taxIncluded: boolean;
-    quantity: number;
-    isActive: boolean;
-    categoryId?: string;
-    category?: {
-        id: string;
-        title: string;
-    };
-    images: {
-        id: string;
-        url: string;
-        isMain: boolean;
-    }[];
-    createdAt: string;
-    updatedAt: string;
-}
+export type ProductTypes = ProductListResponse | ProductDetailResponse;

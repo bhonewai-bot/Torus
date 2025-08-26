@@ -1,8 +1,8 @@
-import {OrderResponse} from "@src/types/OrderResponse";
+import {OrderTypes} from "@src/types/order.types";
 import prisma from "@config/prisma";
 import {UpdateOrderStatusDto} from "@src/types/dto/order/UpdateOrderStatusDto";
 
-function formatOrder(order: any): OrderResponse | null {
+function formatOrder(order: any): OrderTypes | null {
     if (!order) return null;
 
     const { user, items, ...orderData } = order;
@@ -23,7 +23,7 @@ function formatOrder(order: any): OrderResponse | null {
 }
 
 export async function getAllOrders(page = 1, limit = 10): Promise<{
-    data: OrderResponse[];
+    data: OrderTypes[];
     pagination: { total: number; page: number; limit: number; totalPages: number  }
 }> {
     const skip = (page - 1) * limit;
@@ -57,7 +57,7 @@ export async function getAllOrders(page = 1, limit = 10): Promise<{
     ]);
 
     return {
-        data: orders.map(formatOrder).filter(Boolean) as OrderResponse[],
+        data: orders.map(formatOrder).filter(Boolean) as OrderTypes[],
         pagination: {
             total,
             page,
@@ -67,7 +67,7 @@ export async function getAllOrders(page = 1, limit = 10): Promise<{
     }
 }
 
-export async function getOrderById(id: string): Promise<OrderResponse | null> {
+export async function getOrderById(id: string): Promise<OrderTypes | null> {
     const order = await prisma.order.findUnique({
         where: { id },
         include: {
@@ -94,7 +94,7 @@ export async function getOrderById(id: string): Promise<OrderResponse | null> {
     return formatOrder(order) ?? null;
 }
 
-export async function updateOrderStatus(id: string, data: UpdateOrderStatusDto): Promise<OrderResponse | null> {
+export async function updateOrderStatus(id: string, data: UpdateOrderStatusDto): Promise<OrderTypes | null> {
     const { status } = data;
 
     const order = await prisma.order.update({
@@ -124,7 +124,7 @@ export async function updateOrderStatus(id: string, data: UpdateOrderStatusDto):
     return formatOrder(order) ?? null;
 }
 
-export async function refundOrder(id: string): Promise<OrderResponse | null> {
+export async function refundOrder(id: string): Promise<OrderTypes | null> {
     const order = await prisma.order.update({
         where: { id },
         data: {

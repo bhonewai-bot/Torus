@@ -8,7 +8,7 @@ export interface OrderItemResponse {
     quantity: number;
 }
 
-export interface OrderResponse {
+export interface OrderTypes {
     id: string;
     userId: string;
     userName: string;

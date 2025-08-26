@@ -3,7 +3,7 @@ import prisma from "@config/prisma";
 import {productDetailInclude, productListInclude} from "@utils/product/product.include";
 import {buildProductWhereClause, formatProductDetail, formatProductList} from "@utils/product/product.helpers";
 import {CreateProductDto} from "@src/types/dto/product/CreateProductDto";
-import {ProductDetailItem} from "@src/types/ProductResponse";
+import {ProductDetailItem} from "@src/types/product.types";
 import {UpdateProductDto} from "@src/types/dto/product/UpdateProductDto";
 
 export interface GetAllProductsParams {

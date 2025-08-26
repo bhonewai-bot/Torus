@@ -1,9 +1,9 @@
-import {UserResponse} from "@src/types/UserResponse";
+import {UserTypes} from "@src/types/user.types";
 import prisma from "@config/prisma";
 import {UpdateUserStatusDto} from "@src/types/dto/user/UpdateUserStatusDto";
 
 export async function getAllUsers(page = 1, limit = 10): Promise<{
-    data: UserResponse[];
+    data: UserTypes[];
     pagination: { total: number; page: number; limit: number; totalPage: number };
 }> {
     const skip = (page - 1) * limit;
@@ -35,7 +35,7 @@ export async function getAllUsers(page = 1, limit = 10): Promise<{
     }
 }
 
-export async function getUserById(id: string): Promise<UserResponse | null> {
+export async function getUserById(id: string): Promise<UserTypes | null> {
     const user = await prisma.user.findUnique({
         where: { id },
         select: {
@@ -50,7 +50,7 @@ export async function getUserById(id: string): Promise<UserResponse | null> {
     return user ?? null;
 }
 
-export async function updateUserStatus(id: string, data: UpdateUserStatusDto): Promise<UserResponse | null> {
+export async function updateUserStatus(id: string, data: UpdateUserStatusDto): Promise<UserTypes | null> {
     const { enabled } = data;
 
     const user = await prisma.user.update({

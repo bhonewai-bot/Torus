@@ -1,9 +1,9 @@
 import prisma from "@config/prisma";
-import {InventoryResponse} from "@src/types/InventoryResponse";
+import {InventoryTypes} from "@src/types/inventory.types";
 import {UpdateInventoryDto} from "@src/types/dto/inventory/UpdateInventoryDto";
 import {BulkInventoryUpdateDto} from "@src/types/dto/inventory/BulkInventoryUpdateDto";
 
-export async function getAllInventory(): Promise<InventoryResponse[]> {
+export async function getAllInventory(): Promise<InventoryTypes[]> {
     const inventory = await prisma.inventory.findMany({
         include: {
             product: {
@@ -23,7 +23,7 @@ export async function getAllInventory(): Promise<InventoryResponse[]> {
     }));
 }
 
-export async function updateInventory(productId: string, data: UpdateInventoryDto): Promise<InventoryResponse | null> {
+export async function updateInventory(productId: string, data: UpdateInventoryDto): Promise<InventoryTypes | null> {
     const { quantity } = data
 
     const inventory = await prisma.inventory.update({
@@ -48,7 +48,7 @@ export async function updateInventory(productId: string, data: UpdateInventoryDt
     };
 }
 
-export async function getLowStockInventory(threshold = 5): Promise<InventoryResponse[]> {
+export async function getLowStockInventory(threshold = 5): Promise<InventoryTypes[]> {
     const lowStockItems = await prisma.inventory.findMany({
         where: {
             quantity: {
@@ -75,7 +75,7 @@ export async function getLowStockInventory(threshold = 5): Promise<InventoryResp
     }));
 }
 
-export async function bulkUpdateInventory(data: BulkInventoryUpdateDto): Promise<InventoryResponse[]> {
+export async function bulkUpdateInventory(data: BulkInventoryUpdateDto): Promise<InventoryTypes[]> {
     const updates = data.updates.map(({ productId, quantity }) =>
         prisma.inventory.update({
             where: { productId },

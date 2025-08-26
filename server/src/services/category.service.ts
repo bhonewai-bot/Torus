@@ -1,5 +1,5 @@
 import prisma from "@config/prisma";
-import {CategoryListItem, CategorySelectItem} from "@src/types/CategoryResponse";
+import {CategoryListItem, CategorySelectItem} from "@src/types/category.types";
 import {CreateCategoryDto} from "@src/types/dto/category/CreateCategoryDto";
 
 export async function getCategoriesForSelect(): Promise<CategorySelectItem[]> {
