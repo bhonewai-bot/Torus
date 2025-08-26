@@ -64,7 +64,7 @@ src
 │ │ │ └── useCategories.ts
 │ │ ├── lib
 │ │ │ ├── error.ts
-│ │ │ └── queryKeys.ts
+│ │ │ └── query.keys.ts
 │ │ ├── services
 │ │ │ └── categoryService.ts
 │ │ └── types
@@ -84,9 +84,9 @@ src
 │     │ └── useProducts.ts
 │     ├── lib
 │     │ ├── error.ts
-│     │ └── queryKeys.ts
+│     │ └── query.keys.ts
 │     ├── services
-│     │ └── productService.ts
+│     │ └── product.service.ts
 │     └── types
 │         └── product.types.ts
 ├── hooks

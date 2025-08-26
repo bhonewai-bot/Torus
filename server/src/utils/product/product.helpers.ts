@@ -1,4 +1,4 @@
-import {ProductDetailItem, ProductListItem} from "@src/types/ProductResponse";
+import {ProductDetailItem, ProductListItem} from "@src/types/product.types";
 
 export function formatProductList(product: any): ProductListItem {
     return {

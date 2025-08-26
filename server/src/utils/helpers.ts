@@ -1,4 +1,4 @@
-import {PaginationInfo} from "@src/types/ProductResponse";
+import {PaginationInfo} from "@src/types/product.types";
 
 export const calculatePagination = (total: number, page: number, limit: number): PaginationInfo => {
     const totalPages = Math.ceil(total / limit);

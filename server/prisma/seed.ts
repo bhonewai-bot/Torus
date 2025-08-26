@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import prisma from "../src/config/prisma";
-import users from "../src/routes/admin/users";
+import users from "../src/routes/admin/users.route";
 
 async function main() {
     await prisma.orderItem.deleteMany({});
