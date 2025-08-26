@@ -5,7 +5,7 @@ import {
     createProduct,
     updateProduct,
     deleteProduct
-} from "@controllers/admin/productController";
+} from "@controllers/admin/product.controller";
 import {validateBody, validateParams, validateQuery} from "@middlewares/validation";
 import {
     postgresIdPathSchema,

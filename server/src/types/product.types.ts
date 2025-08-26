@@ -21,7 +21,7 @@ export interface ProductPricing {
     regularPrice?: number;
     salePrice?: number;
     taxRate?: number;
-    taxIncluded: boolean;
+    taxIncluded?: boolean;
 }
 
 export interface ProductInventory {
@@ -73,7 +73,7 @@ export interface BaseApiResponse {
 
 export interface ProductListResponse extends BaseApiResponse {
     data: {
-        products: ProductListItem,
+        products: ProductListItem[],
         pagination: PaginationInfo,
     }
 }

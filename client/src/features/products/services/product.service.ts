@@ -85,12 +85,6 @@ export async function getProduct(id: string): Promise<ProductDetails> {
     }
 }
 
-export const productService = {
-    getProducts,
-    getProduct,
-    createProduct
-}
-
 export async function createProduct(data: CreateProductDto): Promise<ProductDetails> {
     try {
         const response = await api.post<ApiResponse<ProductDetails>>(
@@ -108,6 +102,12 @@ export async function createProduct(data: CreateProductDto): Promise<ProductDeta
     } catch (error) {
         handleApiError(error, "Error creating product");
     }
+}
+
+export const productService = {
+    getProducts,
+    getProduct,
+    createProduct
 }
 
 /*

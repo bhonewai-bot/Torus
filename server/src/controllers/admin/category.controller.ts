@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
-import * as categoryService from "services/categoryService";
+import * as categoryService from "@services/category.service";
 import {createSuccessResponse} from "@utils/helpers";
-import {notFoundError} from "@middlewares/errorHandlers";
+import {notFoundError} from "@middlewares/error.handlers";
 import {CreateCategoryDto} from "@src/types/dto/category/CreateCategoryDto";
 
 export async function getCategoriesForSelect(req: Request, res: Response, next: NextFunction) {

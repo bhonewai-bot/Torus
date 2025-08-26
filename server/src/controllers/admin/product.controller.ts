@@ -1,9 +1,9 @@
 import {Request, Response, NextFunction} from "express";
-import * as productService from '@services/productService';
+import * as productService from '@services/product.service';
 import {CreateProductDto} from "@src/types/dto/product/CreateProductDto";
 import {UpdateProductDto} from "@src/types/dto/product/UpdateProductDto";
 import { createSuccessResponse, calculatePagination } from '@utils/helpers';
-import { notFoundError } from '@middlewares/errorHandlers';
+import { notFoundError } from '@middlewares/error.handlers';
 
 export async function getAllProducts(req: Request, res: Response, next: NextFunction) {
     try {

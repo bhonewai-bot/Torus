@@ -5,7 +5,7 @@ import {
     postgresIdPathSchema,
     updateOrderStatusSchema,
 } from "@utils/validation";
-import {getAllOrders, getOrderById, refundOrder, updateOrderStatus} from "@controllers/admin/orderController";
+import {getAllOrders, getOrderById, refundOrder, updateOrderStatus} from "@controllers/admin/order.controller";
 
 const router = Router();
 

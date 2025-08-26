@@ -5,7 +5,7 @@ import {
     postgresIdPathSchema,
     updateUserStatusSchema
 } from "@utils/validation";
-import {getAllUsers, getUserAnalytics, getUserById, updateUserStatus} from "@controllers/admin/userController";
+import {getAllUsers, getUserAnalytics, getUserById, updateUserStatus} from "@controllers/admin/user.controller";
 
 const router = Router();
 

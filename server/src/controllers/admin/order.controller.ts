@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import * as orderService from '@services/orderService';
+import * as orderService from '@services/order.service';
 import {calculatePagination, createSuccessResponse} from "@utils/helpers";
 import {UpdateOrderStatusDto} from "@src/types/dto/order/UpdateOrderStatusDto";
 

@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from "express";
-import * as inventoryService from '@services/inventoryService';
+import * as inventoryService from '@services/inventory.service';
 import {UpdateInventoryDto} from "@src/types/dto/inventory/UpdateInventoryDto";
 import {BulkInventoryUpdateDto} from "@src/types/dto/inventory/BulkInventoryUpdateDto";
 import { createSuccessResponse } from '@utils/helpers';

@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import * as userService from '@services/userService';
+import * as userService from '@services/user.service';
 import {calculatePagination, createSuccessResponse} from "@utils/helpers";
 import {UpdateUserStatusDto} from "@src/types/dto/user/UpdateUserStatusDto";
 

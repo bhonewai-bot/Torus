@@ -4,7 +4,7 @@ import {
     updateInventory,
     getLowStockInventory,
     bulkUpdateInventory
-} from "@controllers/admin/inventoryController";
+} from "@controllers/admin/inventory.controller";
 import {validateBody, validateParams} from "@middlewares/validation";
 import {bulkInventoryUpdateSchema, postgresIdPathSchema, updateInventorySchema} from "@utils/validation";
 

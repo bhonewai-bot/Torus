@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {createCategory, getAllCategories, getCategoriesForSelect} from "@controllers/admin/categoryController";
+import {createCategory, getAllCategories, getCategoriesForSelect} from "@controllers/admin/category.controller";
 import {validateBody} from "@middlewares/validation";
 import {createCategorySchema} from "@utils/validation";
 
