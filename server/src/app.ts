@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import routes from "@src/routes";
-import { errorHandler, notFoundHandler } from '@middlewares/errorHandlers';
+import { errorHandler, notFoundHandler } from '@middlewares/error.handlers';
 import env from "@config/env";
+import path from "path";
 
 const app = express();
 
@@ -19,6 +20,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(routes);
+
+const uploadsPath = path.join(process.cwd(), "uploads");
+app.use("/uploads", express.static(uploadsPath, {
+    maxAge: "1y",
+    etag: true,
+    lastModified: true,
+}));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
