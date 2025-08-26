@@ -1,3 +1,5 @@
+import {UploadedImage} from "@/features/products/types/image.types";
+
 interface CategoryInfo {
     id: string;
     title: string;
@@ -11,35 +13,41 @@ export interface Product {
     description?: string;
     price: number;
     quantity: number;
-    mainImage: string;
+    mainImage?: string;
     category?: CategoryInfo;
     isActive: boolean;
     createdAt?: string;
     updatedAt?: string;
 }
 
-export interface ProductDetails extends Product {
-    dimensions?: {
-        length: number;
-        width: number;
-        height: number;
-        weight: number;
-    },
+export interface ProductDetails {
+    id: string;
+    sku: string;
+    title: string;
+    brand?: string;
+    description?: string;
+    category?: CategoryInfo;
+    dimensions: {
+        length?: number;
+        width?: number;
+        height?: number;
+        weight?: number;
+    };
     pricing: {
         price: number;
-        regularPrice?: number;
         salePrice?: number;
+        regularPrice?: number;
         taxRate?: number;
         taxIncluded?: boolean;
-    },
-    inventory: {
-        quantity: number;
-    },
+    };
     images: Array<{
         id: string;
         url: string;
         isMain: boolean;
     }>;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface Pagination {
@@ -73,11 +81,6 @@ export interface ApiResponse<T> {
     data: T;
 }
 
-interface CreateProductImageDto {
-    url: string;
-    isMain: boolean;
-}
-
 export interface CreateProductDto {
     sku: string;
     title: string;
@@ -94,6 +97,6 @@ export interface CreateProductDto {
     taxIncluded?: boolean;
     quantity?: number;
     categoryId?: string;
-    images?: CreateProductImageDto[],
+    images?: UploadedImage[],
     isActive?: boolean,
 }

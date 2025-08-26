@@ -13,7 +13,7 @@ export const createProductSchema = z.object({
     description: z.string()
         .max(1000, "Description must be less than 1000 characters")
         .optional(),
-    categoryId: z.string().optional(),
+    categoryId: z.string().uuid().optional(),
     dimensions: z.object({
         length: z.coerce.number().min(0, "Length must be positive").optional(),
         width: z.coerce.number().min(0, "Width must be positive").optional(),
@@ -33,10 +33,21 @@ export const createProductSchema = z.object({
         quantity: z.coerce.number()
             .min(1, "Quantity cannot be negative"),
     }),
-    images: z.array(z.object({
-        url: z.string().url("Invalid image URL"),
-        isMain: z.boolean().optional(),
-    })).optional().default([]),
+    images: z.array(
+        z.union([
+            z.object({
+                // For file uploads (creating new products)
+                url: z.string(),
+                isMain: z.boolean().optional(),
+                file: z.instanceof(File).optional(),
+            }),
+            // For URL-only (editing existing products or external URLs)
+            z.object({
+                url: z.string().url("Invalid image URL"),
+                isMain: z.boolean().optional(),
+            })
+        ])
+    ).optional().default([]),
     isActive: z.boolean().optional().default(true),
 });
 

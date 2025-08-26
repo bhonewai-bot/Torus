@@ -10,7 +10,8 @@ import {CreateProductFormData, createProductSchema} from "@/features/products/sc
 import {Button} from "@/components/ui/button";
 import {ProductPricingInventory} from "@/features/products/components/admin/form/ProductPricingInventory";
 import {ProductDimensions} from "@/features/products/components/admin/form/ProductDimensions";
-import {CreateProductDto} from "@/features/products/types/product.types";
+import {transformFormDataToDto} from "@/features/products/utils/transformers";
+import {ProductImageUpload} from "@/features/products/components/admin/form/ProductImageUpload";
 
 export function ProductForm() {
     const router = useRouter();
@@ -23,7 +24,7 @@ export function ProductForm() {
             title: "",
             brand: "",
             description: "",
-            categoryId: "",
+            categoryId: undefined,
             dimensions: {
                 length: "" as any,
                 width: "" as any,
@@ -45,44 +46,15 @@ export function ProductForm() {
         }
     });
 
-    // Transform nested form data to flat API structure
-    const transformFormDataToDto = (data: CreateProductFormData): CreateProductDto => {
-        return {
-            sku: data.sku,
-            title: data.title,
-            brand: data.brand,
-            description: data.description,
-            categoryId: data.categoryId,
-            // Flatten dimensions
-            length: data.dimensions?.length,
-            width: data.dimensions?.width,
-            height: data.dimensions?.height,
-            weight: data.dimensions?.weight,
-            // Flatten pricing
-            price: data.pricing.price,
-            regularPrice: data.pricing.regularPrice,
-            salePrice: data.pricing.salePrice,
-            taxRate: data.pricing.taxRate,
-            taxIncluded: data.pricing.taxIncluded,
-            // Flatten inventory
-            quantity: data.inventory.quantity,
-            // Keep images and isActive as-is
-            images: data.images,
-            isActive: data.isActive,
-        };
-    };
-
     const onSubmit = (data: CreateProductFormData) => {
         const transformedData = transformFormDataToDto(data);
+        console.log("Payload being sent:", transformedData);
 
-        createProduct(
-            transformedData,
-            {
-                onSuccess: () => {
-                    router.push("/admin/products");
-                }
+        createProduct(transformedData, {
+            onSuccess: () => {
+                router.push("/admin/products");
             }
-        );
+        });
     }
 
     return (
@@ -91,6 +63,7 @@ export function ProductForm() {
                 <ProductBasicInfo form={form} />
                 <ProductPricingInventory form={form} />
                 <ProductDimensions form={form} />
+                <ProductImageUpload form={form} />
 
                 <div className={"flex items-center gap-4"}>
                     <Button

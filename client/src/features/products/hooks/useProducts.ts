@@ -1,8 +1,8 @@
 "use client";
 
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {productKeys} from "@/features/products/lib/queryKeys";
-import {getProduct, getProducts, productService} from "@/features/products/services/productService";
+import {productKeys} from "@/features/products/lib/query.keys";
+import {productService} from "@/features/products/services/product.service";
 import {showError, showSuccess} from "@/lib/utils/toast";
 import {
     CreateProductDto,
@@ -16,7 +16,7 @@ import {ProductServiceError} from "@/features/products/lib/error";
 export function useProducts(filters: ProductFilters = {}) {
     return useQuery({
         queryKey: productKeys.list(filters),
-        queryFn: () => getProducts(filters),
+        queryFn: () => productService.getProducts(filters),
         staleTime: 1000 * 30,
     })
 }
@@ -24,7 +24,7 @@ export function useProducts(filters: ProductFilters = {}) {
 export function useProduct(id: string) {
     return useQuery({
         queryKey: productKeys.detail(id),
-        queryFn: () => getProduct(id),
+        queryFn: () => productService.getProduct(id),
         enabled: !!id,
         staleTime: 1000 * 60 * 5,
     });
