@@ -6,7 +6,7 @@ import {productService} from "@/features/products/services/product.service";
 import {showError, showSuccess} from "@/lib/utils/toast";
 import {
     CreateProductDto,
-    Product,
+    Product, ProductDetails,
     ProductFilters,
     ProductsListResponse,
     UpdateProductDto
@@ -51,34 +51,20 @@ export function useCreateProduct() {
 
             showError(message);
         }
-    })
+    });
 }
 
 export function useUpdateProduct() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: UpdateProductDto }) =>
-            productService.updateProduct(id, data),
-        onSuccess: (updatedProduct: Product) => {
+        mutationFn: ({id, data}: { id: string, data: UpdateProductDto }) => productService.updateProduct(id, data),
+        onSuccess: (updatedProduct: ProductDetails, variables) => {
             // Update the detail cache
-            queryClient.setQueryData(productKeys.detail(updatedProduct.id), updatedProduct);
+            queryClient.setQueryData(productKeys.detail(variables.id), updatedProduct);
 
-            // Update any list caches that contain this product
-            queryClient.getQueryCache().findAll({
-                queryKey: productKeys.lists(),
-            }).forEach((query) => {
-                queryClient.setQueryData(query.queryKey, (old: ProductsListResponse | undefined) => {
-                    if (!old || !Array.isArray(old.products)) return old;
-
-                    return {
-                        ...old,
-                        products: old.products.map((product) =>
-                            product.id === updatedProduct.id ? updatedProduct : product
-                        ),
-                    }
-                });
-            });
+            // Invalidate list queries to reflect changes
+            queryClient.invalidateQueries({ queryKey: productKeys.lists() });
 
             showSuccess("Product updated successfully");
         },
@@ -86,14 +72,9 @@ export function useUpdateProduct() {
             const message = error instanceof ProductServiceError
                 ? error.message
                 : "Failed to update product";
-
             showError(message);
-        },
-        onSettled: (data) => {
-            // Optionally invalidate if you want to ensure data freshness
-            // queryClient.invalidateQueries({ queryKey: productKeys.lists() });
-        },
-    });
+        }
+    })
 }
 
 export function useDeleteProduct() {

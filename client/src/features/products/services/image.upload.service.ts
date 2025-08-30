@@ -29,8 +29,11 @@ export async function uploadProductImages(files: File[]): Promise<UploadedImage[
         const formData = new FormData();
 
         files.forEach((file) => {
+            console.log("Appending file:", file.name, file.size, file.type);
             formData.append("images", file);
         });
+
+        console.log("FormData entries:", [...formData.entries()])
 
         const response = await api.post<ImageUploadResponse>(
             API_ENDPOINTS.admin.images.create,

@@ -1,4 +1,4 @@
-import {UploadedImage} from "@/features/products/types/image.types";
+import {UpdateImage, UploadedImage} from "@/features/products/types/image.types";
 
 interface CategoryInfo {
     id: string;
@@ -45,6 +45,9 @@ export interface ProductDetails {
         url: string;
         isMain: boolean;
     }>;
+    inventory: {
+        quantity: number,
+    },
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
@@ -97,6 +100,26 @@ export interface CreateProductDto {
     taxIncluded?: boolean;
     quantity?: number;
     categoryId?: string;
-    images?: UploadedImage[],
-    isActive?: boolean,
+    images?: UploadedImage[];
+    isActive?: boolean;
+}
+
+export interface UpdateProductDto {
+    sku?: string;
+    title?: string;
+    brand?: string;
+    description?: string;
+    length?: number;
+    width?: number;
+    height?: number;
+    weight?: number;
+    price?: number;
+    regularPrice?: number;
+    salePrice?: number;
+    taxRate?: number;
+    taxIncluded?: boolean;
+    quantity?: number;
+    categoryId?: string;
+    images?: UpdateImage[];
+    isActive?: boolean;
 }

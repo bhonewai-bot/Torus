@@ -6,6 +6,18 @@ export interface UploadedImage {
     isMain: boolean;
 }
 
+export interface UpdateImage {
+    id?: string;
+    url: string;
+    isMain: boolean;
+}
+
+export interface ExistingImage {
+    id: string;
+    url: string;
+    isMain: boolean;
+}
+
 export interface ImageUploadResponse {
     success: boolean;
     message: string;

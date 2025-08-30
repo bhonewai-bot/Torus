@@ -2,7 +2,7 @@ import {
     ApiResponse, CreateProductDto,
     ProductDetails,
     ProductFilters,
-    ProductListResponse
+    ProductListResponse, UpdateProductDto
 } from "@/features/products/types/product.types";
 import {ProductServiceError} from "@/features/products/lib/error";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
@@ -98,151 +98,46 @@ export async function createProduct(data: CreateProductDto): Promise<ProductDeta
             throw new ProductServiceError("Invalid response format");
         }
 
-        return product
+        return product;
     } catch (error) {
         handleApiError(error, "Error creating product");
+    }
+}
+
+export async function updateProduct(id: string, data: UpdateProductDto): Promise<ProductDetails> {
+    try {
+        const response = await api.put<ApiResponse<ProductDetails>>(
+            API_ENDPOINTS.admin.products.update(id),
+            data,
+        );
+
+        const product = response.data.data || response.data;
+
+        if (!product) {
+            throw new ProductServiceError("Invalid response format");
+        }
+
+        return product;
+    } catch (error) {
+        handleApiError(error, "Error updating product");
+    }
+}
+
+export async function deleteProduct(id: string): Promise<void> {
+    try {
+        if (!id) {
+            throw new Error("Product ID is required");
+        }
+        await api.delete(API_ENDPOINTS.admin.products.delete(id));
+    } catch (error) {
+        handleApiError(error, "Error deleting product");
     }
 }
 
 export const productService = {
     getProducts,
     getProduct,
-    createProduct
+    createProduct,
+    updateProduct,
+    deleteProduct,
 }
-
-/*
-    async updateProduct(id: string, data: UpdateProductDto): Promise<Product> {
-        if (!id?.trim()) {
-            throw new ProductServiceError("Product ID is required");
-        }
-
-        // Validation for update data
-        if (data.price !== undefined && data.price < 0) {
-            throw new ProductServiceError("Product price cannot be negative");
-        }
-
-        try {
-            const response = await api.put<ApiResponse<Product>>(
-                API_ENDPOINTS.admin.products.update(id),
-                data
-            );
-
-            const product = response.data.data || response.data;
-
-            if (!product) {
-                throw new ProductServiceError("Invalid response format");
-            }
-
-            return product;
-        } catch (error) {
-            this.handleApiError(error, "Error updating product");
-        }
-    }
-
-    async deleteProduct(id: string): Promise<void> {
-        if (!id?.trim()) {
-            throw new ProductServiceError("Product ID is required");
-        }
-
-        try {
-            await api.delete(API_ENDPOINTS.admin.products.delete(id));
-        } catch (error) {
-            this.handleApiError(error, "Error deleting product");
-        }
-    }
-}
-
-export const productService = new ProductService();*/
-
-
-/*
-export const productService = {
-    getProducts: async (filters: ProductFilters = {}): Promise<ProductsListResponse> => {
-        try {
-            const params = new URLSearchParams();
-
-            Object.entries(filters).forEach(([key, value]) => {
-                if (value !== undefined && value !== null && value !== '') {
-                    params.append(key, value.toString());
-                }
-            });
-
-            const queryString = params.toString();
-            const url = queryString
-                ? `${API_ENDPOINTS.admin.products.list}?${queryString}`
-                : API_ENDPOINTS.admin.products.list;
-
-            const response = await api.get(url);
-            return response.data.data || response.data || {
-                products: [],
-                total: 0,
-                page: 1,
-                limit: 10,
-                totalPages: 0,
-            }
-        } catch (error) {
-            console.error("Error fetching products:", error);
-            throw new Error("Failed to fetch products");
-        }
-    },
-
-    getProduct: async (id: string): Promise<ProductResponse> => {
-        try {
-            if (!id) {
-                throw new Error("Product ID is required");
-            }
-            const response = await api.get(API_ENDPOINTS.admin.products.get(id));
-
-            if (!response?.data.data) {
-                throw new Error("Product not found");
-            }
-
-            return response.data.data;
-        } catch (error) {
-            console.error("Error fetching product:", error);
-            throw new Error("Failed to fetch product");
-        }
-    },
-
-    createProduct: async (data: CreateProductDto): Promise<Product> => {
-        try {
-            const response = await api.post(API_ENDPOINTS.admin.products.create, data);
-
-            if (!response?.data) {
-                throw new Error("Invalid response format");
-            }
-
-            return response.data;
-        } catch (error) {
-            console.error("Error creating product:", error);
-            throw new Error("Failed to create product");
-        }
-    },
-
-    updateProduct: async (id: string, data: UpdateProductDto): Promise<Product> => {
-        try {
-            const response = await api.put(API_ENDPOINTS.admin.products.update(id), data);
-
-            if (!response.data?.data) {
-                throw new Error('Invalid response format');
-            }
-
-            return response.data.data;
-        } catch (error) {
-            console.error("Error updating product:", error);
-            throw new Error("Failed to update product");
-        }
-    },
-
-    deleteProduct: async (id: string): Promise<void> => {
-        try {
-            if (!id) {
-                throw new Error("Product ID is required");
-            }
-            await api.delete(API_ENDPOINTS.admin.products.delete(id));
-        } catch (error) {
-            console.error("Error deleting product:", error);
-            throw new Error("Failed to delete product");
-        }
-    }
-}*/
