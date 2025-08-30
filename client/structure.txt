@@ -75,7 +75,7 @@ src
 │     │ └── admin
 │     │     ├── ProductBreadcrumb.tsx
 │     │     ├── ProductDescriptionEditor.tsx
-│     │     ├── ProductForm.tsx
+│     │     ├── ProductCreateForm.tsx
 │     │     └── table
 │     │         ├── Columns.tsx
 │     │         ├── ProductTableFilters.tsx

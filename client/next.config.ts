@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
       'media-cdn.bnn.in.th',
       'image.uniqlo.com',
       'd2cva83hdk3bwc.cloudfront.net',
-      'bananapedia.wiki.gg'
+      'bananapedia.wiki.gg',
+      'localhost',
       // Add other domains for your product images
     ],
   },

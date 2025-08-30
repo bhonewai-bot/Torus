@@ -12,6 +12,14 @@ const api = axios.create({
     withCredentials: true,
 });
 
+api.interceptors.request.use((config) => {
+    if (config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
+    }
+
+    return config;
+});
+
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
