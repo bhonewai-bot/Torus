@@ -8,9 +8,18 @@ const validate = (schema: z.ZodObject<any, any>, part: 'body' | 'params' | 'quer
         next();
     } catch (error) {
         if (error instanceof ZodError) {
+            const errors = error.issues.map(issue => ({
+                field: issue.path.join('.'),
+                message: issue.message,
+                code: issue.code,
+                // received: issue.received
+            }));
             return res.status(400).json({
                 success: false,
-                errors: error.issues,
+                message: "Validation failed",
+                errors: errors,
+                // For debugging - include the first error message in the main message
+                details: errors.length > 0 ? errors[0].message : "Invalid input data"
             });
         }
         next(error);
