@@ -1,10 +1,12 @@
 import {calculatePagination} from "@utils/helpers";
-import prisma from "@config/prisma";
+import prisma, { Prisma } from "@config/prisma";
 import {productDetailInclude, productListInclude} from "@utils/product/product.include";
-import {buildProductWhereClause, formatProductDetail, formatProductList} from "@utils/product/product.helpers";
+import {buildProductWhereClause} from "@utils/product/product.helpers";
 import {CreateProductDto} from "@src/types/dto/product/CreateProductDto";
 import {ProductDetailItem} from "@src/types/product.types";
-import {UpdateProductDto} from "@src/types/dto/product/UpdateProductDto";
+import {UpdateProductDto, UpdateProductImageDto} from "@src/types/dto/product/UpdateProductDto";
+import {deleteImageFiles, findImagesToDelete, splitImages} from "@utils/image.helpers";
+import { formatProductDetail, formatProductList } from "@src/utils/product/product.transformer";
 
 export interface GetAllProductsParams {
     page?: number;
@@ -60,62 +62,133 @@ export async function getProductById(id: string) {
 }
 
 export async function createProduct(data: CreateProductDto): Promise<ProductDetailItem> {
-    const { images = [], ...productData } = data;
+    try {
+        const { images = [], ...productData } = data;
 
-    const product = await prisma.product.create({
-        data: {
-            ...productData,
-            images: {
-                create: images.map((img) => ({
-                    url: img.url,
-                    isMain: img.isMain,
-                }))
-            }
-        },
-        include: productDetailInclude,
-    });
+        const product = await prisma.product.create({
+            data: {
+                ...productData,
+                images: {
+                    create: images.map((img) => ({
+                        url: img.url,
+                        isMain: img.isMain,
+                    }))
+                }
+            },
+            include: productDetailInclude,
+        });
 
-    return formatProductDetail(product);
+        return formatProductDetail(product);
+    } catch (error) {
+        if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === "P2002"
+        ) {
+            throw new Error("SKU already exists. Please use a different one");
+        }
+        throw error;
+    }
 }
 
 export async function updateProduct(id: string, data: UpdateProductDto): Promise<ProductDetailItem | null> {
-    const existedProduct = await prisma.product.findUnique({
-        where: { id },
-        include: { images: true },
-    });
+    try {
+        const { images = [], ...productData } = data;
 
-    if (!existedProduct) {
-        return null;
-    }
+        const existedProduct = await prisma.product.findUnique({
+            where: { id },
+            include: { images: true },
+        });
 
-    const { images, ...productData } = data;
-
-    let updateData: any = productData;
-
-    if (images) {
-        updateData.images = {
-            deleteMany: {},
-            create: images.map((img) => ({
-                url: img.url,
-                isMain: img.isMain,
-            }))
+        if (!existedProduct) {
+            throw new Error("Product not found");
         }
+
+        const { existingImages, newImages, existingImagesId } = splitImages(images as UpdateProductImageDto[]);
+
+        const imagesToDelete = findImagesToDelete(existedProduct.images, existingImagesId);
+
+        await deleteImageFiles(imagesToDelete);
+
+        /*let updateData: any = productData;*/
+
+        const updatedProduct = await prisma.$transaction(async (tx) => {
+            const product = await tx.product.update({
+                where: { id },
+                data: productData,
+                include: { images: true },
+            });
+
+            if (imagesToDelete.length > 0) {
+                await tx.productImage.deleteMany({
+                    where: { id: { in: imagesToDelete.map((img) => img.id) } },
+                });
+            }
+
+            await Promise.all(
+                existingImages.map((img) =>
+                    tx.productImage.update({
+                        where: { id: img.id },
+                        data: { isMain: img.isMain },
+                    })
+                )
+            );
+
+            if (newImages.length > 0) {
+                await tx.productImage.createMany({
+                    data: newImages.map((img) => ({
+                        productId: id,
+                        url: img.url,
+                        isMain: img.isMain,
+                    }))
+                });
+            }
+
+            return tx.product.findUnique({
+                where: {id},
+                include: productDetailInclude,
+            });
+        });
+
+        if (!updatedProduct) throw new Error("Failed to update product");
+
+        return formatProductDetail(updatedProduct);
+    } catch (error) {
+        if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === "P2002"
+        ) {
+            throw new Error("SKU already exists. Please use a different one");
+        }
+        throw error;
     }
-
-    const updatedProduct = await prisma.product.update({
-        where: { id },
-        data: updateData,
-        include: productDetailInclude,
-    });
-
-    return formatProductDetail(updatedProduct);
 }
 
 export async function deleteProduct(id: string) {
-     const product = await prisma.product.delete({
-        where: { id },
-        include: productDetailInclude,
-     });
+    try {
+        const productWithImages = await prisma.product.findUnique({
+            where: { id },
+            include: { images: true },
+        });
 
-     return formatProductDetail(product);
+        if (!productWithImages) {
+            throw new Error("Product not found");
+        }
+
+        if (productWithImages.images && productWithImages.images.length > 0) {
+            await deleteImageFiles(productWithImages.images);
+        }
+
+        const deletedProduct = await prisma.product.delete({
+            where: { id },
+            include: productDetailInclude,
+        });
+
+        return formatProductDetail(deletedProduct);
+    } catch (error) {
+        // If it's a Prisma error for record not found
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+            throw new Error("Product not found");
+        }
+        throw error;
+    }
 }

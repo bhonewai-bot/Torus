@@ -80,6 +80,13 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
         const { id } = req.params;
         const updateProductDto: UpdateProductDto = res.locals.validatedData;
 
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Product ID is required"
+            });
+        }
+
         const result = await productService.updateProduct(id, updateProductDto);
 
         res.status(200).json(createSuccessResponse(
@@ -87,6 +94,12 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
             result,
         ));
     } catch (error) {
+        if (error instanceof Error && error.message === "Product not found") {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
         next(error);
     }
 }

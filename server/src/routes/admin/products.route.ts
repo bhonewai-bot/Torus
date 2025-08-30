@@ -10,7 +10,7 @@ import {validateBody, validateParams, validateQuery} from "@middlewares/validati
 import {
     postgresIdPathSchema,
 } from "@utils/validation";
-import {createProductSchema, productQuerySchema, updateProductSchema} from "@utils/product/product.validation";
+import {createProductSchema, productQuerySchema, updateProductSchema} from "@utils/product/product.schema";
 
 const router = Router();
 

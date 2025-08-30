@@ -1,4 +1,5 @@
 export interface UpdateProductImageDto {
+    id?: string;
     url: string;
     isMain: boolean;
 }
