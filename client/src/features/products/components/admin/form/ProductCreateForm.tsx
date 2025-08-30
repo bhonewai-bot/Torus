@@ -10,7 +10,7 @@ import {CreateProductFormData, createProductSchema} from "@/features/products/sc
 import {Button} from "@/components/ui/button";
 import {ProductPricingInventory} from "@/features/products/components/admin/form/ProductPricingInventory";
 import {ProductDimensions} from "@/features/products/components/admin/form/ProductDimensions";
-import {transformCreateFormDataToDto} from "@/features/products/utils/transformers";
+import {transformCreateFormDataToDto} from "@/features/products/utils/product.transformers";
 import {ProductImageUpload} from "@/features/products/components/admin/form/ProductImageUpload";
 
 export function ProductCreateForm() {

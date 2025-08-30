@@ -145,7 +145,7 @@ export function ProductImageUpload({ form }: ProductImageUploadProps) {
                                         {imagePreviews.length > 0 && (
                                             <div className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4"}>
                                                 {imagePreviews.map((preview, index) => (
-                                                    <Card key={index} className={"relative group cursor-pointer"}>
+                                                    <Card key={index} className={"relative group cursor-pointer shadow-none"}>
                                                         <CardContent className={"px-4"}>
                                                             <div className={"aspect-square relative rounded-md overflow-hidden bg-gray-100"}>
                                                                 <img
