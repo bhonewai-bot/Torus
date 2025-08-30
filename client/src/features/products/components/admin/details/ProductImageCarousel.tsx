@@ -51,7 +51,7 @@ export function ProductImageCarousel({product, className = ""}: ProductImageCaro
 
     if (sortedImages.length === 0) {
         return (
-            <Card className={`lg:col-span-1 ${className}`}>
+            <Card className={`lg:col-span-1 ${className} shadow-none`}>
                 <CardContent>
                     <div className="relative aspect-square bg-muted rounded-lg flex items-center justify-center">
                         <span className="text-muted-foreground">No images available</span>
@@ -66,7 +66,7 @@ export function ProductImageCarousel({product, className = ""}: ProductImageCaro
 
 
     return (
-        <Card className={`lg:col-span-1 ${className}`}>
+        <Card className={`lg:col-span-1 ${className} shadow-none`}>
             <CardContent className={""}>
                 <div className={"space-y-4"}>
                     {/* Main Carousel */}

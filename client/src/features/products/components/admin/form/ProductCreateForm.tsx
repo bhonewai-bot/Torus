@@ -10,10 +10,10 @@ import {CreateProductFormData, createProductSchema} from "@/features/products/sc
 import {Button} from "@/components/ui/button";
 import {ProductPricingInventory} from "@/features/products/components/admin/form/ProductPricingInventory";
 import {ProductDimensions} from "@/features/products/components/admin/form/ProductDimensions";
-import {transformFormDataToDto} from "@/features/products/utils/transformers";
+import {transformCreateFormDataToDto} from "@/features/products/utils/transformers";
 import {ProductImageUpload} from "@/features/products/components/admin/form/ProductImageUpload";
 
-export function ProductForm() {
+export function ProductCreateForm() {
     const router = useRouter();
     const { mutate: createProduct, isPending } = useCreateProduct();
 
@@ -24,31 +24,32 @@ export function ProductForm() {
             title: "",
             brand: "",
             description: "",
-            categoryId: undefined,
+            categoryId: "",
             dimensions: {
-                length: "" as any,
-                width: "" as any,
-                height: "" as any,
-                weight: "" as any,
+                length: "",
+                width: "",
+                height: "",
+                weight: "",
             },
             pricing: {
-                price: "" as any,
-                regularPrice: "" as any,
-                salePrice: "" as any,
-                taxRate: "" as any,
+                price: "",
+                regularPrice: "",
+                salePrice: "",
+                taxRate: "",
                 taxIncluded: false,
             },
             inventory: {
-                quantity: "" as any,
+                quantity: "",
             },
             images: [],
             isActive: true
         }
     });
 
-    const onSubmit = (data: CreateProductFormData) => {
-        const transformedData = transformFormDataToDto(data);
-        console.log("Payload being sent:", transformedData);
+    const onSubmit = async (data: CreateProductFormData) => {
+        console.log("Form data before transform:", data);
+        const transformedData = await transformCreateFormDataToDto(data);
+        console.log("Transformed data:", transformedData);
 
         createProduct(transformedData, {
             onSuccess: () => {
