@@ -9,7 +9,7 @@ interface ProductPricingCardProps {
 
 export function ProductPricingCard({ product }: ProductPricingCardProps) {
     return (
-        <Card>
+        <Card className={"shadow-none"}>
             <CardHeader>
                 <CardTitle className="text-lg font-medium flex items-center">
                     <DollarSign className="h-5 w-5 mr-2" />
@@ -22,19 +22,19 @@ export function ProductPricingCard({ product }: ProductPricingCardProps) {
                         <div>
                             <label className="text-sm font-medium text-muted-foreground">Current Price</label>
                             <p className="text-xl font-semibold">
-                                ฿{product.pricing?.price?.toLocaleString() ?? "-"}
+                                ฿ {product.pricing?.price?.toLocaleString() ?? "-"}
                             </p>
                         </div>
                         <div>
                             <label className="text-sm font-medium text-muted-foreground">Regular Price</label>
                             <p className="text-lg font-semibold">
-                                {product.pricing?.regularPrice?.toLocaleString() ?? "-"}
+                                {product.pricing.regularPrice ? <span>฿ {product.pricing.regularPrice}</span> : "-"}
                             </p>
                         </div>
                         <div>
                             <label className="text-sm font-medium text-muted-foreground">Sale Price</label>
                             <p className="text-lg font-semibold">
-                                {product.pricing?.salePrice?.toLocaleString() ?? "-"}
+                                {product.pricing.salePrice ? <span>฿ {product.pricing.salePrice}</span> : "-"}
                             </p>
                         </div>
                         <div>
@@ -48,7 +48,7 @@ export function ProductPricingCard({ product }: ProductPricingCardProps) {
                     <div>
                         <label className="text-sm font-medium text-muted-foreground">Price</label>
                         <p className="text-2xl font-bold">
-                            ฿{product.price?.toLocaleString() ?? "-"}
+                            ฿{product?.pricing?.price.toLocaleString() ?? "-"}
                         </p>
                     </div>
                 )}

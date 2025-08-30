@@ -10,7 +10,7 @@ interface ProductInventoryCardProps {
 
 export function ProductInventoryCard({ product }: ProductInventoryCardProps) {
     return (
-        <Card>
+        <Card className={"shadow-none"}>
             <CardHeader>
                 <CardTitle className="text-lg font-medium flex items-center">
                     <Package className="h-5 w-5 mr-2" />

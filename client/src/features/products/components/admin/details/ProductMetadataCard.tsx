@@ -9,7 +9,7 @@ interface ProductMetadataCardProps {
 
 export function ProductMetadataCard({ product }: ProductMetadataCardProps) {
     return (
-        <Card>
+        <Card className={"shadow-none"}>
             <CardHeader>
                 <CardTitle className={"text-lg font-medium flex items-center"}>
                     <Calendar className={"h-5 w-5 mr-2"} />

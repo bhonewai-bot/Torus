@@ -9,7 +9,7 @@ interface ProductDimensionsCardProps {
 
 export function ProductDimensionsCard({ product }: ProductDimensionsCardProps) {
     return (
-        <Card>
+        <Card className={"shadow-none"}>
             <CardHeader>
                 <CardTitle className="text-lg font-medium flex items-center">
                     <Archive className="h-5 w-5 mr-2" />

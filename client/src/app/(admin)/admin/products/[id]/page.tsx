@@ -3,7 +3,7 @@
 import {useProduct} from "@/features/products/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import {useRouter} from "next/navigation";
-import {ProductImageCarousel} from "@/features/products/components/admin/ProductImageCarousel";
+import {ProductImageCarousel} from "@/features/products/components/admin/details/ProductImageCarousel";
 import React from "react";
 import {ProductHeader} from "@/features/products/components/admin/details/ProductHeader";
 import {ProductInfoCard} from "@/features/products/components/admin/details/ProductInfoCard";

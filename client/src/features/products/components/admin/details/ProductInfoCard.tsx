@@ -9,7 +9,7 @@ interface ProductInfoCardProps {
 
 export function ProductInfoCard({ product }: ProductInfoCardProps) {
     return (
-        <Card>
+        <Card className={"shadow-none"}>
             <CardHeader>
                 <CardTitle className={"text-lg font-medium flex items-center"}>
                     <Info className="h-5 w-5 mr-2" />
