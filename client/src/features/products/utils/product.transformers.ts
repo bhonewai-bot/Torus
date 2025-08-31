@@ -1,7 +1,7 @@
 import {CreateProductFormData, UpdateProductFormData} from "@/features/products/schemas/product.schema";
-import {CreateProductDto, UpdateProductDto} from "@/features/products/types/product.types";
 import {uploadProductImages} from "@/features/products/services/image.upload.service";
 import {ExistingImage, UpdateImage, UploadedImage} from "@/features/products/types/image.types";
+import {CreateProductDto, UpdateProductDto} from "@/features/products/types/dto/product.dto";
 
 /**
  * Transform nested form data to flat DTO structure for API
