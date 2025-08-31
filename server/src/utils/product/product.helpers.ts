@@ -1,5 +1,3 @@
-import {ProductDetailItem, ProductListItem} from "@src/types/product.types";
-
 export function buildProductWhereClause(params: any) {
     const { categoryId, brand, isActive = true, search } = params;
 

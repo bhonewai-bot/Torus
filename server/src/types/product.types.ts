@@ -65,21 +65,3 @@ export interface PaginationInfo {
     hasNextPage: boolean;
     hasPreviousPage: boolean;
 }
-
-export interface BaseApiResponse {
-    success: boolean;
-    message: string;
-}
-
-export interface ProductListResponse extends BaseApiResponse {
-    data: {
-        products: ProductListItem[],
-        pagination: PaginationInfo,
-    }
-}
-
-export interface ProductDetailResponse extends BaseApiResponse {
-    data: ProductDetailItem,
-}
-
-export type ProductTypes = ProductListResponse | ProductDetailResponse;

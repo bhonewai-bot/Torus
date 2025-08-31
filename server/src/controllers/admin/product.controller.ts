@@ -1,35 +1,15 @@
 import {Request, Response, NextFunction} from "express";
 import * as productService from '@services/product.service';
-import {CreateProductDto} from "@src/types/dto/product/CreateProductDto";
-import {UpdateProductDto} from "@src/types/dto/product/UpdateProductDto";
 import { createSuccessResponse, calculatePagination } from '@utils/helpers';
 import { notFoundError } from '@middlewares/error.handlers';
+import {CreateProductDto, UpdateProductDto} from "@src/types/dto/product.dto";
+import {productQuerySchema} from "@utils/product/product.schema";
 
 export async function getAllProducts(req: Request, res: Response, next: NextFunction) {
     try {
-        const {
-            page,
-            limit,
-            categoryId,
-            brand,
-            isActive,
-            search,
-            sortBy,
-            sortOrder,
-        } = req.query;
+        const validatedQuery = productQuerySchema.parse(req.query);
 
-        const params = {
-            page: page ? parseInt(page as string) : undefined,
-            limit: limit ? parseInt(limit as string) : undefined,
-            categoryId: categoryId as string,
-            brand: brand as string,
-            isActive: isActive === "false" ? false : true,
-            search: search as string,
-            sortBy: sortBy as "title" | "price" | "createdAt" | "updatedAt",
-            sortOrder: sortOrder as "asc" | "desc",
-        }
-
-        const result = await productService.getAllProducts(params);
+        const result = await productService.getAllProducts(validatedQuery);
 
         res.status(200).json(createSuccessResponse(
             'Products fetched successfully', {
@@ -64,6 +44,7 @@ export async function getProductById(req: Request, res: Response, next: NextFunc
 export async function createProduct(req: Request, res: Response, next: NextFunction) {
     try {
         const createProductDto: CreateProductDto = res.locals.validatedData;
+
         const result = await productService.createProduct(createProductDto);
 
         res.status(201).json(createSuccessResponse(

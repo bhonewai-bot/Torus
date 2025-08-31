@@ -2,11 +2,10 @@ import {calculatePagination} from "@utils/helpers";
 import prisma, { Prisma } from "@config/prisma";
 import {productDetailInclude, productListInclude} from "@utils/product/product.include";
 import {buildProductWhereClause} from "@utils/product/product.helpers";
-import {CreateProductDto} from "@src/types/dto/product/CreateProductDto";
 import {ProductDetailItem} from "@src/types/product.types";
-import {UpdateProductDto, UpdateProductImageDto} from "@src/types/dto/product/UpdateProductDto";
 import {deleteImageFiles, findImagesToDelete, splitImages} from "@utils/image.helpers";
 import { formatProductDetail, formatProductList } from "@src/utils/product/product.transformer";
+import {CreateProductDto, UpdateProductDto, UpdateProductImageDto} from "@src/types/dto/product.dto";
 
 export interface GetAllProductsParams {
     page?: number;
