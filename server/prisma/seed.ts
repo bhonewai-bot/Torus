@@ -1,6 +1,5 @@
-import bcrypt from 'bcrypt';
 import prisma from "../src/config/prisma";
-import users from "../src/routes/admin/users.route";
+import bcrypt from "bcrypt";
 
 async function main() {
     await prisma.orderItem.deleteMany({});
@@ -18,22 +17,31 @@ async function main() {
         }
     });
 
+    const products = await prisma.product.findMany({ take: 2 });
+    if (products.length < 2) {
+        throw new Error("Not enough products in DB to seeds orders");
+    }
+
     const order = await prisma.order.create({
         data: {
             userId: user.id,
-            total: 671.69,
-            status: 'PENDING',
+            subtotal: products[0].price * 2 + products[1].price,
+            taxAmount: 0,
+            total: products[0].price * 2 + products[1].price,
+            status: "PENDING",
             items: {
                 create: [
                     {
-                        productId: 'fa037c1a-05ec-4912-983e-ff7528b94659',
-                        price: 329,
+                        productId: products[0].id,
+                        productTitle: products[0].title,
+                        price: products[0].price,
                         quantity: 2,
                     },
                     {
-                        productId: 'cb249feb-23ed-4f9d-ac81-b894c93ad404',
-                        price: 13.69,
-                        quantity: 1
+                        productId: products[1].id,
+                        productTitle: products[1].title,
+                        price: products[1].price,
+                        quantity: 1,
                     }
                 ]
             }
