@@ -1,4 +1,5 @@
 import {z} from "zod";
+import {OrderStatus} from "@prisma/client";
 
 export const orderStatusSchema = z.enum([
     "PENDING",
@@ -20,7 +21,7 @@ export const orderQuerySchema = z.object({
     userId: z.string().uuid().optional(),
     search: z.string().min(1).optional(),
 
-    createdAfter: z.coerce.date().optional(),
+    /*createdAfter: z.coerce.date().optional(),
     createdBefore: z.coerce.date().optional(),
     updatedAfter: z.coerce.date().optional(),
     updatedBefore: z.coerce.date().optional(),
@@ -32,8 +33,8 @@ export const orderQuerySchema = z.object({
 
     includeItems: z.coerce.boolean().default(false),
     includeUsers: z.coerce.boolean().default(false),
-    includeProducts: z.coerce.boolean().default(false),
-}).refine(data => {
+    includeProducts: z.coerce.boolean().default(false),*/
+})/*.refine(data => {
     if (data.createdAfter && data.createdBefore) {
         return data.createdAfter < data.createdBefore;
     }
@@ -61,4 +62,17 @@ export const createOrderItemSchema = z.object({
 
 export const createOrderSchema = z.object({
 
+})*/
+
+export const updateOrderSchema = z.object({
+    status: z.nativeEnum(OrderStatus).optional(),
+    subtotal: z.number()
+        .min(0, "Subtotal is required")
+        .optional(),
+    taxAmount: z.number()
+        .min(0, "taxAmount is required")
+        .optional(),
+    total: z.number()
+        .min(0, "Total is required")
+        .optional(),
 })

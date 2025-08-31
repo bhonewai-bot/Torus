@@ -1,21 +1,22 @@
 import {NextFunction, Request, Response} from "express";
 import * as orderService from '@services/order.service';
-import {calculatePagination, createSuccessResponse} from "@utils/helpers";
-import {UpdateOrderStatusDto} from "@src/types/dto/order/UpdateOrderStatusDto";
+import {createSuccessResponse} from "@utils/helpers";
+import {notFoundError} from "@middlewares/error.handlers";
+import {orderQuerySchema} from "@utils/order/order.schema";
+import {UpdateOrderDto} from "@src/types/dto/order.dto";
 
 export async function getAllOrders(req: Request, res: Response, next: NextFunction) {
     try {
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 10;
+        const validatedQuery = orderQuerySchema.parse(req.query);
 
-        const result = await orderService.getAllOrders(page, limit);
-        const pagination = calculatePagination(result.pagination.total, page, limit);
+        const result = await orderService.getAllOrders(validatedQuery);
 
         res.status(200).json(createSuccessResponse(
-            'Orders fetched successfully',
-            result.data,
-            pagination,
-        ));
+            "Orders fetched successfully", {
+                orders: result.orders,
+                pagination: result.pagination,
+            }
+        ))
     } catch (error) {
         next(error);
     }
@@ -27,42 +28,31 @@ export async function getOrderById(req: Request, res: Response, next: NextFuncti
 
         const result = await orderService.getOrderById(id);
 
+        if (!result) {
+            throw notFoundError('Order');
+        }
+
         res.status(200).json(createSuccessResponse(
-            'Order fetched successfully',
-            result,
+            "Order retrieved successfully",
+            result
         ));
     } catch (error) {
         next(error);
     }
 }
 
-export async function updateOrderStatus(req: Request, res: Response, next: NextFunction) {
+export async function updateOrder(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
 
-        const updateOrderStatusDto: UpdateOrderStatusDto = res.locals.validatedData;
+        const updateOrderDto: UpdateOrderDto = res.locals.validatedData;
 
-        const result = await orderService.updateOrderStatus(id, updateOrderStatusDto);
-
-        res.status(200).json(createSuccessResponse(
-            'Order status updated successfully',
-            result,
-        ));
-    } catch (error) {
-        next(error);
-    }
-}
-
-export async function refundOrder(req: Request, res: Response, next: NextFunction) {
-    try {
-        const { id } = req.params;
-
-        const result = await orderService.refundOrder(id);
+        const result = await orderService.updateOrder(id, updateOrderDto);
 
         res.status(200).json(createSuccessResponse(
-            'Order refunded successfully',
-            result,
-        ));
+            "Order updated successfully",
+            result
+        ))
     } catch (error) {
         next(error);
     }

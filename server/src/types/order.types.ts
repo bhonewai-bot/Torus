@@ -1,20 +1,29 @@
 import {OrderStatus} from "@prisma/client";
 
-export interface OrderItemResponse {
+export interface OrderItem {
     id: string;
-    productId: string;
-    productName: string;
     price: number;
     quantity: number;
+    taxAmount?: number;
+    product: {
+        id: string;
+        title: string;
+        mainImage?: string;
+    }
 }
 
-export interface OrderTypes {
+export interface Order {
     id: string;
-    userId: string;
-    userName: string;
-    userEmail: string;
-    items: OrderItemResponse[];
+    subtotal: number;
+    taxAmount: number;
     total: number;
     status: OrderStatus;
-    createdAt: Date;
+    createdAt: string;
+    updatedAt: string;
+    user: {
+        id: string;
+        name: string;
+        email: string;
+    };
+    items: OrderItem[];
 }
