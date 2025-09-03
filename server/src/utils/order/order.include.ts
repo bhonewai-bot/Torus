@@ -4,29 +4,30 @@ export const orderListInclude = {
             id: true,
             name: true,
             email: true,
-        }
+        },
     },
-    items: {
+    _count: {
+        select: { items: true },
+    }
+}
+
+export const orderDetailInclude = {
+    user: {
         select: {
             id: true,
-            price: true,
-            quantity: true,
-            taxAmount: true,
+            name: true,
+            email: true,
+        },
+    },
+    items: {
+        include: {
             product: {
                 select: {
                     id: true,
+                    sku: true,
                     title: true,
-                    images: {
-                        select: {
-                            id: true,
-                            url: true,
-                            isMain: true,
-                        },
-                        orderBy: {
-                            isMain: "desc" as const
-                        },
-                        take: 1,
-                    }
+                    price: true,
+                    isActive: true,
                 }
             }
         }
