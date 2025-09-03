@@ -2,7 +2,7 @@ import {Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList,
     BreadcrumbPage, BreadcrumbSeparator} from "@/components/ui/breadcrumb";
 import {ReactNode} from "react";
 
-export function ProductBreadcrumb({item}: { item: ReactNode }) {
+export function CustomBreadcrumb({item}: { item: ReactNode }) {
     return (
         <Breadcrumb>
             <BreadcrumbList>

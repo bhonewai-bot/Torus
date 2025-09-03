@@ -1,10 +1,4 @@
-export interface CategoryListItem {
-    id: string;
-    title: string;
-    productCount: number;
-}
-
-export interface CategorySelectItem {
+export interface Category {
     id: string;
     title: string;
 }

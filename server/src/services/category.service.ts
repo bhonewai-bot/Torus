@@ -1,8 +1,8 @@
 import prisma from "@config/prisma";
-import {CategoryListItem, CategorySelectItem} from "@src/types/category.types";
 import {CreateCategoryDto} from "@src/types/dto/category/CreateCategoryDto";
+import {createCategoryDto} from "@utils/category/category.schema";
 
-export async function getCategoriesForSelect(): Promise<CategorySelectItem[]> {
+export async function getAllCategories() {
     const categories = await prisma.category.findMany({
         select: {
             id: true,
@@ -16,7 +16,7 @@ export async function getCategoriesForSelect(): Promise<CategorySelectItem[]> {
     return categories;
 }
 
-export async function createCategory(data: CreateCategoryDto): Promise<CategorySelectItem> {
+export async function createCategory(data: createCategoryDto) {
     const category = await prisma.category.create({
         data: {
             title: data.title,
@@ -28,28 +28,4 @@ export async function createCategory(data: CreateCategoryDto): Promise<CategoryS
     });
 
     return category;
-}
-
-export async function getAllCategories(): Promise<CategoryListItem[]> {
-    const categories = await prisma.category.findMany({
-        select: {
-            id: true,
-            title: true,
-            _count: {
-                select: {
-                    products: {
-                        where: {
-                            isActive: true,
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    return categories.map((category) => ({
-        id: category.id,
-        title: category.title,
-        productCount: category._count.products,
-    }));
 }
