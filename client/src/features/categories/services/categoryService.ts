@@ -33,3 +33,25 @@ export async function getAllCategories(): Promise<Category[]> {
         handleApiError(error, "Error fetching categories");
     }
 }
+
+export async function createCategory(data: any) {
+    try {
+        const response = await api.post(
+            API_ENDPOINTS.admin.categories.create,
+            data
+        );
+
+        const category = response.data.data || response.data;
+
+        if (!category) {
+            throw new Error("Invalid response format");
+        }
+    } catch (error) {
+        handleApiError(error, "Error creating category");
+    }
+}
+
+export const categoryService = {
+    getAllCategories,
+    createCategory,
+}
