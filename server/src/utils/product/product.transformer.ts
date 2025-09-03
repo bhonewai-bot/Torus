@@ -1,6 +1,6 @@
-import { ProductDetailItem, ProductListItem } from "@src/types/product.types";
+import { ProductDetail, ProductList } from "@src/types/product.types";
 
-export function formatProductList(product: any): ProductListItem {
+export function formatProductList(product: any): ProductList {
     return {
         id: product.id,
         sku: product.sku,
@@ -17,7 +17,7 @@ export function formatProductList(product: any): ProductListItem {
     }
 }
 
-export function formatProductDetail(product: any): ProductDetailItem {
+export function formatProductDetail(product: any): ProductDetail {
     return {
         id: product.id,
         sku: product.sku,

@@ -1,11 +1,12 @@
 import {calculatePagination} from "@utils/helpers";
-import prisma, { Prisma } from "@config/prisma";
 import {productDetailInclude, productListInclude} from "@utils/product/product.include";
 import {buildProductWhereClause} from "@utils/product/product.helpers";
-import {ProductDetailItem} from "@src/types/product.types";
 import {deleteImageFiles, findImagesToDelete, splitImages} from "@utils/image.helpers";
 import { formatProductDetail, formatProductList } from "@src/utils/product/product.transformer";
-import {CreateProductDto, UpdateProductDto, UpdateProductImageDto} from "@src/types/dto/product.dto";
+import prisma from "@config/prisma";
+import {Prisma} from "@prisma/client";
+import {createProductDto, updateProductDto, updateProductImageDto} from "@utils/product/product.schema";
+import {ProductDetail} from "@src/types/product.types";
 
 export interface GetAllProductsParams {
     page?: number;
@@ -60,7 +61,7 @@ export async function getProductById(id: string) {
     return formatProductDetail(product);
 }
 
-export async function createProduct(data: CreateProductDto): Promise<ProductDetailItem> {
+export async function createProduct(data: createProductDto): Promise<ProductDetail> {
     try {
         const { images = [], ...productData } = data;
 
@@ -89,7 +90,7 @@ export async function createProduct(data: CreateProductDto): Promise<ProductDeta
     }
 }
 
-export async function updateProduct(id: string, data: UpdateProductDto): Promise<ProductDetailItem | null> {
+export async function updateProduct(id: string, data: updateProductDto): Promise<ProductDetail | null> {
     try {
         const { images = [], ...productData } = data;
 
@@ -102,7 +103,7 @@ export async function updateProduct(id: string, data: UpdateProductDto): Promise
             throw new Error("Product not found");
         }
 
-        const { existingImages, newImages, existingImagesId } = splitImages(images as UpdateProductImageDto[]);
+        const { existingImages, newImages, existingImagesId } = splitImages(images as updateProductImageDto[]);
 
         const imagesToDelete = findImagesToDelete(existedProduct.images, existingImagesId);
 

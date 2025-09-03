@@ -1,9 +1,8 @@
 import {Request, Response, NextFunction} from "express";
 import * as productService from '@services/product.service';
-import { createSuccessResponse, calculatePagination } from '@utils/helpers';
+import { createSuccessResponse } from '@utils/helpers';
 import { notFoundError } from '@middlewares/error.handlers';
-import {CreateProductDto, UpdateProductDto} from "@src/types/dto/product.dto";
-import {productQuerySchema} from "@utils/product/product.schema";
+import {createProductDto, productQuerySchema, updateProductDto} from "@utils/product/product.schema";
 
 export async function getAllProducts(req: Request, res: Response, next: NextFunction) {
     try {
@@ -43,9 +42,9 @@ export async function getProductById(req: Request, res: Response, next: NextFunc
 
 export async function createProduct(req: Request, res: Response, next: NextFunction) {
     try {
-        const createProductDto: CreateProductDto = res.locals.validatedData;
+        const newProduct: createProductDto = res.locals.validatedData;
 
-        const result = await productService.createProduct(createProductDto);
+        const result = await productService.createProduct(newProduct);
 
         res.status(201).json(createSuccessResponse(
             "Product created successfully",
@@ -59,7 +58,7 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
 export async function updateProduct(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
-        const updateProductDto: UpdateProductDto = res.locals.validatedData;
+        const updatedProduct: updateProductDto = res.locals.validatedData;
 
         if (!id) {
             return res.status(400).json({
@@ -68,7 +67,7 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
             });
         }
 
-        const result = await productService.updateProduct(id, updateProductDto);
+        const result = await productService.updateProduct(id, updatedProduct);
 
         res.status(200).json(createSuccessResponse(
             "Product updated successfully",
@@ -95,9 +94,8 @@ export async function deleteProduct(req: Request, res: Response, next: NextFunct
             throw notFoundError("Product");
         }
 
-        res.status(200).json(createSuccessResponse(
+        res.status(204).json(createSuccessResponse(
             "Product deleted successfully",
-            result
         ))
     } catch (error) {
         next(error);

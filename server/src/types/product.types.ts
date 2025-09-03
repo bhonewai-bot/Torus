@@ -1,7 +1,4 @@
-export interface CategoryInfo {
-    id: string;
-    title: string;
-}
+import {Category} from "@src/types/category.types";
 
 export interface ProductImage {
     id: string;
@@ -29,7 +26,7 @@ export interface ProductInventory {
 }
 
 // Core product interfaces
-export interface ProductListItem {
+export interface ProductList {
     id: string;
     sku: string;
     title: string;
@@ -37,17 +34,17 @@ export interface ProductListItem {
     price: number;
     quantity: number;
     mainImage?: string;
-    category?: CategoryInfo;
+    category?: Category;
     isActive: boolean;
 }
 
-export interface ProductDetailItem {
+export interface ProductDetail {
     id: string;
     sku: string;
     title: string;
     brand?: string;
     description?: string;
-    category?: CategoryInfo;
+    category?: Category;
     dimensions: ProductDimensions;
     pricing: ProductPricing;
     inventory: ProductInventory;
@@ -55,13 +52,4 @@ export interface ProductDetailItem {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
-}
-
-export interface PaginationInfo {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
 }
