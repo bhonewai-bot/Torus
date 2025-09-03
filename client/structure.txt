@@ -64,7 +64,7 @@ src
 │ │ │ └── useCategories.ts
 │ │ ├── lib
 │ │ │ ├── error.ts
-│ │ │ └── query.keys.ts
+│ │ │ └── product.query.keys.ts
 │ │ ├── services
 │ │ │ └── categoryService.ts
 │ │ └── types
@@ -73,7 +73,7 @@ src
 │ └── products
 │     ├── components
 │     │ └── admin
-│     │     ├── ProductBreadcrumb.tsx
+│     │     ├── CustomBreadcrumb.tsx
 │     │     ├── ProductDescriptionEditor.tsx
 │     │     ├── ProductCreateForm.tsx
 │     │     └── table
@@ -84,7 +84,7 @@ src
 │     │ └── useProducts.ts
 │     ├── lib
 │     │ ├── error.ts
-│     │ └── query.keys.ts
+│     │ └── product.query.keys.ts
 │     ├── services
 │     │ └── product.service.ts
 │     └── types

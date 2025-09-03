@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
         },
         categories: {
             list: "/admin/categories",
+            create: "/admin/categories",
         },
         inventory: {
             get: "",

@@ -50,7 +50,7 @@ export function AdminSidebar() {
                             <SidebarGroupContent>
                                 <SidebarMenu>
                                     <SidebarMenuItem>
-                                        {/* Orders list */}
+                                        {/* Overview */}
                                         <SidebarMenuButton asChild>
                                             <Link href={"/admin/overview"}>
                                                 <LayoutDashboard />
@@ -126,7 +126,7 @@ export function AdminSidebar() {
                                     <SidebarMenuItem>
                                         {/* Orders list */}
                                         <SidebarMenuButton asChild>
-                                            <Link href={"/order"}>
+                                            <Link href={"/admin/orders"}>
                                                 <ShoppingCart />
                                                 Orders
                                             </Link>
