@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -55,16 +55,21 @@ model ProductImage {
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  user      User        @relation(fields: [userId], references: [id])
-  userId    String
-  items     OrderItem[]
-  subtotal  Float
-  taxAmount Float
-  total     Float
-  status    OrderStatus @default(PENDING)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id              String        @id @default(uuid())
+  orderNumber     String        @unique
+  user            User          @relation(fields: [userId], references: [id])
+  userId          String
+  items           OrderItem[]
+  total           Float
+  subtotal        Float
+  taxAmount       Float
+  shippingAddress String?
+  billingAddress  String?
+  notes           String?
+  paymentStatus   PaymentStatus @default(PENDING)
+  orderStatus     OrderStatus   @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 model OrderItem {
@@ -74,6 +79,8 @@ model OrderItem {
   product      Product @relation(fields: [productId], references: [id])
   productId    String
   productTitle String
+  productSku   String
+  productImage String?
   price        Float
   quantity     Int
   taxAmount    Float?
@@ -89,11 +96,18 @@ model User {
   orders    Order[]
 }
 
-enum OrderStatus {
+enum PaymentStatus {
   PENDING
   PAID
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
   PROCESSING
   SHIPPED
-  COMPLETED
+  DELIVERED
   CANCELED
 }
