@@ -1,5 +1,4 @@
 import {UseFormReturn} from "react-hook-form";
-import {CreateProductFormData} from "@/features/products/schemas/product.schema";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Package, Star, StarOff, Upload, X} from "lucide-react";
 import {FormField, FormItem, FormMessage} from "@/components/ui/form";
@@ -8,9 +7,10 @@ import {useDropzone} from "react-dropzone";
 import {Card, CardContent} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {createProductFormData} from "@/features/products/utils/product.schema";
 
 interface ProductImageUploadProps {
-    form: UseFormReturn<CreateProductFormData>;
+    form: UseFormReturn<createProductFormData>;
 }
 
 interface ImagePreview {
@@ -21,7 +21,6 @@ interface ImagePreview {
 
 export function ProductImageUpload({ form }: ProductImageUploadProps) {
     const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
-    const [isUploading, setIsUploading] = useState(false);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const newPreviews = acceptedFiles.map((file, index) => ({
@@ -33,10 +32,9 @@ export function ProductImageUpload({ form }: ProductImageUploadProps) {
         const updatedPreviews = [...imagePreviews, ...newPreviews];
         setImagePreviews(updatedPreviews);
 
-        const imageData = updatedPreviews.map((preview, index) => ({
-            url: preview.preview,
-            isMain: preview.isMain,
+        const imageData = updatedPreviews.map((preview) => ({
             file: preview.file,
+            isMain: preview.isMain,
         }));
 
         form.setValue("images", imageData);
@@ -52,49 +50,48 @@ export function ProductImageUpload({ form }: ProductImageUploadProps) {
     });
 
     const removeImage = (index: number) => {
+        const imageToRemove = imagePreviews[index];
         const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
 
-        if (imagePreviews[index].isMain && imagePreviews.length > 0) {
+        if (imageToRemove.isMain && updatedPreviews.length > 0) {
             updatedPreviews[0].isMain = true;
         }
 
         setImagePreviews(updatedPreviews);
 
         const imageData = updatedPreviews.map((preview) => ({
-            url: preview.preview,
-            isMain: preview.isMain,
             file: preview.file,
+            isMain: preview.isMain,
         }));
 
         form.setValue("images", imageData);
 
-        URL.revokeObjectURL(imagePreviews[index].preview);
+        URL.revokeObjectURL(imageToRemove.preview);
     }
 
     const setMainImage = (index: number) => {
-        const updatedReviews = imagePreviews.map((preview, i) => ({
+        const updatedPreviews = imagePreviews.map((preview, i) => ({
             ...preview,
             isMain: i === index
         }));
 
-        setImagePreviews(updatedReviews);
+        setImagePreviews(updatedPreviews);
 
-        const imageData = updatedReviews.map((preview) => ({
-            url: preview.preview,
-            isMain: preview.isMain,
+        const imageData = updatedPreviews.map((preview) => ({
             file: preview.file,
+            isMain: preview.isMain,
         }));
 
         form.setValue("images", imageData);
-    }
+    };
 
     useEffect(() => {
         return () => {
             imagePreviews.forEach((preview) => {
                 URL.revokeObjectURL(preview.preview);
             });
-        }
-    }, []);
+        };
+    }, [imagePreviews]);
 
     return (
         <Accordion type={"single"} collapsible defaultValue={"product-image-upload"} className={"bg-primary-foreground border rounded-lg"}>

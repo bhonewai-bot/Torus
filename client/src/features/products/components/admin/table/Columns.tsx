@@ -52,49 +52,43 @@ export const columns: ColumnDef<Product>[] = [
         ),
     },
     {
-        id: "mainImage",
+        id: "product",
+        header: () => <TableHeaderCell>Product</TableHeaderCell>,
         cell: ({ row }) => {
             const product = row.original;
             // eslint-disable-next-line react-hooks/rules-of-hooks
             const [imageError, setImageError] = useState(false);
 
-            if (!product.mainImage || imageError) {
-                return (
-                    <div
-                        className={"w-10 h-10 relative bg-gray-100 rounded-md flex items-center justify-center"}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                             stroke="#99a1af" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"
-                             className="lucide lucide-image-icon lucide-image">
-                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
-                            <circle cx="9" cy="9" r="2"/>
-                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-                        </svg>
-                    </div>
-                );
-            }
-
             return (
-                <div className={"w-10 h-10 relative bg-gray-100 rounded-md flex items-center justify-center"}>
-                    <Image
-                        src={product.mainImage}
-                        alt={product.title}
-                        fill
-                        className={"object-cover rounded-md"}
-                        sizes={"48px"}
-                        onError={() => setImageError(true)}
-                    />
+                <div className="flex items-center gap-3">
+                    {/* Product Image */}
+                    <div className="w-10 h-10 relative bg-gray-100 rounded-md flex items-center justify-center">
+                        {(!product.mainImage || imageError) ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 viewBox="0 0 24 24" fill="none" stroke="#99a1af"
+                                 strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"
+                                 className="lucide lucide-image">
+                                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                                <circle cx="9" cy="9" r="2"/>
+                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                            </svg>
+                        ) : (
+                            <Image
+                                src={product.mainImage}
+                                alt={product.title}
+                                fill
+                                className="object-cover rounded-md"
+                                sizes="40px"
+                                onError={() => setImageError(true)}
+                            />
+                        )}
+                    </div>
+
+                    {/* Product Name */}
+                    <span className="font-medium text-gray-800">{product.title}</span>
                 </div>
             );
-        }
-
-    },
-    {
-        accessorKey: "sku",
-        header: () => <TableHeaderCell>SKU</TableHeaderCell>
-    },
-    {
-        accessorKey: "title",
-        header: () => <TableHeaderCell>Name</TableHeaderCell>
+        },
     },
     {
         accessorKey: "brand",

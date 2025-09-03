@@ -4,7 +4,7 @@ import {ProductDetails} from "@/features/products/types/product.types";
 import {useRouter} from "next/navigation";
 import {useUpdateProduct} from "@/features/products/hooks/useProducts";
 import {FormProvider, useForm} from "react-hook-form";
-import {UpdateProductFormData, updateProductSchema} from "@/features/products/schemas/product.schema";
+import {updateProductFormData, updateProductSchema} from "@/features/products/utils/product.schema";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {ProductBasicInfo} from "@/features/products/components/admin/form/ProductBasicInfo";
 import {ProductDimensions} from "@/features/products/components/admin/form/ProductDimensions";
@@ -22,7 +22,7 @@ export function ProductUpdateForm({ product }: ProductUpdateFormProps) {
     const router = useRouter();
     const { mutate: updateProduct, isPending } = useUpdateProduct();
 
-    const form = useForm<UpdateProductFormData>({
+    const form = useForm<updateProductFormData>({
         resolver: zodResolver(updateProductSchema),
         defaultValues: {
             sku: product.sku,

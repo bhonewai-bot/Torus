@@ -1,39 +1,43 @@
-import {CreateProductFormData, UpdateProductFormData} from "@/features/products/schemas/product.schema";
 import {uploadProductImages} from "@/features/products/services/image.upload.service";
-import {ExistingImage, UpdateImage, UploadedImage} from "@/features/products/types/image.types";
-import {CreateProductDto, UpdateProductDto} from "@/features/products/types/dto/product.dto";
+import {ExistingImage} from "@/features/products/types/image.types";
+import {
+    createProductDto,
+    createProductFormData,
+    updateProductDto,
+    updateProductFormData
+} from "@/features/products/utils/product.schema";
 
-/**
- * Transform nested form data to flat DTO structure for API
- */
-export async function transformCreateFormDataToDto(data: CreateProductFormData):Promise<CreateProductDto>  {
-    let processedImages: UploadedImage[] = [];
+export async function transformCreateFormDataToDto(data: createProductFormData):Promise<createProductDto> {
+    let processedImages: Array<{
+        url: string;
+        filename?: string;
+        originalName?: string;
+        size?: number;
+        isMain: boolean;
+    }> = [];
+
+    console.log("Processing images in transform:", data.images);
 
     if (data.images && data.images.length > 0) {
-        // Extract File objects from form data
         const filesToUpload = data.images
-            .filter((img) => img.file)
-            .map((img) => img.file!) as File[];
+            .filter((img): img is { file: File; isMain: boolean } => 'file' in img && img.file instanceof File)
+            .map(img => ({ file: img.file, isMain: img.isMain || false }));
+
+        console.log("Files to upload:", filesToUpload);
 
         if (filesToUpload.length > 0) {
             try {
-                // Upload images and get real URLs from backend
-                const uploadedImages = await uploadProductImages(filesToUpload);
+                const files = filesToUpload.map(item => item.file);
+                const uploadedImages = await uploadProductImages(files);
 
-                // Map uploaded images back to the form structure, preserving isMain
-                processedImages = uploadedImages.map((uploaded, index) => {
-                    const formImage = data.images!.find((img, imgIndex) =>
-                        img.file && imgIndex === index
-                    );
-
-                    return {
-                        url: uploaded.url,
-                        filename: uploaded.filename,
-                        originalName: uploaded.originalName,
-                        size: uploaded.size,
-                        isMain: uploaded?.isMain || false,
-                    }
-                });
+                // Map uploaded images with their isMain flags
+                processedImages = uploadedImages.map((uploaded, index) => ({
+                    url: uploaded.url,
+                    filename: uploaded.filename,
+                    originalName: uploaded.originalName,
+                    size: uploaded.size,
+                    isMain: filesToUpload[index]?.isMain || false,
+                }));
             } catch (error) {
                 console.error("Failed to upload images:", error);
                 throw new Error("Failed to upload images. Please try again.");
@@ -41,6 +45,7 @@ export async function transformCreateFormDataToDto(data: CreateProductFormData):
         }
     }
 
+    console.log("Final processed images:", processedImages);
 
     return {
         sku: data.sku,
@@ -60,59 +65,72 @@ export async function transformCreateFormDataToDto(data: CreateProductFormData):
         regularPrice: data.pricing.regularPrice,
         salePrice: data.pricing.salePrice,
         taxRate: data.pricing.taxRate,
-        taxIncluded: data.pricing.taxIncluded,
+        taxIncluded: data.pricing.taxIncluded || false,
 
         // Flatten inventory
         quantity: data.inventory.quantity,
 
-        // Keep images and isActive as-is
+        // Processed images and isActive
         images: processedImages,
-        isActive: data.isActive,
-    }
+        isActive: data.isActive || true,
+    };
 }
 
-/**
- * Transform flat API response to nested form structure for editing
- */
 export async function transformUpdateFormDataToDto(
-    data: UpdateProductFormData,
+    data: updateProductFormData,
     existingImages: ExistingImage[] = [],
-): Promise<UpdateProductDto> {
-    let processedImages: UpdateImage[] = [];
+): Promise<updateProductDto> {
+    const processedImages: Array<{
+        id?: string;
+        url: string;
+        filename?: string;
+        originalName?: string;
+        size?: number;
+        isMain: boolean;
+    }> = [];
+
+    console.log("Processing update images:", data.images);
 
     if (data.images && data.images.length > 0) {
-        const existingImageUpdates: UpdateImage[] = [];
-        const newFilesUpload: File[] = [];
-        const newFileMetadata: Array<{ file: File, isMain: boolean }> = [];
+        const existingImageUpdates: Array<{ id: string; url: string; isMain: boolean }> = [];
+        const filesToUpload: Array<{ file: File; isMain: boolean }> = [];
 
-        data.images.forEach((img, index) => {
-            if ("id" in img && img.id) {
+        data.images.forEach((img) => {
+            if ('id' in img && img.id) {
+                // Existing image with ID
                 existingImageUpdates.push({
                     id: img.id,
                     url: img.url,
                     isMain: img.isMain || false,
                 });
-            } else if (img.file) {
-                 newFilesUpload.push(img.file);
-                 newFileMetadata.push({
-                     file: img.file,
-                     isMain: img.isMain || false,
-                 });
+            } else if ('file' in img && img.file instanceof File) {
+                // New file upload
+                filesToUpload.push({ file: img.file, isMain: img.isMain || false });
             }
         });
 
-        processedImages.push(...existingImageUpdates);
+        existingImageUpdates.forEach(img => {
+            processedImages.push({
+                id: img.id,
+                url: img.url,
+                isMain: img.isMain,
+            });
+        });
 
-        if (newFilesUpload.length > 0) {
+        if (filesToUpload.length > 0) {
             try {
-                const uploadedImages = await uploadProductImages(newFilesUpload);
+                const files = filesToUpload.map(item => item.file);
+                const uploadedImages = await uploadProductImages(files);
 
-                const newImageDtos: UpdateImage[] = uploadedImages.map((uploaded, index) => ({
-                    url: uploaded.url,
-                    isMain: newFileMetadata[index]?.isMain || false,
-                }));
-
-                processedImages.push(...newImageDtos);
+                uploadedImages.forEach((uploaded, index) => {
+                    processedImages.push({
+                        url: uploaded.url,
+                        filename: uploaded.filename,
+                        originalName: uploaded.originalName,
+                        size: uploaded.size,
+                        isMain: filesToUpload[index]?.isMain || false,
+                    });
+                });
             } catch (error) {
                 console.error("Failed to upload new images:", error);
                 throw new Error("Failed to upload new images. Please try again");
@@ -120,31 +138,39 @@ export async function transformUpdateFormDataToDto(
         }
     }
 
-    return {
-        sku: data.sku,
-        title: data.title,
-        brand: data.brand,
-        description: data.description,
-        categoryId: data.categoryId,
+    console.log("Final update processed images:", processedImages);
 
-        // Flatten dimensions
-            length: data.dimensions?.length,
-            width: data.dimensions?.width,
-            height: data.dimensions?.height,
-            weight: data.dimensions?.weight,
+    const dto: updateProductDto = {};
 
-        // Flatten pricing
-        price: data.pricing?.price,
-        regularPrice: data.pricing?.regularPrice,
-        salePrice: data.pricing?.salePrice,
-        taxRate: data.pricing?.taxRate,
-        taxIncluded: data.pricing?.taxIncluded,
+    if (data.sku !== undefined) dto.sku = data.sku;
+    if (data.title !== undefined) dto.title = data.title;
+    if (data.brand !== undefined) dto.brand = data.brand;
+    if (data.description !== undefined) dto.description = data.description;
+    if (data.categoryId !== undefined) dto.categoryId = data.categoryId;
 
-        // Nest inventory
-        quantity: data.inventory?.quantity,
+    // Handle dimensions
+    if (data.dimensions) {
+        if (data.dimensions.length !== undefined) dto.length = data.dimensions.length;
+        if (data.dimensions.width !== undefined) dto.width = data.dimensions.width;
+        if (data.dimensions.height !== undefined) dto.height = data.dimensions.height;
+        if (data.dimensions.weight !== undefined) dto.weight = data.dimensions.weight;
+    }
 
-        // Transform images (exclude id for form)
-        images: processedImages,
-        isActive: data.isActive,
-    };
+    // Handle pricing
+    if (data.pricing) {
+        if (data.pricing.price !== undefined) dto.price = data.pricing.price;
+        if (data.pricing.regularPrice !== undefined) dto.regularPrice = data.pricing.regularPrice;
+        if (data.pricing.salePrice !== undefined) dto.salePrice = data.pricing.salePrice;
+        if (data.pricing.taxRate !== undefined) dto.taxRate = data.pricing.taxRate;
+        if (data.pricing.taxIncluded !== undefined) dto.taxIncluded = data.pricing.taxIncluded;
+    }
+
+    // Handle inventory
+    if (data.inventory?.quantity !== undefined) dto.quantity = data.inventory.quantity;
+
+    // Handle images and status
+    if (processedImages.length > 0) dto.images = processedImages;
+    if (data.isActive !== undefined) dto.isActive = data.isActive;
+
+    return dto;
 }

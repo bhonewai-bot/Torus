@@ -1,6 +1,6 @@
 "use client";
 
-import {ProductBreadcrumb} from "@/features/products/components/admin/ProductBreadcrumb";
+import {CustomBreadcrumb} from "@/components/common/CustomBreadcrumb";
 import {ProductDataTable} from "@/features/products/components/admin/table/ProductDataTable";
 import {Button} from "@/components/ui/button";
 import {useProducts} from "@/features/products/hooks/useProducts";
@@ -55,7 +55,7 @@ export default function ProductsPage() {
         return (
             <main className={"flex flex-col gap-6"}>
                 <div className={"flex flex-col gap-4"}>
-                    <ProductBreadcrumb item={"Product"} />
+                    <CustomBreadcrumb item={"Product"} />
                     <div className={"flex justify-between"}>
                         <h1 className={"text-3xl font-medium"}>Products</h1>
                         <div className={"flex gap-2"}>
@@ -75,7 +75,7 @@ export default function ProductsPage() {
         return (
             <main className={"flex flex-col gap-6"}>
                 <div className={"flex flex-col gap-4"}>
-                    <ProductBreadcrumb item={"Product"} />
+                    <CustomBreadcrumb item={"Product"} />
                     <div className={"flex justify-between"}>
                         <h1 className={"text-3xl font-medium"}>Products</h1>
                     </div>
@@ -96,7 +96,7 @@ export default function ProductsPage() {
         <main className={"flex flex-col gap-6"}>
             {/* Header */}
             <div className={"flex flex-col gap-4"}>
-                <ProductBreadcrumb item={"Products"} />
+                <CustomBreadcrumb item={"Products"} />
                 <div className={"flex justify-between"}>
                     <h1 className={"text-3xl font-medium"}>Products</h1>
                     <div className={"flex gap-2"}>

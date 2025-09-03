@@ -6,10 +6,11 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {useCategories} from "@/features/categories/hooks/useCategories";
 import {Textarea} from "@/components/ui/textarea";
 import {UseFormReturn} from "react-hook-form";
-import {CreateProductFormData} from "@/features/products/schemas/product.schema";
+import {CategoryCreateDialog} from "@/features/categories/components/CategoryCreateDialog";
+import {createProductFormData} from "@/features/products/utils/product.schema";
 
 interface ProductBasicInfoProps {
-    form: UseFormReturn<CreateProductFormData>
+    form: UseFormReturn<createProductFormData>
 }
 
 export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
@@ -83,7 +84,10 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                 name="categoryId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium">Category</FormLabel>
+                                        <FormLabel className="text-sm font-medium flex justify-between">
+                                            <span>Category</span>
+                                            <CategoryCreateDialog />
+                                        </FormLabel>
                                         <FormControl>
                                             <Select onValueChange={field.onChange} value={field.value}>
                                                 <SelectTrigger className={"w-full"}>

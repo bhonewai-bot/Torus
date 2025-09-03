@@ -4,13 +4,21 @@ const emptyToUndefined = (val: unknown) => val === "" ? undefined : Number(val);
 
 export const productImageSchema = z.union([
     z.object({
+        id: z.string().optional(),
         url: z.string().url("Invalid Image URL"),
         isMain: z.boolean().optional(),
     }),
     z.object({
         file: z.instanceof(File),
         isMain: z.boolean().optional(),
-    })
+    }),
+    z.object({
+        url: z.string(),
+        isMain: z.boolean().optional(),
+    }).refine(
+        (data) => data.url.startsWith("blob:") || data.url.startsWith("http"),
+        "Invalid image URL"
+    ),
 ]);
 
 export const createProductSchema = z.object({
@@ -70,5 +78,72 @@ export const updateProductSchema = createProductSchema.partial();
 
 export type createProductFormData = z.infer<typeof createProductSchema>;
 export type updateProductFormData = z.infer<typeof updateProductSchema>;
-export type createProductDto = createProductFormData;
-export type updateProductDto = updateProductFormData;
+
+export interface createProductDto {
+    sku: string;
+    title: string;
+    brand?: string;
+    description?: string;
+    categoryId?: string;
+
+    // Flattened dimensions
+    length?: number;
+    width?: number;
+    height?: number;
+    weight?: number;
+
+    // Flattened pricing
+    price: number;
+    regularPrice?: number;
+    salePrice?: number;
+    taxRate?: number;
+    taxIncluded?: boolean;
+
+    // Flattened inventory
+    quantity: number;
+
+    // Images and status
+    images: Array<{
+        url: string;
+        filename?: string;
+        originalName?: string;
+        size?: number;
+        isMain: boolean;
+    }>;
+    isActive: boolean;
+}
+
+export interface updateProductDto {
+    sku?: string;
+    title?: string;
+    brand?: string;
+    description?: string;
+    categoryId?: string;
+
+    // Flattened dimensions
+    length?: number;
+    width?: number;
+    height?: number;
+    weight?: number;
+
+    // Flattened pricing
+    price?: number;
+    regularPrice?: number;
+    salePrice?: number;
+    taxRate?: number;
+    taxIncluded?: boolean;
+
+    // Flattened inventory
+    quantity?: number;
+
+    // Images and status
+    images?: Array<{
+        id?: string;
+        url: string;
+        filename?: string;
+        originalName?: string;
+        size?: number;
+        isMain: boolean;
+    }>;
+    isActive?: boolean;
+}

@@ -1,12 +1,13 @@
 import {
-    ApiResponse, CreateProductDto,
+    ApiResponse,
     ProductDetails,
     ProductFilters,
-    ProductListResponse, UpdateProductDto
+    ProductListResponse,
 } from "@/features/products/types/product.types";
 import {ProductServiceError} from "@/features/products/lib/error";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
 import api from "@/lib/api/client";
+import {createProductDto, updateProductDto} from "@/features/products/utils/product.schema";
 
 function buildQueryString(filters: ProductFilters): string {
     const params = new URLSearchParams();
@@ -85,7 +86,7 @@ export async function getProduct(id: string): Promise<ProductDetails> {
     }
 }
 
-export async function createProduct(data: CreateProductDto): Promise<ProductDetails> {
+export async function createProduct(data: createProductDto): Promise<ProductDetails> {
     try {
         const response = await api.post<ApiResponse<ProductDetails>>(
             API_ENDPOINTS.admin.products.create,
@@ -104,7 +105,7 @@ export async function createProduct(data: CreateProductDto): Promise<ProductDeta
     }
 }
 
-export async function updateProduct(id: string, data: UpdateProductDto): Promise<ProductDetails> {
+export async function updateProduct(id: string, data: updateProductDto): Promise<ProductDetails> {
     try {
         const response = await api.put<ApiResponse<ProductDetails>>(
             API_ENDPOINTS.admin.products.update(id),

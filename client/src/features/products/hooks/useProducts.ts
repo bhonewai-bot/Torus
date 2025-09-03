@@ -1,17 +1,15 @@
 "use client";
 
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {productKeys} from "@/features/products/lib/query.keys";
+import {productKeys} from "@/features/products/lib/product.query.keys";
 import {productService} from "@/features/products/services/product.service";
 import {showError, showSuccess} from "@/lib/utils/toast";
 import {
-    CreateProductDto,
     Product, ProductDetails,
-    ProductFilters,
-    ProductsListResponse,
-    UpdateProductDto
+    ProductFilters, ProductListResponse,
 } from "@/features/products/types/product.types";
 import {ProductServiceError} from "@/features/products/lib/error";
+import {createProductDto, updateProductDto} from "@/features/products/utils/product.schema";
 
 export function useProducts(filters: ProductFilters = {}) {
     return useQuery({
@@ -34,7 +32,7 @@ export function useCreateProduct() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: CreateProductDto) => productService.createProduct(data),
+        mutationFn: (data: createProductDto) => productService.createProduct(data),
         onSuccess: (newProduct: Product) => {
             // Update the detail cache with the new product
             queryClient.setQueryData(productKeys.detail(newProduct.id), newProduct);
@@ -58,7 +56,7 @@ export function useUpdateProduct() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({id, data}: { id: string, data: UpdateProductDto }) => productService.updateProduct(id, data),
+        mutationFn: ({id, data}: { id: string, data: updateProductDto }) => productService.updateProduct(id, data),
         onSuccess: (updatedProduct: ProductDetails, variables) => {
             // Update the detail cache
             queryClient.setQueryData(productKeys.detail(variables.id), updatedProduct);
@@ -90,7 +88,7 @@ export function useDeleteProduct() {
             queryClient.getQueryCache().findAll({
                 queryKey: productKeys.lists(),
             }).forEach((query) => {
-                queryClient.setQueryData(query.queryKey, (old: ProductsListResponse | undefined) => {
+                queryClient.setQueryData(query.queryKey, (old: ProductListResponse | undefined) => {
                     if (!old || !Array.isArray(old.products)) return old;
 
                     return {

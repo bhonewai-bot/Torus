@@ -1,5 +1,4 @@
 import {UseFormReturn} from "react-hook-form";
-import {UpdateProductFormData} from "@/features/products/schemas/product.schema";
 import {ExistingImage} from "@/features/products/types/image.types";
 import React, {useCallback, useEffect, useState} from "react";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
@@ -9,9 +8,10 @@ import {useDropzone} from "react-dropzone";
 import {Card, CardContent} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
+import {updateProductFormData} from "@/features/products/utils/product.schema";
 
 interface ProductUpdateImageUploadProps {
-    form: UseFormReturn<UpdateProductFormData>;
+    form: UseFormReturn<updateProductFormData>;
     existingImages: ExistingImage[];
 }
 
@@ -37,10 +37,11 @@ export function ProductUpdateImageUpload({ form, existingImages }: ProductUpdate
         setImagePreviews(existingPreviews);
 
         const imageData = existingPreviews.map(preview => ({
-            id: preview.id,
+            id: preview.id!,
             url: preview.preview,
             isMain: preview.isMain,
         }));
+
         form.setValue("images", imageData)
     }, [existingImages, form]);
 
@@ -55,20 +56,18 @@ export function ProductUpdateImageUpload({ form, existingImages }: ProductUpdate
         const updatedPreviews = [...imagePreviews, ...newPreviews];
         setImagePreviews(updatedPreviews);
 
-        // Update form data
         const imageData = updatedPreviews.map((preview) => {
             if (preview.isExisting) {
                 return {
-                    id: preview.id,
+                    id: preview.id!,
                     url: preview.preview,
                     isMain: preview.isMain,
                 };
             } else {
                 return {
-                    url: preview.preview,
+                    file: preview.file!,
                     isMain: preview.isMain,
-                    file: preview.file,
-                }
+                };
             }
         });
 
@@ -97,16 +96,15 @@ export function ProductUpdateImageUpload({ form, existingImages }: ProductUpdate
         const imageData = updatedPreviews.map((preview) => {
             if (preview.isExisting) {
                 return {
-                    id: preview.id,
+                    id: preview.id!,
                     url: preview.preview,
                     isMain: preview.isMain,
-                }
+                };
             } else {
                 return {
-                    url: preview.preview,
+                    file: preview.file!,
                     isMain: preview.isMain,
-                    file: preview.file,
-                }
+                };
             }
         });
 
@@ -125,35 +123,33 @@ export function ProductUpdateImageUpload({ form, existingImages }: ProductUpdate
 
         setImagePreviews(updatedPreviews);
 
-        // Update form data
         const imageData = updatedPreviews.map((preview) => {
             if (preview.isExisting) {
                 return {
-                    id: preview.id,
+                    id: preview.id!,
                     url: preview.preview,
                     isMain: preview.isMain,
-                }
+                };
             } else {
                 return {
-                    url: preview.preview,
+                    file: preview.file!,
                     isMain: preview.isMain,
-                    file: preview.file,
-                }
+                };
             }
         });
 
         form.setValue("images", imageData);
-
-        useEffect(() => {
-            return () => {
-                imagePreviews
-                    .filter(preview => !preview.isExisting)
-                    .forEach(preview => {
-                        URL.revokeObjectURL(preview.preview)
-                    })
-            }
-        }, []);
     }
+
+    useEffect(() => {
+        return () => {
+            imagePreviews
+                .filter(preview => !preview.isExisting)
+                .forEach(preview => {
+                    URL.revokeObjectURL(preview.preview);
+                });
+        };
+    }, [imagePreviews]);
 
     return (
         <Accordion type={"single"} collapsible defaultValue={"product-image-upload"} className={"bg-primary-foreground border rounded-lg"}>

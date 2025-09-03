@@ -1,12 +1,12 @@
 import {UseFormReturn} from "react-hook-form";
-import {CreateProductFormData} from "@/features/products/schemas/product.schema";
+import {createProductFormData} from "@/features/products/utils/product.schema";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Package} from "lucide-react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 
 interface ProductDimensionsProps {
-    form: UseFormReturn<CreateProductFormData>;
+    form: UseFormReturn<createProductFormData>;
 }
 
 export function ProductDimensions({ form }: ProductDimensionsProps) {
