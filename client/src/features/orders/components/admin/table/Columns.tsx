@@ -1,6 +1,6 @@
-import {ReactNode} from "react";
+import {ReactNode, use} from "react";
 import {ColumnDef} from "@tanstack/table-core";
-import {Order} from "@/features/orders/types/order.types";
+import {OrderList} from "@/features/orders/types/order.types";
 import {Checkbox} from "@/components/ui/checkbox";
 import {useConfirmDialog} from "@/hooks/useConfirmDialog";
 import {
@@ -11,22 +11,37 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {Edit, Eye, MoreHorizontal, Trash2} from "lucide-react";
+import {Check, Clock, CreditCard, Edit, Eye, MoreHorizontal, Package, Trash2, X} from "lucide-react";
 import {toast} from "sonner";
+import {cn} from "@/lib/utils";
+import {Badge} from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {getOrderStatusBadge, getPaymentStatusBadge} from "@/features/orders/utils/order.ui.utils";
 
 type TableHeaderCellProps = {
     children: ReactNode;
+    className?: string;
 }
 
-export function TableHeaderCell({ children }: TableHeaderCellProps) {
+export function TableHeaderCell({ children, className }: TableHeaderCellProps) {
     return (
-        <div className="text-[15px] font-medium text-foreground">
+        <div className={cn("text-sm font-semibold text-gray-700 dark:text-gray-300", className)}>
             {children}
         </div>
     );
 }
 
-export const columns: ColumnDef<Order>[] = [
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+
+    return date.toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+    });
+}
+
+export const columns: ColumnDef<OrderList>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -36,7 +51,8 @@ export const columns: ColumnDef<Order>[] = [
                     (table.getIsSomePageRowsSelected() && "indeterminate")
                 }
                 onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label={"Select all"}
+                aria-label={"Select all orders"}
+                className="border-gray-300 dark:border-gray-600"
             />
         ),
         cell: ({ row }) => (
@@ -44,12 +60,89 @@ export const columns: ColumnDef<Order>[] = [
                 checked={row.getIsSelected()}
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
                 aria-label={"Select row"}
+                className="border-gray-300 dark:border-gray-600"
             />
         )
     },
     {
-        accessorKey: "items.products.title",
-        header: () => <TableHeaderCell>Product</TableHeaderCell>
+        accessorKey: "orderNumber",
+        header: () => <TableHeaderCell>Order Number</TableHeaderCell>,
+        /* cell: ({ row }) => {
+            const orderNumber = row.getValue("orderNumber") as string;
+            return (
+                <div>
+                    #{orderNumber}
+                </div>
+            )
+        } */
+    },
+    {
+        accessorKey: "createdAt",
+        header: () => <TableHeaderCell>Date</TableHeaderCell>,
+        cell: ({ row }) => {
+            const dateString = row.getValue("createdAt") as string;
+            const formattedDate = formatDate(dateString);
+
+            return (
+                <div>
+                    {formattedDate}
+                </div>
+            )
+        }
+    },
+    {
+        accessorKey: "user.name",
+        header: () => <TableHeaderCell>Customer</TableHeaderCell>,
+        cell: ({ row }) => {
+            const user = row.original.user;
+            const initials = use.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+
+            return (
+                <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8 border border-gray-200 dark:border-gray-700">
+                        <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                            {initials}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">
+                            {user.name}
+                        </div>
+                        {/* <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {user.email}
+                        </div> */}
+                    </div>
+                </div>
+            )
+        }
+    },
+    {
+        accessorKey: "paymentStatus",
+        header: () => <TableHeaderCell>Payment</TableHeaderCell>,
+        cell: ({ row }) => {
+            const status = row.getValue("paymentStatus") as string;
+            const { variant, className, icon: Icon } = getPaymentStatusBadge(status);
+            return (
+                <Badge variant={variant} className={cn("gap-1.5 font-medium", className)}>
+                    {status.charAt(0) + status.slice(1).toLowerCase()}
+                    <Icon className="w-4 h-4 mr-1" />
+                </Badge>
+            )
+        }
+    },
+    {
+        accessorKey: "orderStatus",
+        header: () => <TableHeaderCell>Order Status</TableHeaderCell>,
+        cell: ({ row }) => {
+            const status = row.getValue("orderStatus") as string;
+            const { variant, className, icon: Icon } = getOrderStatusBadge(status);
+            return (
+                <Badge variant={variant} className={cn("gap-1.5 font-medium", className)}>
+                    {status.charAt(0) + status.slice(1).toLowerCase()}
+                    <Icon className="w-4 h-4" />
+                </Badge>
+            )
+        }
     },
     {
         accessorKey: "total",
@@ -63,14 +156,6 @@ export const columns: ColumnDef<Order>[] = [
 
             return <div>{formatted}</div>
         }
-    },
-    {
-        accessorKey: "user.name",
-        header: () => <TableHeaderCell>Customer</TableHeaderCell>
-    },
-    {
-        accessorKey: "status",
-        header: () => <TableHeaderCell>Status</TableHeaderCell>
     },
     {
         id: "actions",

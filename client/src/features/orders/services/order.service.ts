@@ -1,4 +1,4 @@
-import {ApiResponse, OrderFilters, OrderResponse} from "@/features/orders/types/order.types";
+import {ApiResponse, OrderDetail, OrderFilters, OrderResponse} from "@/features/orders/types/order.types";
 import {OrderServiceError} from "@/features/orders/lib/error";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
 import api from "@/lib/api/client";
@@ -60,6 +60,22 @@ export async function getAllOrders(filters: OrderFilters = {}): Promise<OrderRes
     }
 }
 
+export async function getOrderById(id: string): Promise<OrderDetail> {
+    try {
+        const response = await api.get<ApiResponse<OrderDetail>>(
+            API_ENDPOINTS.admin.orders.get(id)
+        )
+
+        if (response.data.success && response.data.data) {
+            return response.data.data;
+        }
+
+    } catch (error) {
+        handleApiResponse(error, "Error fetching order");
+    }
+}
+
 export const orderService = {
     getAllOrders,
+    getOrderById
 }

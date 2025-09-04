@@ -1,9 +1,9 @@
 import {DataTable} from "@/components/common/DataTable";
 import {columns} from "@/features/orders/components/admin/table/Columns";
-import {Order, Pagination} from "@/features/orders/types/order.types";
+import {OrderList, Pagination} from "@/features/orders/types/order.types";
 
 interface OrderDataTableProps {
-    orders: Order[];
+    orders: OrderList[];
     pagination?: Pagination;
     onPageChange: (page: number) => void;
     onLimitChange: (limit: number) => void;

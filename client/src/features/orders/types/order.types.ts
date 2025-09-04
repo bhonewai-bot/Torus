@@ -1,25 +1,56 @@
-export type OrderStatus = {
-    status: "PENDING" | "PAID" | "PROCESSING" | "SHIPPED" | "COMPLETED" | "CANCELED"
-}
+export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
+
+export type OrderStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELED";
 
 export interface OrderItem {
     id: string;
+    productSku: string;
+    productTitle: string;
+    productImage?: string;
     price: number;
     quantity: number;
     taxAmount?: number;
-    product: Array<{
+    lineTotal: number;
+    product: {
         id: string;
+        sku: string;
         title: string;
+        price: number;
+        isActive: boolean;
         mainImage?: string;
-    }>
+    }
 }
 
-export interface Order {
+export interface OrderList {
     id: string;
-    subtotal: string;
+    orderNumber: string;
+    subtotal: number;
     taxAmount?: number;
     total: number;
-    status: OrderStatus;
+    paymentStatus: PaymentStatus;
+    orderStatus: OrderStatus;
+    createdAt: string;
+    updatedAt: string;
+    user: {
+        id: string;
+        name: string;
+        email: string;
+    },
+    itemCount: number;
+    notes?: string;
+}
+
+export interface OrderDetail {
+    id: string;
+    orderNumber: string;
+    subtotal: number;
+    taxAmount?: number;
+    total: number;
+    shippingAddress?: string;
+    billingAddress?: string;
+    notes?: string;
+    paymentStatus: PaymentStatus;
+    orderStatus: OrderStatus;
     createdAt: string;
     updatedAt: string;
     user: {
@@ -28,6 +59,8 @@ export interface Order {
         email: string;
     },
     items: OrderItem[];
+    itemCount: number;
+    totalQuantity?: number;
 }
 
 export interface Pagination {
@@ -40,17 +73,18 @@ export interface Pagination {
 }
 
 export interface OrderResponse {
-    orders: Order[];
+    orders: OrderList[];
     pagination: Pagination;
 }
 
 export interface OrderFilters {
     page?: number;
     limit?: number;
-    status?: OrderStatus;
+    paymentStatus?: PaymentStatus;
+    orderStatus?: OrderStatus;
     userId?: string;
     search?: string;
-    sortBy?: "total" | "subtotal" | "status" | "createdAt" | "updatedAt";
+    sortBy?: "total" | "subtotal" | "paymentStatus" | "orderStatus" | "createdAt" | "updatedAt";
     sortOrder?: "asc" | "desc";
 }
 
