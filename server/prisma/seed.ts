@@ -2,7 +2,7 @@ import prisma from "../src/config/prisma";
 import bcrypt from "bcrypt";
 
 function generateOrderNumber(n: number): string {
-    return `ORD-${String(n).padStart(6, "0")}`;
+    return `${String(n).padStart(4, "0")}`;
 }
 
 async function main() {
@@ -29,8 +29,35 @@ async function main() {
         throw new Error("Not enough products in DB to seeds orders");
     }
 
-    const subtotal = products[0].price * 2 + products[1].price;
-    const taxAmount = 0; // change if you want
+    const orderItems = [
+        { product: products[0], quantity: 2 },
+        { product: products[1], quantity: 1 }
+    ];
+
+    const taxRate = 0; // change if you want
+
+    let subtotal = 0;
+    let taxAmount = 0;
+
+    const itemData = orderItems.map(({ product, quantity }) => {
+        const lineSubtotal = product.price * quantity;
+        const lineTaxAmount = lineSubtotal * taxRate;
+        const lineTotal = lineSubtotal + lineTaxAmount;
+
+        subtotal += lineSubtotal;
+        taxAmount += lineTaxAmount;
+
+        return {
+            productId: product.id,
+            productSku: product.sku,
+            productTitle: product.title,
+            productImage: product.images[0]?.url ?? null,
+            price: product.price,
+            quantity,
+            taxAmount: lineTaxAmount,
+        };
+    });
+
     const total = subtotal + taxAmount;
 
     const orderCount = await prisma.order.count();
@@ -45,27 +72,11 @@ async function main() {
             total,
             paymentStatus: "PAID", // or PENDING
             orderStatus: "PROCESSING", // or PENDING
+            shippingAddress: "123 Main St, City, Country",
+            billingAddress: "123 Main St, City, Country",
+            notes: "Leave at front door",
             items: {
-                create: [
-                    {
-                        productId: products[0].id,
-                        productSku: products[0].sku,
-                        productTitle: products[0].title,
-                        productImage: products[0].images[0]?.url ?? null,
-                        price: products[0].price,
-                        quantity: 2,
-                        taxAmount: 0,
-                    },
-                    {
-                        productId: products[1].id,
-                        productSku: products[1].sku,
-                        productTitle: products[1].title,
-                        productImage: products[1].images[0]?.url ?? null,
-                        price: products[1].price,
-                        quantity: 1,
-                        taxAmount: 0,
-                    },
-                ],
+                create: itemData,
             },
         },
     });
@@ -79,4 +90,3 @@ main().catch(e => {
 }).finally(async () => {
     await prisma.$disconnect();
 });
-
