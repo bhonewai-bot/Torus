@@ -1,15 +1,11 @@
 "use client";
 
-import {Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {useState} from "react";
 import {useCreateCategory} from "@/features/categories/hooks/useCategories";
-import {Form, useForm} from "react-hook-form";
-import {createCategoryDto, createCategorySchema} from "@/features/categories/utils/category.schema";
-import {zodResolver} from "@hookform/resolvers/zod";
 import {Plus} from "lucide-react";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import { Label } from "@radix-ui/react-dropdown-menu";
 
 export function CategoryCreateDialog() {
