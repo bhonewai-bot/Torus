@@ -70,10 +70,10 @@ export function ProductTableFilters({
                         <Search className={"absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
                         <Input
                             key={"product-search"}
-                            placeholder={"Search products..."}
+                            placeholder={"Search products"}
                             value={searchTerm}
                             onChange={(e) => handleSearchChange(e.target.value)}
-                            className={"pl-9"}
+                            className={"pl-9 lg:w-100 bg-secondary border-transparent h-9.5 font-light placeholder:text-[15px] dark:bg-secondary]:"}
                         />
                         {searchTerm && (
                             <button

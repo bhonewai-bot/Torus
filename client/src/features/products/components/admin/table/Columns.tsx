@@ -24,7 +24,7 @@ type TableHeaderCellProps = {
 
 export function TableHeaderCell({ children }: TableHeaderCellProps) {
     return (
-        <div className="text-[15px] font-medium text-foreground">
+        <div className="text-[15px] font-normal">
             {children}
         </div>
     );
@@ -85,7 +85,7 @@ export const columns: ColumnDef<Product>[] = [
                     </div>
 
                     {/* Product Name */}
-                    <span className="font-medium text-gray-800">{product.title}</span>
+                    <a href="" className="font-normal text-primary dark:text-primary hover:underline">{product.title}</a>
                 </div>
             );
         },

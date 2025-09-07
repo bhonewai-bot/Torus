@@ -94,16 +94,16 @@ export function ProductImageUpload({ form }: ProductImageUploadProps) {
     }, [imagePreviews]);
 
     return (
-        <Accordion type={"single"} collapsible defaultValue={"product-image-upload"} className={"bg-primary-foreground border rounded-lg"}>
-            <AccordionItem value={"product-image-upload"}>
-                <AccordionTrigger className={"flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition"}>
-                    <span className={"flex items-center text-lg font-medium"}>
-                        <Package className={"h-5 w-5 mr-2"} />
+        <Accordion type={"single"} collapsible defaultValue={"product-image-upload"} className={"border rounded-lg shadow-sm dark:shadow-none"}>
+            <AccordionItem value={"product-image-upload"} className={"border-none"}>
+                <AccordionTrigger className={"flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50"}>
+                    <span className={"flex items-center text-lg font-medium text-foreground"}>
+                        <Package className={"h-5 w-5 mr-2 text-muted-foreground"} />
                         Images
                     </span>
                 </AccordionTrigger>
-                <AccordionContent className={"px-4 py-4 border-t"}>
-                    <div className={"space-y-6"}>
+                <AccordionContent className={"px-4 py-4 border-t border-border"}>
+                    <div className={"space-y-4"}>
                         <div>
                             <FormField
                                 control={form.control}
@@ -114,25 +114,27 @@ export function ProductImageUpload({ form }: ProductImageUploadProps) {
                                         <div
                                             {...getRootProps()}
                                             className={`
-                                                border-1 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+                                                border-1 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all duration-200
                                                 ${isDragActive
-                                                    ? "border-primary bg-primary/5"
-                                                    : "border-gray-300 hover:border-primary hover:bg-gray-50"
+                                                    ? "border-primary bg-primary/5 dark:bg-primary/10 scale-[1.02]"
+                                                    : "border-border hover:border-primary hover:bg-muted/30 dark:border-border dark:hover:border-primary dark:hover:bg-muted/20"
                                                 }
                                             `}
                                         >
                                             <input {...getInputProps()} />
-                                            <div className={"flex flex-col items-center gap-2"}>
-                                                <Upload className={"h-10 w-10 text-gray-400"} />
+                                            <div className={"flex flex-col items-center gap-3"}>
                                                 <div>
-                                                    <p className={"text-sm font-medium"}>
+                                                    <Upload className={`h-8 w-8 ${isDragActive ? "text-primary" : "text-muted-foreground"}`} />
+                                                </div>
+                                                <div className={"space-y-1"}>
+                                                    <p className={"text-sm font-medium text-foreground"}>
                                                         {isDragActive ? "Drop images here..." : "Drag & drop images here"}
                                                     </p>
-                                                    <p className={"text-xs text-gray-500 mt-1"}>
-                                                        or <span className={"text-primary underline"}>browse files</span>
+                                                    <p className={"text-xs text-muted-foreground"}>
+                                                        or <span className={"text-primary underline font-medium"}>browse files</span>
                                                     </p>
                                                 </div>
-                                                <p className={"text-xs text-gray-400"}>
+                                                <p className={"text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full"}>
                                                     PNG, JPG, WEBP up to 5MB each
                                                 </p>
                                             </div>
@@ -140,34 +142,36 @@ export function ProductImageUpload({ form }: ProductImageUploadProps) {
 
                                         {/* Image Previews */}
                                         {imagePreviews.length > 0 && (
-                                            <div className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4"}>
+                                            <div className={"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2"}>
                                                 {imagePreviews.map((preview, index) => (
-                                                    <Card key={index} className={"relative group cursor-pointer shadow-none"}>
-                                                        <CardContent className={"px-4"}>
-                                                            <div className={"aspect-square relative rounded-md overflow-hidden bg-gray-100"}>
+                                                    <Card key={index} className={"relative group cursor-pointer shadow-sm hover:shadow-md dark:shadow-none dark:hover:shadow-none transition-all duration-200 border-border hover:border-primary/20"}>
+                                                        <CardContent className={"py-0 px-2"}>
+                                                            <div className={"aspect-square relative rounded-lg overflow-hidden bg-muted"}>
                                                                 <img
                                                                     src={preview.preview}
                                                                     alt={`Preview ${index + 1}`}
-                                                                    className={"w-full h-full object-cover"}
+                                                                    className={"w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"}
                                                                 />
 
                                                                 {/* Main Image Badge */}
                                                                 {preview.isMain && (
-                                                                    <Badge className={"absolute top-2 left-2 text-shadow-xs"}>
-                                                                        <Star className={"h-3 w-3 mr-1"} />
+                                                                    <Badge className={"absolute top-2 left-2 bg-primary text-primary-foreground shadow-md"}>
+                                                                        <Star className={"h-3 w-3 mr-1 fill-current"} />
                                                                         Main
                                                                     </Badge>
                                                                 )}
 
-                                                                {/* Action Buttons */}
-                                                                <div className={"absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1"}>
+                                                                {/* Action Buttons Overlay */}
+                                                                <div className={"absolute inset-0 bg-black/40 dark:bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2"}>
                                                                     {!preview.isMain && (
                                                                         <Button
                                                                             type={"button"}
                                                                             onClick={() => setMainImage(index)}
-                                                                            className={"h-8 w-8 p-0"}
+                                                                            size={"sm"}
+                                                                            variant={"secondary"}
+                                                                            className={"h-8 w-8 p-0 bg-background/90 hover:bg-background border-border shadow-sm"}
                                                                         >
-                                                                            <StarOff className={"h-4 w-4"} />
+                                                                            <StarOff className={"h-4 w-4 text-foreground"} />
                                                                         </Button>
                                                                     )}
                                                                     <Button
@@ -175,18 +179,19 @@ export function ProductImageUpload({ form }: ProductImageUploadProps) {
                                                                         size={"sm"}
                                                                         variant={"destructive"}
                                                                         onClick={() => removeImage(index)}
-                                                                        className={"h-8 w-8 p-0"}
+                                                                        className={"h-8 w-8 p-0 shadow-sm"}
                                                                     >
                                                                         <X className={"h-4 w-4"} />
                                                                     </Button>
                                                                 </div>
                                                             </div>
 
-                                                            <div className={"mt-2"}>
-                                                                <p className={"text-xs text-gray-500 truncate"}>
+                                                            {/* File Info */}
+                                                            <div className={"mt-3 space-y-1"}>
+                                                                <p className={"text-xs text-foreground truncate font-medium"}>
                                                                     {preview.file.name}
                                                                 </p>
-                                                                <p className={"text-xs text-gray-400"}>
+                                                                <p className={"text-xs text-muted-foreground"}>
                                                                     {(preview.file.size / 1024 / 1024).toFixed(1)} MB
                                                                 </p>
                                                             </div>
@@ -196,7 +201,7 @@ export function ProductImageUpload({ form }: ProductImageUploadProps) {
                                             </div>
                                         )}
 
-                                        <FormMessage className={"text-xs text-red-500 mt-1"} />
+                                        <FormMessage className={"text-xs text-destructive mt-2"} />
                                     </FormItem>
                                 )}
                             />

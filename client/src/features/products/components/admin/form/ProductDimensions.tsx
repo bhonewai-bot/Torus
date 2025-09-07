@@ -13,7 +13,7 @@ export function ProductDimensions({ form }: ProductDimensionsProps) {
     return (
         <Accordion type={"single"} collapsible defaultValue={"product-pricing-inventory"} className={"bg-primary-foreground border rounded-lg"}>
             <AccordionItem value={"product-pricing-inventory"}>
-                <AccordionTrigger className={"flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition"}>
+                <AccordionTrigger className={"flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50"}>
                     <span className={"flex items-center text-lg font-medium"}>
                         <Package className={"h-5 w-5 mr-2"} />
                         Dimensions
@@ -27,7 +27,7 @@ export function ProductDimensions({ form }: ProductDimensionsProps) {
                                 name={"dimensions.length"}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={"text-sm font-medium"}>Length (cm)</FormLabel>
+                                        <FormLabel className={"text-sm font-medium"}>Length (cm) <span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 type={"number"}
@@ -46,7 +46,7 @@ export function ProductDimensions({ form }: ProductDimensionsProps) {
                                 name={"dimensions.width"}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={"text-sm font-medium"}>Width (cm)</FormLabel>
+                                        <FormLabel className={"text-sm font-medium"}>Width (cm) <span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 type={"number"}
@@ -65,7 +65,7 @@ export function ProductDimensions({ form }: ProductDimensionsProps) {
                                 name={"dimensions.height"}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={"text-sm font-medium"}>Height (cm)</FormLabel>
+                                        <FormLabel className={"text-sm font-medium"}>Height (cm) <span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 type={"number"}
@@ -84,7 +84,7 @@ export function ProductDimensions({ form }: ProductDimensionsProps) {
                                 name={"dimensions.weight"}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={"text-sm font-medium"}>Height (g)</FormLabel>
+                                        <FormLabel className={"text-sm font-medium"}>Height (g) <span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 type={"number"}

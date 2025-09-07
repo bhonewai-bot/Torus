@@ -19,7 +19,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
     return (
         <Accordion type="single" collapsible defaultValue={"product-info"} className="bg-primary-foreground border rounded-lg">
             <AccordionItem value="product-info">
-                <AccordionTrigger className="flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition">
+                <AccordionTrigger className="flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50">
                     <span className={"flex items-center text-lg font-medium"}>
                         <Info className={"h-5 w-5 mr-2"} />
                         Product Information
@@ -33,7 +33,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                 name="title"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium">Title</FormLabel>
+                                        <FormLabel className="text-sm font-medium">Title<span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Title"
@@ -49,7 +49,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                 name="sku"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium">SKU</FormLabel>
+                                        <FormLabel className="text-sm font-medium">SKU<span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="e.g., PROD-001"
@@ -68,7 +68,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                 name="brand"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-medium">Brand</FormLabel>
+                                        <FormLabel className="text-sm font-medium">Brand<span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Brand name"
@@ -85,7 +85,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-sm font-medium flex justify-between">
-                                            <span>Category</span>
+                                            <p>Category  <span className="text-primary"> *</span></p>
                                             <CategoryCreateDialog />
                                         </FormLabel>
                                         <FormControl>
@@ -114,7 +114,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                             name={"description"}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className={"text-sm font-medium"}>Description</FormLabel>
+                                    <FormLabel className={"text-sm font-medium"}>Description <span className="text-primary">*</span></FormLabel>
                                     <FormControl>
                                         <Textarea
                                             placeholder={"Write a product description..."}

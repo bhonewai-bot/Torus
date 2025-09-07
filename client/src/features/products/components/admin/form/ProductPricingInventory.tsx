@@ -14,7 +14,7 @@ export function ProductPricingInventory({ form }: ProductPricingInventoryProps) 
     return (
         <Accordion type={"single"} collapsible defaultValue={"product-pricing-inventory"} className={"bg-primary-foreground border rounded-lg"}>
             <AccordionItem value={"product-pricing-inventory"}>
-                <AccordionTrigger className={"flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition"}>
+                <AccordionTrigger className={"flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50"}>
                     <span className={"flex items-center text-lg font-medium"}>
                         <DollarSign className={"h-5 w-5 mr-2"} />
                         Pricing & Inventory
@@ -28,7 +28,7 @@ export function ProductPricingInventory({ form }: ProductPricingInventoryProps) 
                                 name={"pricing.price"}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={"text-sm font-medium"}>Price *</FormLabel>
+                                        <FormLabel className={"text-sm font-medium"}>Price <span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 type={"number"}
@@ -47,7 +47,7 @@ export function ProductPricingInventory({ form }: ProductPricingInventoryProps) 
                                 name={"pricing.salePrice"}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={"text-sm font-medium"}>Sale Price</FormLabel>
+                                        <FormLabel className={"text-sm font-medium"}>Sale Price <span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 type={"number"}
@@ -66,7 +66,7 @@ export function ProductPricingInventory({ form }: ProductPricingInventoryProps) 
                                 name={"pricing.regularPrice"}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={"text-sm font-medium"}>Regular Price</FormLabel>
+                                        <FormLabel className={"text-sm font-medium"}>Regular Price <span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 type={"number"}
@@ -87,7 +87,7 @@ export function ProductPricingInventory({ form }: ProductPricingInventoryProps) 
                                 name={"inventory.quantity"}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={"text-sm font-medium"}>Quantity</FormLabel>
+                                        <FormLabel className={"text-sm font-medium"}>Quantity <span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 type={"number"}
@@ -105,7 +105,7 @@ export function ProductPricingInventory({ form }: ProductPricingInventoryProps) 
                                 name={"pricing.taxRate"}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={"text-sm font-medium"}>Tax Rate (%)</FormLabel>
+                                        <FormLabel className={"text-sm font-medium"}>Tax Rate (%) <span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
                                                 type={"number"}
@@ -125,7 +125,7 @@ export function ProductPricingInventory({ form }: ProductPricingInventoryProps) 
                                 render={({ field }) => (
                                     <FormItem className={"flex flex-row items-center justify-between bg-primary-foreground rounded-lg border p-3"}>
                                         <div className="space-y-0.5">
-                                            <FormLabel className="text-sm font-medium">Tax Included</FormLabel>
+                                            <FormLabel className="text-sm font-medium">Tax Included <span className="text-primary">*</span></FormLabel>
                                             <p className="text-xs text-muted-foreground">
                                                 Is tax included in the price?
                                             </p>
