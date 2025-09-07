@@ -38,7 +38,7 @@ type SidebarContextProps = {
   setOpen: (open: boolean) => void
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
-  isMobile: boolean
+  isMobile: boolean | undefined
   toggleSidebar: () => void
 }
 
@@ -164,6 +164,10 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+
+  if (isMobile === undefined) {
+    return null
+  }
 
   if (collapsible === "none") {
     return (
@@ -517,7 +521,7 @@ function SidebarMenuButton({
       data-sidebar="menu-button"
       data-size={size}
       data-active={isActive}
-      className={cn(sidebarMenuButtonVariants({ variant, size }), "py-5", className)}
+      className={cn(sidebarMenuButtonVariants({ variant, size }), "py-4 hover:bg-secondary", className)}
       {...props}
     />
   )
@@ -538,7 +542,7 @@ function SidebarMenuButton({
       <TooltipContent
         side="right"
         align="center"
-        hidden={state !== "collapsed" || isMobile}
+        hidden={state !== "collapsed" || isMobile === true}
         {...tooltip}
       />
     </Tooltip>
@@ -608,7 +612,7 @@ function SidebarMenuSkeleton({
 }) {
   // Random width between 50 to 90%.
   const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
+    return `${Math.floor(0.5 * 40) + 50}%`
   }, [])
 
   return (
