@@ -20,6 +20,8 @@ export default function ProductsPage() {
         sortOrder: "desc",
     });
 
+    const [showingAll, setShowingAll] = useState(false);
+
     const {
         data,
         isLoading,
@@ -37,6 +39,10 @@ export default function ProductsPage() {
             // Reset page when filters change (except pagination)
             ...(newFilters.page === undefined && { page: 1 })
         }));
+
+        if (newFilters.search !== undefined || newFilters.categoryId !== undefined) {
+            setShowingAll(true);
+        }
     }
 
     const handleCreateProduct = () => {
@@ -48,19 +54,25 @@ export default function ProductsPage() {
     }
 
     const handleLimitChange = (limit: number) => {
-        setFilters(prev => ({ ...prev, limit, page: 1 }));
+        if (limit === -1) {
+            setShowingAll(true);
+            setFilters(prev => ({ ...prev, limit: -1, page: 1 }));
+        } else {
+            setShowingAll(false);
+            setFilters(prev => ({ ...prev, limit, page: 1 }))
+        }
     }
 
     if (isLoading) {
         return (
             <main className={"flex flex-col gap-6"}>
                 <div className={"flex flex-col gap-4"}>
-                    <CustomBreadcrumb item={"Product"} />
+                    <CustomBreadcrumb item={"Products"} />
                     <div className={"flex justify-between"}>
                         <h1 className={"text-3xl font-medium"}>Products</h1>
                         <div className={"flex gap-2"}>
-                            <Button disabled className="bg-muted-foreground">Export</Button>
-                            <Button disabled className="bg-muted-foreground">Import</Button>
+                            <Button variant={"secondary"}>Export</Button>
+                            <Button variant={"secondary"}>Import</Button>
                         </div>
                     </div>
                 </div>
@@ -93,15 +105,15 @@ export default function ProductsPage() {
     }
 
     return (
-        <main className={"flex flex-col gap-6"}>
+        <main className={"flex flex-col gap-6 mb-6"}>
             {/* Header */}
             <div className={"flex flex-col gap-4"}>
                 <CustomBreadcrumb item={"Products"} />
                 <div className={"flex justify-between"}>
                     <h1 className={"text-3xl font-medium"}>Products</h1>
                     <div className={"flex gap-2"}>
-                        <Button className={"bg-muted-foreground"}>Export</Button>
-                        <Button className={"bg-muted-foreground"}>Import</Button>
+                        <Button variant={"secondary"}>Export</Button>
+                        <Button variant={"secondary"}>Import</Button>
                     </div>
                 </div>
             </div>
@@ -119,6 +131,7 @@ export default function ProductsPage() {
                 pagination={data?.pagination}
                 onPageChange={handlePageChange}
                 onLimitChange={handleLimitChange}
+                showingAll={showingAll}
             />
         </main>
     );

@@ -24,7 +24,7 @@ export const API_ENDPOINTS = {
         orders: {
             list: "/admin/orders",
             get: (id: string) => `/admin/orders/${id}`,
-            update: (id: string) => `/admin/orders/${id}/status`,
+            updateStatus: (id: string) => `/admin/orders/${id}/status`,
         },
         users: {
             list: "/admin/users",

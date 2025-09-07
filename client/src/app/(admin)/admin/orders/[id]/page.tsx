@@ -6,10 +6,11 @@ import React from "react";
 import {OrderInfoCard} from "@/features/orders/components/details/OrderInfoCard";
 import {CustomerInfoCard} from "@/features/orders/components/details/CustomerInfoCard";
 import {OrderItemCard} from "@/features/orders/components/details/OrderItemCard";
-import {AddressCard} from "@/features/orders/components/details/AddressCard";
+import {AddressInfoCard} from "@/features/orders/components/details/AddressInfoCard";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 import {OrderSummaryCard} from "@/features/orders/components/details/OrderSummaryCard";
+import {OrderStatusCard} from "@/features/orders/components/details/OrderStatusCard";
 
 interface OrderDetailPageProps {
     params: {
@@ -60,23 +61,32 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             {/* Header */}
             <OrderHeader order={order} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div>
                 {/* Order Information */}
                 <OrderInfoCard order={order} />
 
-                {/* Customer Information */}
-                <CustomerInfoCard order={order} />
+
             </div>
 
-            {/* Order Items */}
-            <OrderItemCard order={order} />
+            <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Order Items */}
+                    <OrderItemCard order={order} />
+                </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Address */}
-                <AddressCard order={order} />
+                <div className="space-y-6">
+                    {/* Customer Information */}
+                    <CustomerInfoCard order={order} />
 
-                {/* Order Summary */}
-                <OrderSummaryCard order={order} />
+                    {/* Address Information */}
+                    <AddressInfoCard order={order} />
+
+                    {/* Order Summary */}
+                    <OrderSummaryCard order={order} />
+
+                    {/* Order Status */}
+                    <OrderStatusCard order={order} />
+                </div>
             </div>
         </div>
     )
