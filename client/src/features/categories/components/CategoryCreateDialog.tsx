@@ -5,30 +5,42 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {useState} from "react";
 import {useCreateCategory} from "@/features/categories/hooks/useCategories";
-import {Plus} from "lucide-react";
-import { Label } from "@radix-ui/react-dropdown-menu";
 
-export function CategoryCreateDialog() {
+interface CategoryCreateDialogProps {
+    children?: React.ReactNode;
+}
+
+export function CategoryCreateDialog({ children }: CategoryCreateDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [categoryName, setCategoryName] = useState("");
     const [error, setError] = useState("");
     const { mutate: createCategory, isPending } = useCreateCategory();
 
+    const validateInput = (name: string): string | null => {
+        if (!name.trim()) {
+            return "Category name is required";
+        }
+        if (name.trim().length < 2) {
+            return "Category name must be at least 2 characters";
+        }
+        if (name.trim().length > 100) {
+            return "Category name must be less than 100 characters";
+        }
+        return null;
+    };
 
     const handleSubmit = () => {
-        if (!categoryName.trim()) {
-            setError("Category name is required");
-            return;
-        }
-
-        if (categoryName.trim().length > 100) {
-            setError("Category name is too long");
+        const validationError = validateInput(categoryName);
+        if (validationError) {
+            setError(validationError);
             return;
         }
 
         setError("");
 
-        createCategory({ title: categoryName.trim() }, {
+        createCategory(
+            { title: categoryName.trim() },
+            {
             onSuccess: () => {
                 setIsOpen(false);
                 setCategoryName("");
@@ -48,12 +60,19 @@ export function CategoryCreateDialog() {
         }
     };
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCategoryName(e.target.value);
+        if (error) setError(""); // Clear error when user starts typing
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button variant={"ghost"} size={"sm"} className={"hover:bg-transparent p-0"}>
-                    <Plus /> New Category
-                </Button>
+                {children || (
+                    <button className="font-medium hover:underline text-[13px] text-primary">
+                        Add New Category
+                    </button>
+                )}
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -62,12 +81,11 @@ export function CategoryCreateDialog() {
 
                 <div className="space-y-4">
                     <div className="space-y-2">
-                        <Label aria-label="categoryName">Category Name</Label>
                         <Input
                             id="categoryName"
                             placeholder="Enter category name"
                             value={categoryName}
-                            onChange={(e) => setCategoryName(e.target.value)}
+                            onChange={handleInputChange}
                             disabled={isPending}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
@@ -81,7 +99,7 @@ export function CategoryCreateDialog() {
                         )}
                     </div>
                     
-                    <div className="flex gap-2 pt-4">
+                    <div className="flex justify-end gap-2 pt-4">
                         <Button 
                             type="button" 
                             variant="outline" 
@@ -94,7 +112,7 @@ export function CategoryCreateDialog() {
                         <Button 
                             type="button"
                             onClick={handleSubmit}
-                            disabled={isPending}
+                            disabled={isPending || !categoryName.trim()}
                             className="flex-0"
                         >
                             {isPending ? "Creating..." : "Create Category"}

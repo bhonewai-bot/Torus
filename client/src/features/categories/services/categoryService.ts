@@ -1,6 +1,7 @@
 import api from "@/lib/api/client";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
 import {CategoryServiceError} from "@/features/categories/lib/error";
+import { createCategoryDto } from "../utils/category.schema";
 
 function handleApiError(error: unknown, context: string): never {
     console.error(`${context}:`, error);
@@ -34,7 +35,7 @@ export async function getAllCategories(): Promise<Category[]> {
     }
 }
 
-export async function createCategory(data: any) {
+export async function createCategory(data: createCategoryDto) {
     try {
         const response = await api.post(
             API_ENDPOINTS.admin.categories.create,
