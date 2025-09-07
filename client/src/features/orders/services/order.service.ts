@@ -2,6 +2,7 @@ import {ApiResponse, OrderDetail, OrderFilters, OrderResponse} from "@/features/
 import {OrderServiceError} from "@/features/orders/lib/error";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
 import api from "@/lib/api/client";
+import {updateOrderStatusDto} from "@/features/orders/utils/order.schema";
 
 function buildQueryString(filters: OrderFilters): string {
     const params = new URLSearchParams();
@@ -64,7 +65,7 @@ export async function getOrderById(id: string): Promise<OrderDetail> {
     try {
         const response = await api.get<ApiResponse<OrderDetail>>(
             API_ENDPOINTS.admin.orders.get(id)
-        )
+        );
 
         if (response.data.success && response.data.data) {
             return response.data.data;
@@ -75,7 +76,20 @@ export async function getOrderById(id: string): Promise<OrderDetail> {
     }
 }
 
+export async function updateOrderStatus(id: string, data: updateOrderStatusDto) {
+    try {
+        const response = await api.patch(
+            API_ENDPOINTS.admin.orders.updateStatus(id),
+            data
+        );
+        return response.data;
+    } catch (error) {
+        handleApiResponse(error, "Error updating order status");
+    }
+}
+
 export const orderService = {
     getAllOrders,
-    getOrderById
+    getOrderById,
+    updateOrderStatus
 }

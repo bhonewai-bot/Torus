@@ -1,7 +1,9 @@
-import {OrderDetail} from "@/features/orders/types/order.types";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import { CreditCard } from "lucide-react";
-import {formatOrderCurrency} from "@/features/orders/utils/order.ui.utils";
+import { OrderDetail } from "@/features/orders/types/order.types";
+import { OrderCard } from "./OrderCard";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CreditCard, DollarSign, Receipt, TrendingUp } from "lucide-react";
+import { formatOrderCurrency } from "@/features/orders/utils/order.ui.utils";
+import { getPaymentStatusBadge, getOrderStatusBadge } from "./OrderBadge";
 import { Separator } from "@/components/ui/separator";
 
 interface OrderSummaryCardProps {
@@ -10,55 +12,39 @@ interface OrderSummaryCardProps {
 
 export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
     return (
-        <Card className={"shadow-none"}>
+        <OrderCard>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Order Summary
+                <CardTitle>
+                    Summary
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Subtotal:</span>
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
-                                    {formatOrderCurrency(order.subtotal)}
-                                </span>
+            <CardContent className="space-y-6">
+                {/* Financial Breakdown */}
+                <div className="space-y-3">
+                    <div className="flex justify-between dark:bg-gray-800 rounded-lg">
+                        <span className="text-muted-foreground">
+                            Subtotal ({order.items.length} {order.items.length === 1 ? 'item' : 'items'})
+                        </span>
+                        <span>{formatOrderCurrency(order.subtotal)}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                        <span className={"text-muted-foreground"}>Tax</span>
+                        <span>
+                            {formatOrderCurrency(order.taxAmount)}
+                        </span>
+                    </div>
                 </div>
 
-                {order.taxAmount && order.taxAmount > 0 && (
-                    <div className="flex justify-between items-center">
-                        <span className="text-gray-600 dark:text-gray-400">Tax:</span>
-                        <span className="font-medium text-gray-900 dark:text-gray-100">
-                                        {formatOrderCurrency(order.taxAmount)}
-                                    </span>
-                    </div>
-                )}
+                <Separator className="my-4" />
 
-                <Separator />
-
-                <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Total:</span>
-                    <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                                    {formatOrderCurrency(order.total)}
-                                </span>
-                </div>
-
-                {/* Payment and Order Status */}
-                <div className="pt-4 space-y-3">
-                    <div>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Payment Status:</span>
-                        <div className="mt-1">
-                            {/*{getPaymentStatusBadge(order.paymentStatus)}*/}
-                        </div>
-                    </div>
-                    <div>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">Order Status:</span>
-                        <div className="mt-1">
-                            {/*{getOrderStatusBadge(order.orderStatus)}*/}
-                        </div>
-                    </div>
+                <div className="flex justify-between text-lg font-medium">
+                    <span>Total</span>
+                    <span>
+                        {formatOrderCurrency(order.total)}
+                    </span>
                 </div>
             </CardContent>
-        </Card>
+        </OrderCard>
     )
 }

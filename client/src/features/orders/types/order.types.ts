@@ -1,6 +1,8 @@
-export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
+export const PAYMENT_STATUSES = ["PENDING", "PAID", "FAILED", "REFUNDED"] as const;
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
-export type OrderStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELED";
+export const ORDER_STATUSES = ["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELED"] as const;
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
 export interface OrderItem {
     id: string;

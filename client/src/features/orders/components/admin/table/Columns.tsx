@@ -11,12 +11,11 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {Check, Clock, CreditCard, Edit, Eye, MoreHorizontal, Package, Trash2, X} from "lucide-react";
+import {Edit, Eye, MoreHorizontal, Trash2} from "lucide-react";
 import {toast} from "sonner";
 import {cn} from "@/lib/utils";
-import {Badge} from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {getOrderStatusBadge, getPaymentStatusBadge} from "@/features/orders/utils/order.ui.utils";
+import {getOrderStatusBadge, getPaymentStatusBadge} from "@/features/orders/components/details/OrderBadge";
 
 type TableHeaderCellProps = {
     children: ReactNode;
@@ -67,14 +66,14 @@ export const columns: ColumnDef<OrderList>[] = [
     {
         accessorKey: "orderNumber",
         header: () => <TableHeaderCell>Order Number</TableHeaderCell>,
-        /* cell: ({ row }) => {
+         cell: ({ row }) => {
             const orderNumber = row.getValue("orderNumber") as string;
             return (
                 <div>
                     #{orderNumber}
                 </div>
             )
-        } */
+        }
     },
     {
         accessorKey: "createdAt",
@@ -121,12 +120,9 @@ export const columns: ColumnDef<OrderList>[] = [
         header: () => <TableHeaderCell>Payment</TableHeaderCell>,
         cell: ({ row }) => {
             const status = row.getValue("paymentStatus") as string;
-            const { variant, className, icon: Icon } = getPaymentStatusBadge(status);
+
             return (
-                <Badge variant={variant} className={cn("gap-1.5 font-medium", className)}>
-                    {status.charAt(0) + status.slice(1).toLowerCase()}
-                    <Icon className="w-4 h-4 mr-1" />
-                </Badge>
+                <div>{getPaymentStatusBadge(status)}</div>
             )
         }
     },
@@ -135,12 +131,9 @@ export const columns: ColumnDef<OrderList>[] = [
         header: () => <TableHeaderCell>Order Status</TableHeaderCell>,
         cell: ({ row }) => {
             const status = row.getValue("orderStatus") as string;
-            const { variant, className, icon: Icon } = getOrderStatusBadge(status);
+
             return (
-                <Badge variant={variant} className={cn("gap-1.5 font-medium", className)}>
-                    {status.charAt(0) + status.slice(1).toLowerCase()}
-                    <Icon className="w-4 h-4" />
-                </Badge>
+                <div>{getOrderStatusBadge(status)}</div>
             )
         }
     },
@@ -179,9 +172,9 @@ export const columns: ColumnDef<OrderList>[] = [
                 window.location.href = `/admin/orders/${order.id}`;
             }
 
-            const handleEdit = () => {
+            /*const handleEdit = () => {
                 window.location.href = `/admin/orders/${order.id}/edit`;
-            }
+            }*/
 
             return (
                 <div className={"text-right"}>
@@ -202,10 +195,10 @@ export const columns: ColumnDef<OrderList>[] = [
                                 <Eye className={"mr-2 h-4 w-4"} />
                                 View order
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleEdit}>
+                            {/*<DropdownMenuItem onClick={handleEdit}>
                                 <Edit className={"mr-2 h-4 w-4"} />
                                 Edit order
-                            </DropdownMenuItem>
+                            </DropdownMenuItem>*/}
                             <DropdownMenuItem
                                 disabled
                                 className={"text-destructive focus:text-destructive"}

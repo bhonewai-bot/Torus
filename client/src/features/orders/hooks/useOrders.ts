@@ -1,7 +1,8 @@
 import {OrderFilters} from "@/features/orders/types/order.types";
-import {useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {orderKeys} from "@/features/orders/lib/order.query.keys";
 import {orderService} from "@/features/orders/services/order.service";
+import { updateOrderStatusDto } from "../utils/order.schema";
 
 export function useOrders(filters: OrderFilters = {}) {
     return useQuery({
@@ -17,5 +18,16 @@ export function useOrder(id: string) {
         queryFn: () => orderService.getOrderById(id),
         enabled: !!id,
         staleTime: 1000 * 60 * 5,
+    });
+}
+
+export function useUpdateOrderStatus(orderId: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: updateOrderStatusDto) => orderService.updateOrderStatus(orderId, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
+        }
     });
 }
