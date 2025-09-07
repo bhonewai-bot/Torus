@@ -29,8 +29,3 @@ export const bulkInventoryUpdateSchema = z.object({
 export const updateUserStatusSchema = z.object({
     enabled: z.boolean(),
 });
-
-// Order
-export const updateOrderStatusSchema = z.object({
-    status: z.nativeEnum(OrderStatus),
-})

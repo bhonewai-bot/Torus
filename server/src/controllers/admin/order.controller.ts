@@ -2,8 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import * as orderService from '@services/order.service';
 import {createSuccessResponse} from "@utils/helpers";
 import {notFoundError} from "@middlewares/error.handlers";
-import {orderQuerySchema} from "@utils/order/order.schema";
-import {UpdateOrderDto} from "@src/types/dto/order.dto";
+import {orderQuerySchema, updateOrderStatusDto} from "@utils/order/order.schema";
 
 export async function getAllOrders(req: Request, res: Response, next: NextFunction) {
     try {
@@ -41,16 +40,16 @@ export async function getOrderById(req: Request, res: Response, next: NextFuncti
     }
 }
 
-export async function updateOrder(req: Request, res: Response, next: NextFunction) {
+export async function updateOrderStatus(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
 
-        const updateOrderDto: UpdateOrderDto = res.locals.validatedData;
+        const orderStatus: updateOrderStatusDto = res.locals.validatedData;
 
-        const result = await orderService.updateOrder(id, updateOrderDto);
+        const result = await orderService.updateOrderStatus(id, orderStatus);
 
         res.status(200).json(createSuccessResponse(
-            "Order updated successfully",
+            "Order status updated successfully",
             result
         ))
     } catch (error) {

@@ -48,7 +48,7 @@ export const formatOrderDetail = (order: any): OrderDetail => {
             price: item.price,
             quantity: item.quantity,
             taxAmount: item.taxAmount ?? undefined,
-            lineTotal: item.lineTotal,
+            lineTotal: item.lineTotal ?? undefined,
             product: {
                 id: item.product.id,
                 sku: item.product.sku,

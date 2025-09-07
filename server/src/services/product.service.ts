@@ -27,8 +27,27 @@ export async function getAllProducts(params: GetAllProductsParams = {}) {
         sortOrder = "desc",
     } = params;
 
-    const skip = (page - 1) * limit;
     const where = buildProductWhereClause(params);
+
+    if (limit === -1) {
+        const products = await prisma.product.findMany({
+            where,
+            include: productListInclude,
+            orderBy: {
+                [sortBy]: sortOrder,
+            }
+        });
+
+        const formattedProducts = products.map(formatProductList);
+        const pagination = calculatePagination(products.length, page, -1);
+
+        return {
+            products: formattedProducts,
+            pagination
+        }
+    }
+
+    const skip = (page - 1) * limit;
 
     const [products, total] = await prisma.$transaction([
         prisma.product.findMany({

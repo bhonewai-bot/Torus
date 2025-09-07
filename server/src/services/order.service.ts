@@ -3,9 +3,9 @@ import {OrderStatus, PaymentStatus} from "@prisma/client";
 import {orderDetailInclude, orderListInclude} from "@utils/order/order.include";
 import {calculatePagination} from "@utils/helpers";
 import {buildOrderWithWhereClause} from "@utils/order/order.helpers";
-import {UpdateOrderDto} from "@src/types/dto/order.dto";
 import {formatOrderDetail, formatOrderList} from "@utils/order/order.transformer";
 import {OrderDetail} from "@src/types/order.types";
+import {updateOrderStatusDto} from "@utils/order/order.schema";
 
 export interface GetAllOrdersParams {
     page?: number;
@@ -62,11 +62,11 @@ export async function getOrderById(id: string) {
     return formatOrderDetail(order);
 }
 
-export async function updateOrder(id: string, data: UpdateOrderDto): Promise<OrderDetail | null> {
+export async function updateOrderStatus(id: string, data: updateOrderStatusDto): Promise<OrderDetail | null> {
     const order = await prisma.order.update({
         where: { id },
         data,
-        include: orderListInclude,
+        include: orderDetailInclude,
     });
 
     return formatOrderDetail(order);
