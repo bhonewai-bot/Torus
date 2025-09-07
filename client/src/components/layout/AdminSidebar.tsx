@@ -1,25 +1,30 @@
+"use client";
+
 import {Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem} from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar";
 import {
-    Boxes,
-    ChevronDown,
     ChevronUp,
     LayoutDashboard,
     Package,
-    Plus,
-    ReceiptText, ShoppingCart, User,
-    User2
+    ReceiptText, ShoppingBag,
+    User2,
+    Users
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import { usePathname } from "next/navigation";
 
 export function AdminSidebar() {
+    const pathname = usePathname();
+
+    const isActive = (path: string) => {
+        return pathname === path || pathname.startsWith(path + "/");
+    }
+
     return (
         <Sidebar collapsible={"icon"}>
             <SidebarHeader className={"py-4"}>
@@ -27,8 +32,8 @@ export function AdminSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
                             <Link href={"/admin"}>
-                                <Image src={"/Torus.svg"} alt={"Logo"} width={24} height={24} />
-                                <span className={"text-base font-semibold"}>Torus</span>
+                                <Image src={"/Torus.svg"} alt={"Logo"} width={36} height={36} />
+                                <span className={"text-lg font-semibold font-stretch-extra-expanded"}>Torus</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -38,139 +43,83 @@ export function AdminSidebar() {
             <SidebarContent>
 
                 {/* Dashboard */}
-                <Collapsible defaultOpen className={"group/collapsible"}>
-                    <SidebarGroup>
-                        <SidebarGroupLabel asChild>
-                            <CollapsibleTrigger className={"cursor-pointer"}>
-                                Dashboard
-                                <ChevronDown className={"ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"} />
-                            </CollapsibleTrigger>
-                        </SidebarGroupLabel>
-                        <CollapsibleContent>
-                            <SidebarGroupContent>
-                                <SidebarMenu>
-                                    <SidebarMenuItem>
-                                        {/* Overview */}
-                                        <SidebarMenuButton asChild>
-                                            <Link href={"/admin/overview"}>
-                                                <LayoutDashboard />
-                                                Overview
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                </SidebarMenu>
-                            </SidebarGroupContent>
-                        </CollapsibleContent>
-                    </SidebarGroup>
-                </Collapsible>
+                <SidebarGroup>
+                    <SidebarGroupLabel>
+                        Dashboard
+                    </SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                <SidebarMenuItem>
+                                    {/* Overview */}
+                                    <SidebarMenuButton 
+                                        asChild
+                                        className={isActive("/admin/e-commerce") ? "bg-secondary/50 text-primary hover:bg-secondary/50 hover:text-primary" : ""}
+                                    >
+                                        <Link href={"/admin/e-commerce"}>
+                                            <LayoutDashboard />
+                                            E-commerce
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                </SidebarGroup>
 
                 {/* Proucts */}
-                <Collapsible defaultOpen className={"group/collapsible"}>
-                    <SidebarGroup>
-                        <SidebarGroupLabel asChild>
-                            <CollapsibleTrigger className={"cursor-pointer"}>
-                                Products
-                                <ChevronDown className={"ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"} />
-                            </CollapsibleTrigger>
-                        </SidebarGroupLabel>
-                        <CollapsibleContent>
-                            <SidebarGroupContent>
-                                <SidebarMenu>
-                                    <SidebarMenuItem>
-                                        {/* Products list */}
-                                        <SidebarMenuButton asChild>
-                                            <Link href={"/admin/products"}>
-                                                <Package />
-                                                Products
-                                            </Link>
-                                        </SidebarMenuButton>
-                                        <SidebarMenuSub>
-                                            <SidebarMenuSubItem>
-                                                {/* Add Product */}
-                                                <SidebarMenuSubButton asChild>
-                                                    <Link href={'/admin/products/create'}>
-                                                        <Plus />
-                                                        Add Product
-                                                    </Link>
-                                                </SidebarMenuSubButton>
-                                            </SidebarMenuSubItem>
-                                        </SidebarMenuSub>
-                                    </SidebarMenuItem>
-                                    <SidebarMenuItem>
-                                        {/* Products list */}
-                                        <SidebarMenuButton asChild>
-                                            <Link href={"/public#"}>
-                                                <Boxes />
-                                                Inventory
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                </SidebarMenu>
-                            </SidebarGroupContent>
-                        </CollapsibleContent>
-                    </SidebarGroup>
-                </Collapsible>
-
-                {/* SALES */}
-                <Collapsible defaultOpen className={"group/collapsible"}>
-                    <SidebarGroup>
-                        <SidebarGroupLabel asChild>
-                            <CollapsibleTrigger className={"cursor-pointer"}>
-                                Sales
-                                <ChevronDown className={"ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"} />
-                            </CollapsibleTrigger>
-                        </SidebarGroupLabel>
-                        <CollapsibleContent>
-                            <SidebarGroupContent>
-                                <SidebarMenu>
-                                    <SidebarMenuItem>
-                                        {/* Orders list */}
-                                        <SidebarMenuButton asChild>
-                                            <Link href={"/admin/orders"}>
-                                                <ShoppingCart />
-                                                Orders
-                                            </Link>
-                                        </SidebarMenuButton>
-                                        {/* Invoices list */}
-                                        <SidebarMenuButton asChild>
-                                            <Link href={"/invoices"}>
-                                                <ReceiptText />
-                                                Invoices
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                </SidebarMenu>
-                            </SidebarGroupContent>
-                        </CollapsibleContent>
-                    </SidebarGroup>
-                </Collapsible>
-
-                {/* Users */}
-                <Collapsible defaultOpen className={"group/collapsible"}>
-                    <SidebarGroup>
-                        <SidebarGroupLabel asChild>
-                            <CollapsibleTrigger className={"cursor-pointer"}>
-                                Users
-                                <ChevronDown className={"ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"} />
-                            </CollapsibleTrigger>
-                        </SidebarGroupLabel>
-                        <CollapsibleContent>
-                            <SidebarGroupContent>
-                                <SidebarMenu>
-                                    <SidebarMenuItem>
-                                        {/* Orders list */}
-                                        <SidebarMenuButton asChild>
-                                            <Link href={"/order"}>
-                                                <User />
-                                                Users
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                </SidebarMenu>
-                            </SidebarGroupContent>
-                        </CollapsibleContent>
-                    </SidebarGroup>
-                </Collapsible>
+                <SidebarGroup>
+                    <SidebarGroupLabel>
+                        Management
+                    </SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu className="space-y-1">
+                                <SidebarMenuItem>
+                                    {/* Products list */}
+                                    <SidebarMenuButton 
+                                        asChild
+                                        className={isActive("/admin/products") ? "bg-secondary/50 text-primary hover:bg-secondary/50 hover:text-primary" : ""}
+                                    >
+                                        <Link href={"/admin/products"}>
+                                            <Package />
+                                            Products
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    {/* Products list */}
+                                    <SidebarMenuButton 
+                                        asChild
+                                        className={isActive("/admin/orders") ? "bg-secondary/50 text-primary hover:bg-secondary/50 hover:text-primary" : ""}
+                                    >
+                                        <Link href={"/admin/orders"}>
+                                            <ShoppingBag />
+                                            Orders
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    {/* Products list */}
+                                    <SidebarMenuButton 
+                                        asChild
+                                        className={isActive("/admin/users") ? "bg-secondary/50 text-primary hover:bg-secondary/50 hover:text-primary" : ""}
+                                    >
+                                        <Link href={"/admin/users"}>
+                                            <Users />
+                                            Users
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    {/* Products list */}
+                                    <SidebarMenuButton asChild>
+                                        <Link href={"/admin/invoices"}>
+                                            <ReceiptText />
+                                            Invoices
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                </SidebarGroup>
 
             </SidebarContent>
             <SidebarFooter>
@@ -178,7 +127,7 @@ export function AdminSidebar() {
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton>
+                                <SidebarMenuButton className="data-[state=open]:bg-transparent data-[state=open]:text-current focus:ring-0 focus-visible:ring-0">
                                     <User2 />
                                     Bhone Wai <ChevronUp className={"ml-auto"} />
                                 </SidebarMenuButton>
@@ -186,7 +135,7 @@ export function AdminSidebar() {
                             <DropdownMenuContent align={"end"}>
                                 <DropdownMenuItem>Account</DropdownMenuItem>
                                 <DropdownMenuItem>Setting</DropdownMenuItem>
-                                <DropdownMenuItem>Sign out</DropdownMenuItem>
+                                <DropdownMenuItem variant="destructive">Sign out</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </SidebarMenuItem>

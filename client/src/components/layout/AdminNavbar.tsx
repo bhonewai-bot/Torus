@@ -23,27 +23,20 @@ export function AdminNavbar() {
 
             {/* RIGHT */}
             <div className={'flex items-center gap-4'}>
-                {/* Theme Menu */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="icon">
-                            <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                            <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                            <span className="sr-only">Toggle theme</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setTheme("light")}>
-                            Light
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setTheme("dark")}>
-                            Dark
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setTheme("system")}>
-                            System
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Theme Toggle */}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    className="relative h-9 w-9 rounded-full overflow-hidden transition-all duration-300 hover:scale-110 active:scale-95 focus:ring-0 focus-visible:ring-0 group"
+                >
+                    {/* Animated background */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-0 scale-0 transition-all duration-500 ease-out group-hover:opacity-20 group-hover:scale-100 dark:from-blue-600 dark:to-purple-600" />
+                    
+                    <Sun className="h-6 w-6 scale-100 rotate-0 transition-all duration-500 ease-in-out text-yellow-600 dark:scale-0 dark:-rotate-180" />
+                    <Moon className="absolute h-6 w-6 scale-0 rotate-180 transition-all duration-500 ease-in-out text-blue-400 dark:scale-100 dark:rotate-0" />
+                    <span className="sr-only">Toggle theme</span>
+                </Button>
 
                 {/* User Menu */}
                 <DropdownMenu>
