@@ -84,6 +84,7 @@ model OrderItem {
   price        Float
   quantity     Int
   taxAmount    Float?
+  lineTotal    Float?
 }
 
 model User {

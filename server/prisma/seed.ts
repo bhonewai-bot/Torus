@@ -29,59 +29,61 @@ async function main() {
         throw new Error("Not enough products in DB to seeds orders");
     }
 
-    const orderItems = [
-        { product: products[0], quantity: 2 },
-        { product: products[1], quantity: 1 }
-    ];
-
     const taxRate = 0; // change if you want
 
-    let subtotal = 0;
-    let taxAmount = 0;
+    for (let i = 0; i < 2; i++) {
+        const orderItems = [
+            { product: products[0], quantity: 2 },
+            { product: products[1], quantity: 1 }
+        ];
 
-    const itemData = orderItems.map(({ product, quantity }) => {
-        const lineSubtotal = product.price * quantity;
-        const lineTaxAmount = lineSubtotal * taxRate;
-        const lineTotal = lineSubtotal + lineTaxAmount;
+        let subtotal = 0;
+        let taxAmount = 0;
 
-        subtotal += lineSubtotal;
-        taxAmount += lineTaxAmount;
+        const itemData = orderItems.map(({ product, quantity }) => {
+            const lineSubtotal = product.price * quantity;
+            const lineTaxAmount = lineSubtotal * taxRate;
+            const lineTotal = lineSubtotal + lineTaxAmount;
 
-        return {
-            productId: product.id,
-            productSku: product.sku,
-            productTitle: product.title,
-            productImage: product.images[0]?.url ?? null,
-            price: product.price,
-            quantity,
-            taxAmount: lineTaxAmount,
-        };
-    });
+            subtotal += lineSubtotal;
+            taxAmount += lineTaxAmount;
 
-    const total = subtotal + taxAmount;
+            return {
+                productId: product.id,
+                productSku: product.sku,
+                productTitle: product.title,
+                productImage: product.images[0]?.url ?? null,
+                price: product.price,
+                quantity,
+                taxAmount: lineTaxAmount,
+                lineTotal,
+            };
+        });
 
-    const orderCount = await prisma.order.count();
-    const orderNumber = generateOrderNumber(orderCount + 1);
+        const total = subtotal + taxAmount;
 
-    await prisma.order.create({
-        data: {
-            userId: user.id,
-            orderNumber,
-            subtotal,
-            taxAmount,
-            total,
-            paymentStatus: "PAID", // or PENDING
-            orderStatus: "PROCESSING", // or PENDING
-            shippingAddress: "123 Main St, City, Country",
-            billingAddress: "123 Main St, City, Country",
-            notes: "Leave at front door",
-            items: {
-                create: itemData,
+        const orderCount = await prisma.order.count();
+        const orderNumber = generateOrderNumber(orderCount + 1);
+
+        await prisma.order.create({
+            data: {
+                userId: user.id,
+                orderNumber,
+                subtotal,
+                taxAmount,
+                total,
+                paymentStatus: "PAID",
+                orderStatus: "PROCESSING",
+                shippingAddress: "123 Main St, City, Country",
+                billingAddress: "123 Main St, City, Country",
+                notes: "Leave at front door",
+                items: {
+                    create: itemData,
+                },
             },
-        },
-    });
-
-    console.log('Seeded user and order');
+        });
+    }
+    console.log("✅ Seeded user and 2 orders");
 }
 
 main().catch(e => {
