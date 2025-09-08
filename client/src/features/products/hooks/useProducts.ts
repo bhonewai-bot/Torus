@@ -8,7 +8,7 @@ import {
     Product, ProductDetails,
     ProductFilters, ProductListResponse,
 } from "@/features/products/types/product.types";
-import {ProductServiceError} from "@/features/products/lib/error";
+import {ProductServiceError} from "@/features/products/lib/product.error";
 import {createProductDto, updateProductDto} from "@/features/products/utils/product.schema";
 
 export function useProducts(filters: ProductFilters = {}) {

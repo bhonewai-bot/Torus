@@ -4,7 +4,7 @@ import {
     ProductFilters,
     ProductListResponse,
 } from "@/features/products/types/product.types";
-import {ProductServiceError} from "@/features/products/lib/error";
+import {ProductServiceError} from "@/features/products/lib/product.error";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
 import api from "@/lib/api/client";
 import {createProductDto, updateProductDto} from "@/features/products/utils/product.schema";

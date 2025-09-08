@@ -1,7 +1,7 @@
 import {ImageUploadResponse, UploadedImage} from "@/features/products/types/image.types";
 import api from "@/lib/api/client";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
-import {UploadServiceError} from "@/features/products/lib/error";
+import {UploadServiceError} from "@/features/products/lib/product.error";
 
 function handleApiError(error: unknown, context: string): never {
     console.error(`${context}:`, error);
