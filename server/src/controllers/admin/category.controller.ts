@@ -1,33 +1,63 @@
 import {NextFunction, Request, Response} from "express";
 import * as categoryService from "@services/category.service";
 import {createSuccessResponse} from "@utils/helpers";
-import {notFoundError} from "@middlewares/error.handlers";
-import {CreateCategoryDto} from "@src/types/dto/category/CreateCategoryDto";
 import {createCategoryDto} from "@utils/category/category.schema";
+import { asyncHandler } from "@src/middlewares/error.handlers";
+import { ErrorFactory } from "@src/lib/errors";
 
-export async function getAllCategories(req: Request, res: Response, next: NextFunction) {
-    try {
-        const result = await categoryService.getAllCategories();
+export const getAllCategories = asyncHandler(async(req: Request, res: Response) => {
+    const result = await categoryService.getAllCategories();
 
-        res.status(200).json(createSuccessResponse(
-            "Categories retrieved successfully",
-            result,
-        ));
-    } catch (error) {
-        next(error);
+    res.status(200).json(createSuccessResponse(
+        "Categories retrieved successfully",
+        result,
+    ));
+})
+
+export const createCategory = asyncHandler(async(req: Request, res: Response) => {
+    const newCategory: createCategoryDto = res.locals.validatedData;
+    const result = await categoryService.createCategory(newCategory);
+
+    res.status(201).json(createSuccessResponse(
+        "Category created successfully",
+        result,
+    ));
+})
+
+export const updateCategory = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const categoryData = res.locals.validatedData;
+
+    if (!id) {
+        throw ErrorFactory.badRequest("Category ID is required", req);
     }
-}
 
-export async function createCategory(req: Request, res: Response, next: NextFunction) {
-    try {
-        const newCategory: createCategoryDto = res.locals.validatedData;
-        const result = await categoryService.createCategory(newCategory);
+    const result = await categoryService.updateCategory(id, categoryData);
 
-        res.status(201).json(createSuccessResponse(
-            "Category created successfully",
-            result,
-        ));
-    } catch (error) {
-        next(error);
+    if (!result) {
+        throw ErrorFactory.notFound("Category", req);
     }
-}
+
+    res.status(200).json(createSuccessResponse(
+        "Category updated successfully",
+        result
+    ));
+});
+
+export const deleteCategory = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (!id) {
+        throw ErrorFactory.badRequest("Category ID is required", req);
+    }
+
+    const result = await categoryService.deleteCategory(id);
+
+    if (!result) {
+        throw ErrorFactory.notFound("Category", req);
+    }
+
+    res.status(200).json(createSuccessResponse(
+        "Category deleted successfully"
+    ));
+});
