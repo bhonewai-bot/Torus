@@ -48,7 +48,4 @@ app.get('/', (req, res) => {
 // 404 handler for unknown routes
 app.use(notFoundHandler);
 
-// Global error handler (must be last)
-app.use(errorHandler);
-
 export default app;

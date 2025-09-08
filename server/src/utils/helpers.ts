@@ -36,3 +36,27 @@ export const createSuccessResponse = <T>(
 
     return response;
 };
+
+/**
+ * Creates a standardized error response
+ */
+export const createErrorResponse = (
+    message: string,
+    code: string,
+    statusCode: number,
+    details?: any,
+) => {
+    const response: any = {
+        success: false,
+        message,
+        code,
+        statusCode,
+        timestamp: new Date().toISOString(),
+    }
+
+    if (details && process.env.NODE_ENV === "development") {
+        response.details = details;
+    }
+
+    return response;
+}

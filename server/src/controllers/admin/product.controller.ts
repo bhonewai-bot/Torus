@@ -1,103 +1,88 @@
 import {Request, Response, NextFunction} from "express";
 import * as productService from '@services/product.service';
 import { createSuccessResponse } from '@utils/helpers';
-import { notFoundError } from '@middlewares/error.handlers';
+import { asyncHandler } from '@middlewares/error.handlers';
 import {createProductDto, productQuerySchema, updateProductDto} from "@utils/product/product.schema";
+import { ErrorFactory } from "@src/lib/errors";
 
-export async function getAllProducts(req: Request, res: Response, next: NextFunction) {
-    try {
-        const validatedQuery = productQuerySchema.parse(req.query);
+export const getAllProducts = asyncHandler(async (req: Request, res: Response) => {
+    const validatedQuery = productQuerySchema.parse(req.query);
 
-        const result = await productService.getAllProducts(validatedQuery);
+    const result = await productService.getAllProducts(validatedQuery);
 
-        res.status(200).json(createSuccessResponse(
-            'Products fetched successfully', {
-                products: result.products,
-                pagination: result.pagination,
-            }
-        ));
-    } catch (error) {
-        next(error)
-    }
-}
-
-export async function getProductById(req: Request, res: Response, next: NextFunction) {
-    try {
-        const { id } = req.params;
-
-        const result = await productService.getProductById(id);
-
-        if (!result) {
-            throw notFoundError('Product');
+    res.status(200).json(createSuccessResponse(
+        'Products fetched successfully', 
+        {
+            products: result.products,
+            pagination: result.pagination,
         }
+    ));
+})
 
-        res.status(200).json(createSuccessResponse(
-            'Product retrieved successfully',
-            result
-        ));
-    } catch (error) {
-        next(error);
+export const getProductById = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (!id) {
+        throw ErrorFactory.badRequest("Product ID is required", req);
     }
-}
 
-export async function createProduct(req: Request, res: Response, next: NextFunction) {
-    try {
-        const newProduct: createProductDto = res.locals.validatedData;
+    const product = await productService.getProductById(id);
 
-        const result = await productService.createProduct(newProduct);
-
-        res.status(201).json(createSuccessResponse(
-            "Product created successfully",
-            result
-        ));
-    } catch (error) {
-        next(error);
+    if (!product) {
+        throw ErrorFactory.notFound('Product', req);
     }
-}
 
-export async function updateProduct(req: Request, res: Response, next: NextFunction) {
-    try {
-        const { id } = req.params;
-        const updatedProduct: updateProductDto = res.locals.validatedData;
+    res.status(200).json(createSuccessResponse(
+        'Product retrieved successfully',
+        product
+    ));
+})
 
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                message: "Product ID is required"
-            });
-        }
+export const createProduct = asyncHandler(async (req: Request, res: Response) => {
+    const newProduct: createProductDto = res.locals.validatedData;
 
-        const result = await productService.updateProduct(id, updatedProduct);
+    const result = await productService.createProduct(newProduct);
 
-        res.status(200).json(createSuccessResponse(
-            "Product updated successfully",
-            result,
-        ));
-    } catch (error) {
-        if (error instanceof Error && error.message === "Product not found") {
-            return res.status(404).json({
-                success: false,
-                message: "Product not found"
-            });
-        }
-        next(error);
+    res.status(201).json(createSuccessResponse(
+        "Product created successfully",
+        result
+    ));
+})
+
+export const updateProduct = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const updatedProduct: updateProductDto = res.locals.validatedData;
+
+    if (!id) {
+        throw ErrorFactory.badRequest("Product ID is required", req);
     }
-}
 
-export async function deleteProduct(req: Request, res: Response, next: NextFunction) {
-    try {
-        const { id } = req.params;
+    const result = await productService.updateProduct(id, updatedProduct);
 
-        const result = await productService.deleteProduct(id);
-
-        if (!result) {
-            throw notFoundError("Product");
-        }
-
-        res.status(204).json(createSuccessResponse(
-            "Product deleted successfully",
-        ))
-    } catch (error) {
-        next(error);
+    if (!result) {
+        throw ErrorFactory.notFound("Product", req);
     }
-}
+
+    res.status(200).json(createSuccessResponse(
+        "Product updated successfully",
+        result,
+    ));
+})
+
+export const deleteProduct = asyncHandler(async(req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    if (!id) {
+        throw ErrorFactory.badRequest("Product ID is required", req)
+    }
+
+    const result = await productService.deleteProduct(id);
+
+    if (!result) {
+        throw ErrorFactory.notFound("Product", req);
+    }
+
+    res.status(200).json(createSuccessResponse(
+        "Product deleted successfully",
+    ));
+})

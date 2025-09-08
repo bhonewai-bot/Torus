@@ -7,6 +7,7 @@ import prisma from "@config/prisma";
 import {Prisma} from "@prisma/client";
 import {createProductDto, updateProductDto, updateProductImageDto} from "@utils/product/product.schema";
 import {ProductDetail} from "@src/types/product.types";
+import { ErrorFactory } from "@src/lib/errors";
 
 export interface GetAllProductsParams {
     page?: number;
@@ -20,67 +21,88 @@ export interface GetAllProductsParams {
 }
 
 export async function getAllProducts(params: GetAllProductsParams = {}) {
-    const {
-        page = 1,
-        limit = 10,
-        sortBy = "createdAt",
-        sortOrder = "desc",
-    } = params;
-
-    const where = buildProductWhereClause(params);
-
-    if (limit === -1) {
-        const products = await prisma.product.findMany({
-            where,
-            include: productListInclude,
-            orderBy: {
-                [sortBy]: sortOrder,
+    try {
+        const {
+            page = 1,
+            limit = 10,
+            sortBy = "createdAt",
+            sortOrder = "desc",
+        } = params;
+    
+        const where = buildProductWhereClause(params);
+    
+        if (limit === -1) {
+            const products = await prisma.product.findMany({
+                where,
+                include: productListInclude,
+                orderBy: {
+                    [sortBy]: sortOrder,
+                }
+            });
+    
+            const formattedProducts = products.map(formatProductList);
+            const pagination = calculatePagination(products.length, page, -1);
+    
+            return {
+                products: formattedProducts,
+                pagination
             }
-        });
-
+        }
+    
+        const skip = (page - 1) * limit;
+    
+        const [products, total] = await prisma.$transaction([
+            prisma.product.findMany({
+                where,
+                include: productListInclude,
+                orderBy: {
+                    [sortBy]: sortOrder,
+                },
+                skip,
+                take: limit,
+            }),
+            prisma.product.count({ where }),
+        ]);
+    
         const formattedProducts = products.map(formatProductList);
-        const pagination = calculatePagination(products.length, page, -1);
-
+        const pagination = calculatePagination(total, page, limit);
+    
         return {
             products: formattedProducts,
             pagination
         }
-    }
-
-    const skip = (page - 1) * limit;
-
-    const [products, total] = await prisma.$transaction([
-        prisma.product.findMany({
-            where,
-            include: productListInclude,
-            orderBy: {
-                [sortBy]: sortOrder,
-            },
-            skip,
-            take: limit,
-        }),
-        prisma.product.count({ where }),
-    ]);
-
-    const formattedProducts = products.map(formatProductList);
-    const pagination = calculatePagination(total, page, limit);
-
-    return {
-        products: formattedProducts,
-        pagination
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            throw ErrorFactory.fromPrismaError(error);
+        }
+        throw ErrorFactory.fromUnknownError(error);
     }
 }
 
 export async function getProductById(id: string) {
-    const product = await prisma.product.findUnique({
-        where: { id },
-        include: productDetailInclude,
-    });
+    try {
+        const product = await prisma.product.findUnique({
+            where: { id },
+            include: productDetailInclude,
+        });
 
-    return formatProductDetail(product);
+        if (!product) {
+            return null;
+        }
+    
+        return formatProductDetail(product);
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            throw ErrorFactory.fromPrismaError(error, undefined, {
+                opeartion: "getProductById",
+                productId: id,
+            });
+        }
+        throw ErrorFactory.fromUnknownError(error);
+    }
 }
 
-export async function createProduct(data: createProductDto): Promise<ProductDetail> {
+export async function createProduct(data: createProductDto): Promise<ProductDetail | undefined> {
     try {
         const { images = [], ...productData } = data;
 
@@ -99,13 +121,19 @@ export async function createProduct(data: createProductDto): Promise<ProductDeta
 
         return formatProductDetail(product);
     } catch (error) {
-        if (
-            error instanceof Prisma.PrismaClientKnownRequestError &&
-            error.code === "P2002"
-        ) {
-            throw new Error("SKU already exists. Please use a different one");
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === "P2002") {
+                throw ErrorFactory.createError(
+                    "SKU already exists. Please use a different one",
+                    409,
+                    "SKU_ALREADY_EXISTS",
+                );
+            }
+            throw ErrorFactory.fromPrismaError(error, undefined, {
+                operation: "createProduct",
+                productData: data,
+            })
         }
-        throw error;
     }
 }
 
@@ -119,16 +147,13 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
         });
 
         if (!existedProduct) {
-            throw new Error("Product not found");
+            return null;
         }
 
         const { existingImages, newImages, existingImagesId } = splitImages(images as updateProductImageDto[]);
-
         const imagesToDelete = findImagesToDelete(existedProduct.images, existingImagesId);
 
         await deleteImageFiles(imagesToDelete);
-
-        /*let updateData: any = productData;*/
 
         const updatedProduct = await prisma.$transaction(async (tx) => {
             const product = await tx.product.update({
@@ -168,17 +193,34 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
             });
         });
 
-        if (!updatedProduct) throw new Error("Failed to update product");
+        if (!updatedProduct) {
+            throw ErrorFactory.createError(
+                "Failed to update product",
+                500,
+                "PRODUCT_UPDATE_FAILED",
+            );
+        }
 
         return formatProductDetail(updatedProduct);
     } catch (error) {
-        if (
-            error instanceof Prisma.PrismaClientKnownRequestError &&
-            error.code === "P2002"
-        ) {
-            throw new Error("SKU already exists. Please use a different one");
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === "P2002") {
+                throw ErrorFactory.createError(
+                    "SKU already exists. Please use a different one",
+                    409,
+                    'SKU_ALREADY_EXISTS',
+                )
+            }
+            if (error.code === 'P2025') {
+                return null;
+            }
+            throw ErrorFactory.fromPrismaError(error, undefined, {
+                operation: 'updateProduct',
+                productId: id,
+                updateData: data,
+            });
         }
-        throw error;
+        throw ErrorFactory.fromUnknownError(error);
     }
 }
 
@@ -190,7 +232,7 @@ export async function deleteProduct(id: string) {
         });
 
         if (!productWithImages) {
-            throw new Error("Product not found");
+            return null;
         }
 
         if (productWithImages.images && productWithImages.images.length > 0) {
@@ -204,10 +246,15 @@ export async function deleteProduct(id: string) {
 
         return formatProductDetail(deletedProduct);
     } catch (error) {
-        // If it's a Prisma error for record not found
-        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-            throw new Error("Product not found");
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2025') {
+                return null;
+            }
+            throw ErrorFactory.fromPrismaError(error, undefined, {
+                operation: 'deleteProduct',
+                productId: id,
+            });
         }
-        throw error;
+        throw ErrorFactory.fromUnknownError(error);
     }
 }
