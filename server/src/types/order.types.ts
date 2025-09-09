@@ -20,7 +20,7 @@ export interface OrderItem {
         sku: string;
         title: string;
         price: number;
-        isActive: boolean;
+        status: boolean;
         mainImage?: string;
     }
 }

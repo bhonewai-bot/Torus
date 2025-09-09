@@ -32,7 +32,7 @@ export async function createCategory(data: createCategoryDto) {
 export async function updateCategory(id: string, data: updateCategoryDto) {
     const updatedcategory = await prisma.category.update({
         where: { id },
-        data,
+        data
     });
 
     return updatedcategory;
@@ -43,5 +43,5 @@ export async function deleteCategory(id:string) {
         where: { id },
     });
 
-    return null;
+    return category;
 }

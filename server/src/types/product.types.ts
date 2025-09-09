@@ -1,3 +1,4 @@
+import { ProductStatus } from "@prisma/client";
 import {Category} from "@src/types/category.types";
 
 export interface ProductImage {
@@ -35,7 +36,7 @@ export interface ProductList {
     quantity: number;
     mainImage?: string;
     category?: Category;
-    isActive: boolean;
+    status: ProductStatus;
 }
 
 export interface ProductDetail {
@@ -49,7 +50,7 @@ export interface ProductDetail {
     pricing: ProductPricing;
     inventory: ProductInventory;
     images: ProductImage[];
-    isActive: boolean;
+    status: ProductStatus;
     createdAt: string;
     updatedAt: string;
 }

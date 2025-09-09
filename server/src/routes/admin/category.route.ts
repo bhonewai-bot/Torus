@@ -1,7 +1,8 @@
 import {Router} from "express";
 import {createCategory, deleteCategory, getAllCategories, updateCategory} from "@controllers/admin/category.controller";
 import {validateBody, validateParams} from "@middlewares/validation";
-import {createCategorySchema, postgresIdPathSchema} from "@utils/validation";
+import {postgresIdPathSchema} from "@utils/validation";
+import { createCategorySchema } from "@src/utils/category/category.schema";
 
 const route = Router();
 

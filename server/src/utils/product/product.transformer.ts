@@ -13,7 +13,7 @@ export function formatProductList(product: any): ProductList {
             id: product.category.id,
             title: product.category.title,
         } : undefined,
-        isActive: product.isActive,
+        status: product.status,
     }
 }
 
@@ -49,7 +49,7 @@ export function formatProductDetail(product: any): ProductDetail {
             url: img.url,
             isMain: img.isMain,
         })),
-        isActive: product.isActive,
+        status: product.status,
         createdAt: product.createdAt.toISOString(),
         updatedAt: product.updatedAt.toISOString(),
     }

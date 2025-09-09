@@ -1,4 +1,4 @@
-import {Request, Response, NextFunction} from "express";
+import {Request, Response} from "express";
 import * as productService from '@services/product.service';
 import { createSuccessResponse } from '@utils/helpers';
 import { asyncHandler } from '@middlewares/error.handlers';
@@ -49,7 +49,7 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     ));
 })
 
-export const updateProduct = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+export const updateProduct = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const updatedProduct: updateProductDto = res.locals.validatedData;
 
@@ -69,7 +69,7 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response, ne
     ));
 })
 
-export const deleteProduct = asyncHandler(async(req: Request, res: Response, next: NextFunction) => {
+export const deleteProduct = asyncHandler(async(req: Request, res: Response) => {
     const { id } = req.params;
 
     if (!id) {

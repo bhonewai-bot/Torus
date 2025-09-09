@@ -54,7 +54,7 @@ export const formatOrderDetail = (order: any): OrderDetail => {
                 sku: item.product.sku,
                 title: item.product.title,
                 price: item.product.price,
-                isActive: item.product.isActive,
+                status: item.product.status,
                 mainImage: item.product.mainImage ?? undefined,
             }
         })),

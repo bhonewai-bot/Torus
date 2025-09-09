@@ -1,7 +1,7 @@
 export function buildProductWhereClause(params: any) {
-    const { categoryId, brand, isActive = true, search } = params;
+    const { categoryId, brand, status = "ACTIVE", search } = params;
 
-    const where: any = { isActive };
+    const where: any = { status };
 
     if (categoryId) {
         where.categoryId = categoryId;

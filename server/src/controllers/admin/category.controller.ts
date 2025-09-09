@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 import * as categoryService from "@services/category.service";
 import {createSuccessResponse} from "@utils/helpers";
 import {createCategoryDto} from "@utils/category/category.schema";
@@ -12,7 +12,7 @@ export const getAllCategories = asyncHandler(async(req: Request, res: Response) 
         "Categories retrieved successfully",
         result,
     ));
-})
+});
 
 export const createCategory = asyncHandler(async(req: Request, res: Response) => {
     const newCategory: createCategoryDto = res.locals.validatedData;
@@ -22,17 +22,17 @@ export const createCategory = asyncHandler(async(req: Request, res: Response) =>
         "Category created successfully",
         result,
     ));
-})
+});
 
 export const updateCategory = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const categoryData = res.locals.validatedData;
+    const { title } = req.body;
 
     if (!id) {
         throw ErrorFactory.badRequest("Category ID is required", req);
     }
 
-    const result = await categoryService.updateCategory(id, categoryData);
+    const result = await categoryService.updateCategory(id, { title });
 
     if (!result) {
         throw ErrorFactory.notFound("Category", req);
@@ -58,6 +58,7 @@ export const deleteCategory = asyncHandler(async (req: Request, res: Response) =
     }
 
     res.status(200).json(createSuccessResponse(
-        "Category deleted successfully"
+        "Category deleted successfully",
+        result
     ));
 });

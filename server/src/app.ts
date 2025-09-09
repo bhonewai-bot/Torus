@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import routes from "@src/routes";
-import { errorHandler, notFoundHandler } from '@middlewares/error.handlers';
+import { handleErrors, notFoundHandler } from '@middlewares/error.handlers';
 import env from "@config/env";
 import path from "path";
 
@@ -47,5 +47,8 @@ app.get('/', (req, res) => {
 
 // 404 handler for unknown routes
 app.use(notFoundHandler);
+
+// Global error handler 
+app.use(handleErrors);
 
 export default app;

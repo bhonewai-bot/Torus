@@ -1,11 +1,13 @@
 import {z} from "zod";
 
+export const productStatusSchema = z.enum(["ACTIVE", "INACTIVE"]);
+
 export const productQuerySchema = z.object({
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(-1).max(1000).default(10),
     categoryId: z.string().uuid().optional(),
     brand: z.string().optional(),
-    isActive: z.boolean().optional(),
+    status: z.boolean().optional(),
     search: z.string().optional(),
     sortBy: z.enum(["title", "price", "createdAt", "updatedAt"]).default("createdAt"),
     sortOrder: z.enum(["asc", "desc"]).default("desc"),
@@ -62,7 +64,7 @@ export const createProductSchema = z.object({
             },
             { message: "Only one image can be marked as main" }
         ),
-    isActive: z.boolean().default(true),
+    status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
 });
 
 export const updateProductSchema = createProductSchema.partial();

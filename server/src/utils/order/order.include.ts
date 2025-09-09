@@ -27,7 +27,7 @@ export const orderDetailInclude = {
                     sku: true,
                     title: true,
                     price: true,
-                    isActive: true,
+                    status: true,
                 }
             }
         }

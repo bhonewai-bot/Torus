@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 import * as orderService from '@services/order.service';
 import {createSuccessResponse} from "@utils/helpers";
 import {orderQuerySchema, updateOrderStatusDto} from "@utils/order/order.schema";
@@ -17,7 +17,7 @@ export const getAllOrders = asyncHandler(async(req: Request, res: Response) => {
             orders: result.orders,
             pagination: result.pagination,
         }
-    ))
+    ));
 })
 
 export const getOrderById = asyncHandler(async(req: Request, res: Response) => {
@@ -42,12 +42,12 @@ export const getOrderById = asyncHandler(async(req: Request, res: Response) => {
 export const updateOrderStatus = asyncHandler(async(req: Request, res: Response) => {
     const { id } = req.params;
 
-    const orderStatus: updateOrderStatusDto = res.locals.validatedData;
+    const updatedorderStatuses: updateOrderStatusDto = res.locals.validatedData;
 
-    const result = await orderService.updateOrderStatus(id, orderStatus);
+    const result = await orderService.updateOrderStatus(id, updatedorderStatuses);
 
     res.status(200).json(createSuccessResponse(
         "Order status updated successfully",
         result
-    ))
+    ));
 }) 
