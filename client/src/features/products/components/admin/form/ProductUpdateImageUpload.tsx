@@ -57,9 +57,9 @@ export function ProductUpdateImageUpload({ form, existingImages }: ProductUpdate
         setImagePreviews(updatedPreviews);
 
         const imageData = updatedPreviews.map((preview) => {
-            if (preview.isExisting) {
+            if ("id" in preview && preview.isExisting) {
                 return {
-                    id: preview.id!,
+                    id: preview.id,
                     url: preview.preview,
                     isMain: preview.isMain,
                 };

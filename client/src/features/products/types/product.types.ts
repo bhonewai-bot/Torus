@@ -1,9 +1,12 @@
+export const PRODUCT_STATUSES = ["ACTIVE", "INACTIVE"] as const;
+export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
+
 interface CategoryInfo {
     id: string;
     title: string;
 }
 
-export interface Product {
+export interface ProductList {
     id: string;
     sku: string;
     title: string;
@@ -13,7 +16,7 @@ export interface Product {
     quantity: number;
     mainImage?: string;
     category?: CategoryInfo;
-    isActive: boolean;
+    status: ProductStatus;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -46,7 +49,7 @@ export interface ProductDetails {
     inventory: {
         quantity: number,
     },
-    isActive: boolean;
+    status: ProductStatus;
     createdAt: string;
     updatedAt: string;
 }
@@ -61,7 +64,7 @@ export interface Pagination {
 }
 
 export interface ProductListResponse {
-    products: Product[];
+    products: ProductList[];
     pagination: Pagination;
 }
 

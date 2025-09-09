@@ -12,11 +12,12 @@ import {ColumnDef} from "@tanstack/table-core";
 import {Edit, Eye, MoreHorizontal, Trash2} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ReactNode, useState} from "react";
-import {Product} from "@/features/products/types/product.types";
+import {ProductList} from "@/features/products/types/product.types";
 import {useDeleteProduct} from "@/features/products/hooks/useProducts";
 import {useConfirmDialog} from "@/hooks/useConfirmDialog";
 import {toast} from "sonner";
 import Image from "next/image";
+import { stat } from "fs";
 
 type TableHeaderCellProps = {
     children: ReactNode;
@@ -30,7 +31,7 @@ export function TableHeaderCell({ children }: TableHeaderCellProps) {
     );
 }
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<ProductList>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -140,17 +141,17 @@ export const columns: ColumnDef<Product>[] = [
         }
     },
     {
-        accessorKey: "isActive",
+        accessorKey: "status",
         header: () => <TableHeaderCell>Status</TableHeaderCell>,
         cell: ({ row }) => {
-            const isActive = row.getValue("isActive") as boolean;
+            const status = row.getValue("status") as string;
             return (
-                <div className={`inline-flex items-center px-2 py-1 rounded-full text-foreground text-xs font-medium ${
-                    isActive
-                        ? 'bg-green-100 text-green-800 border-1 dark:bg-green-900/30 dark:text-green-200'
+                <div className={`inline-flex items-center px-2 py-1 rounded-full text-foreground text-xs font-semibold ${
+                    status === "ACTIVE"
+                        ? 'bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30'
                         : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                 }`}>
-                    {isActive ? 'Active' : 'Inactive'}
+                    {status ? 'Active' : 'Inactive'}
                 </div>
             );
         },

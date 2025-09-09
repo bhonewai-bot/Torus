@@ -31,31 +31,31 @@ export function ProductUpdateForm({ product }: ProductUpdateFormProps) {
             description: product.description || "",
             categoryId: product.category?.id,
             dimensions: {
-                length: product.dimensions?.length || "",
-                width: product.dimensions?.width || "",
-                height: product.dimensions?.height || "",
-                weight: product.dimensions?.weight || "",
+                length: product.dimensions?.length ?? undefined,
+                width: product.dimensions?.width ?? undefined,
+                height: product.dimensions?.height ?? undefined,
+                weight: product.dimensions?.weight ?? undefined,
             },
             pricing: {
-                price: product.pricing?.price || "",
-                regularPrice: product.pricing?.regularPrice || "",
-                salePrice: product.pricing?.salePrice || "",
-                taxRate: product.pricing?.taxRate || "",
-                taxIncluded: product.pricing?.taxIncluded || false,
+                price: product.pricing?.price ?? undefined,
+                regularPrice: product.pricing?.regularPrice ?? undefined,
+                salePrice: product.pricing?.salePrice ?? undefined,
+                taxRate: product.pricing?.taxRate ?? undefined,
+                taxIncluded: product.pricing?.taxIncluded ?? false,
             },
             inventory: {
-                quantity: product.inventory?.quantity || "",
+                quantity: product.inventory?.quantity ?? undefined,
             },
             images: product.images?.map((img) => ({
                 id: img.id,
                 url: img.url,
                 isMain: img.isMain
             })) || [],
-            isActive: product.isActive ?? true
+            status: product.status
         }
     });
 
-    const onSubmit = async (data: UpdateProductFormData) => {
+    const onSubmit = async (data: updateProductFormData) => {
         const existingImages: ExistingImage[] = product.images?.map(img => ({
             id: img.id,
             url: img.url,

@@ -1,39 +1,41 @@
 import {ImageUploadResponse, UploadedImage} from "@/features/products/types/image.types";
 import api from "@/lib/api/client";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
-import {UploadServiceError} from "@/features/products/lib/product.error";
+import { ErrorFactory, ErrorHandler, ValidationError } from "@/lib/errors";
 
-function handleApiError(error: unknown, context: string): never {
-    console.error(`${context}:`, error);
+const errorHandler = new ErrorHandler();
 
-    if (error instanceof Error) {
-        if ("response" in error && typeof error.response === "object" && error.response) {
-            const response = error.response as any;
-            const message = response.data?.message || response.statusText || error.message;
-            const statusCode = response.status;
-
-            throw new UploadServiceError(message, statusCode, error);
-        }
-        throw new UploadServiceError(error.message, undefined, error);
-    }
-    throw new UploadServiceError(`Unknown error occurred in ${context}`, undefined, error);
-}
-
-/**
- * Upload multiple images to local storage
- */
 export async function uploadProductImages(files: File[]): Promise<UploadedImage[]> {
-    if (!files.length) return [];
+    if (!files.length) {
+        throw ErrorFactory.createValidationError(
+            [{ field: "images", message: "At least one image is required", code: "required" }],
+            "No files provided for upload",
+            { operation: "uploadProductImages" }
+        );
+    }
 
     try {
-        const formData = new FormData();
+        const { valid, invalid } = validateMultipleFiles(files);
 
-        files.forEach((file) => {
-            console.log("Appending file:", file.name, file.size, file.type);
+        if (invalid.length > 0) {
+            const validationIssues = invalid.map(({ file, error }) => ({
+                field: 'files',
+                message: `${file.name}: ${error}`,
+                code: 'invalid_file',
+                value: file.name
+            }));
+
+            throw ErrorFactory.createValidationError(
+                validationIssues,
+                "File validation failed",
+                { operation: 'uploadProductImages', invalidFiles: invalid.length }
+            );
+        }
+
+        const formData = new FormData();
+        valid.forEach((file) => {
             formData.append("images", file);
         });
-
-        console.log("FormData entries:", [...formData.entries()])
 
         const response = await api.post<ImageUploadResponse>(
             API_ENDPOINTS.admin.images.create,
@@ -42,14 +44,34 @@ export async function uploadProductImages(files: File[]): Promise<UploadedImage[
 
         return response.data.data.images;
     } catch (error) {
-        handleApiError(error, "Failed to upload images");
+        if (error instanceof ValidationError) {
+            throw error;
+        }
+
+        const processedError = ErrorFactory.createServiceError(
+            "upload",
+            "Failed to upload images",
+            (error as any).statusCode || 500,
+            error,
+            {
+                operation: 'uploadProductImages',
+                endpoint: API_ENDPOINTS.admin.images.create,
+                fileCount: files.length
+            }
+        );
+        throw errorHandler.handle(processedError);
     }
 }
 
-/**
- * Delete uploaded image
- */
 export async function deleteProductImage(filename: string): Promise<boolean> {
+    if (!filename) {
+        throw ErrorFactory.createValidationError(
+            [{ field: "filename", message: "Filename is required", code: "required" }],
+            "Filename validation failed",
+            { operation: "deleteProductImage" }
+        );
+    }
+    
     try {
         const response = await api.delete(
             API_ENDPOINTS.admin.images.delete(filename)
@@ -57,26 +79,43 @@ export async function deleteProductImage(filename: string): Promise<boolean> {
 
         return response.data.success;
     } catch (error) {
-        console.error("Image delete error:", error);
+        if (error instanceof ValidationError) {
+            throw error;
+        }
+
+        const processedError = ErrorFactory.createServiceError(
+            "upload",
+            "Failed to delete image",
+            (error as any).statusCode || 500,
+            error,
+            {
+                operation: 'deleteProductImage',
+                endpoint: API_ENDPOINTS.admin.images.delete(filename),
+                filename
+            }
+        );
+        
+        // For delete operations, we might want to be less strict and return false instead of throwing
+        errorHandler.handle(processedError);
         return false;
     }
 }
 
-/**
- * Upload single image
- */
 export async function uploadSingleImage(file: File): Promise<UploadedImage> {
     const result = await uploadProductImages([file]);
 
     if (!result.length) {
-        throw new Error("No image wa uploaded");
+        throw ErrorFactory.createServiceError(
+            "upload",
+            "No image was uploaded",
+            422,
+            undefined,
+            { operation: 'uploadSingleImage', fileName: file.name }
+        );
     }
     return result[0];
 }
 
-/**
- * Validate image file before upload
- */
 export function validateImageFile(file: File): { valid: boolean; error?: string } {
     if (!file.type.startsWith("image/")) {
         return { valid: false, error: "File must be an image" };

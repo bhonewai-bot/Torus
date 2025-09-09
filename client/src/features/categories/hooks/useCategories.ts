@@ -5,7 +5,7 @@ import {categoryKeys} from "@/features/categories/lib/category.query.keys";
 import {categoryService} from "@/features/categories/services/categoryService";
 import {showError, showSuccess} from "@/lib/utils/toast";
 import { createCategoryDto } from "../utils/category.schema";
-import { CategoryServiceError } from "../lib/error";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
 
 export function useCategories() {
     return useQuery({
@@ -17,6 +17,7 @@ export function useCategories() {
 
 export function useCreateCategory() {
     const queryClient = useQueryClient();
+    const { handleError } = useErrorHandler();
 
     return useMutation({
         mutationFn: (data: createCategoryDto) => categoryService.createCategory(data),
@@ -30,11 +31,8 @@ export function useCreateCategory() {
 
             showSuccess("Category created successfully");
         },
-        onError: (error: CategoryServiceError) => {
-            const message = error instanceof CategoryServiceError
-                ? error.message
-                : "Failed to create category";
-            showError(message);
+        onError: (error: unknown) => {
+            handleError(error, "useCreateCategory")
         }
     })
 }

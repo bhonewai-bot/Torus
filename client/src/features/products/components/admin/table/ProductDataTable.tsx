@@ -1,9 +1,9 @@
-import {Pagination, Product} from "@/features/products/types/product.types";
+import {Pagination, ProductList} from "@/features/products/types/product.types";
 import {DataTable} from "@/components/common/DataTable";
 import {columns} from "@/features/products/components/admin/table/Columns";
 
 interface ProductDataTableProps {
-    products: Product[];
+    products: ProductList[];
     pagination?: Pagination;
     onPageChange: (page: number) => void;
     onLimitChange: (limit: number) => void;

@@ -5,14 +5,14 @@ import {productKeys} from "@/features/products/lib/product.query.keys";
 import {productService} from "@/features/products/services/product.service";
 import {showError, showSuccess} from "@/lib/utils/toast";
 import {
-    Product, ProductDetails,
+    ProductList, ProductDetails,
     ProductFilters, ProductListResponse,
 } from "@/features/products/types/product.types";
-import {ProductServiceError} from "@/features/products/lib/product.error";
 import {createProductDto, updateProductDto} from "@/features/products/utils/product.schema";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
 
 export function useProducts(filters: ProductFilters = {}) {
-    return useQuery({
+    return useQuery<ProductListResponse, Error>({
         queryKey: productKeys.list(filters),
         queryFn: () => productService.getProducts(filters),
         staleTime: 1000 * 30,
@@ -30,10 +30,11 @@ export function useProduct(id: string) {
 
 export function useCreateProduct() {
     const queryClient = useQueryClient();
+    const { handleError } = useErrorHandler();
 
     return useMutation({
         mutationFn: (data: createProductDto) => productService.createProduct(data),
-        onSuccess: (newProduct: Product) => {
+        onSuccess: (newProduct: ProductDetails) => {
             // Update the detail cache with the new product
             queryClient.setQueryData(productKeys.detail(newProduct.id), newProduct);
 
@@ -42,18 +43,15 @@ export function useCreateProduct() {
 
             showSuccess("Product created successfully");
         },
-        onError: (error: ProductServiceError) => {
-            const message = error instanceof ProductServiceError
-                ? error.message
-                : "Failed to create product";
-
-            showError(message);
+        onError: (error: unknown) => {
+            handleError(error, "useCreateProduct")
         }
     });
 }
 
 export function useUpdateProduct() {
     const queryClient = useQueryClient();
+    const { handleError } = useErrorHandler();
 
     return useMutation({
         mutationFn: ({id, data}: { id: string, data: updateProductDto }) => productService.updateProduct(id, data),
@@ -66,17 +64,15 @@ export function useUpdateProduct() {
 
             showSuccess("Product updated successfully");
         },
-        onError: (error: ProductServiceError) => {
-            const message = error instanceof ProductServiceError
-                ? error.message
-                : "Failed to update product";
-            showError(message);
+        onError: (error: unknown) => {
+            handleError(error, 'useUpdateProduct')
         }
     })
 }
 
 export function useDeleteProduct() {
     const queryClient = useQueryClient();
+    const { handleError } = useErrorHandler();
 
     return useMutation({
         mutationFn: (id: string) => productService.deleteProduct(id),
@@ -94,19 +90,15 @@ export function useDeleteProduct() {
                     return {
                         ...old,
                         products: old.products.filter((product) => product.id !== deletedId),
-                        total: Math.max(0, old.total - 1),
+                        total: Math.max(0, old.pagination.total - 1),
                     };
                 });
             });
 
             showSuccess("Product deleted successfully");
         },
-        onError: (error: ProductServiceError) => {
-            const message = error instanceof ProductServiceError
-                ? error.message
-                : "Failed to delete product";
-
-            showError(message);
+        onError: (error: unknown) => {
+            handleError(error, "useDeleteProduct");
         },
     });
 }

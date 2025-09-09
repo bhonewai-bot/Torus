@@ -1,4 +1,7 @@
 import {z} from "zod";
+import { PRODUCT_STATUSES, ProductStatus } from "../types/product.types";
+
+export const productStatusSchema = z.enum(PRODUCT_STATUSES);
 
 const emptyToUndefined = (val: unknown) => val === "" ? undefined : Number(val);
 
@@ -71,7 +74,7 @@ export const createProductSchema = z.object({
     images: z.array(productImageSchema)
         .optional()
         .default([]),
-    isActive: z.boolean().optional().default(true),
+    status: z.enum(PRODUCT_STATUSES).default("ACTIVE"),
 });
 
 export const updateProductSchema = createProductSchema.partial();
@@ -87,20 +90,20 @@ export interface createProductDto {
     categoryId?: string;
 
     // Flattened dimensions
-    length?: number;
-    width?: number;
-    height?: number;
-    weight?: number;
+    length?: number | undefined;
+    width?: number | undefined;
+    height?: number | undefined;
+    weight?: number | undefined;
 
     // Flattened pricing
-    price: number;
-    regularPrice?: number;
-    salePrice?: number;
-    taxRate?: number;
+    price: number | undefined;
+    regularPrice?: number | undefined;
+    salePrice?: number | undefined;
+    taxRate?: number | undefined;
     taxIncluded?: boolean;
 
     // Flattened inventory
-    quantity: number;
+    quantity: number | undefined;
 
     // Images and status
     images: Array<{
@@ -110,7 +113,7 @@ export interface createProductDto {
         size?: number;
         isMain: boolean;
     }>;
-    isActive: boolean;
+    status: ProductStatus;
 }
 
 export interface updateProductDto {
@@ -145,5 +148,5 @@ export interface updateProductDto {
         size?: number;
         isMain: boolean;
     }>;
-    isActive?: boolean;
+    status?: ProductStatus;
 }

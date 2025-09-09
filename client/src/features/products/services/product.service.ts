@@ -4,10 +4,10 @@ import {
     ProductFilters,
     ProductListResponse,
 } from "@/features/products/types/product.types";
-import {ProductServiceError} from "@/features/products/lib/product.error";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
 import api from "@/lib/api/client";
 import {createProductDto, updateProductDto} from "@/features/products/utils/product.schema";
+import { ErrorFactory, ErrorHandler, ValidationError } from "@/lib/errors";
 
 function buildQueryString(filters: ProductFilters): string {
     const params = new URLSearchParams();
@@ -21,21 +21,7 @@ function buildQueryString(filters: ProductFilters): string {
     return params.toString();
 }
 
-function handleApiError(error: unknown, context: string): never {
-    console.error(`${context}:`, error);
-
-    if (error instanceof Error) {
-        if ("response" in error && typeof error.response === "object" && error.response) {
-            const response = error.response as any;
-            const message = response.data?.message || response.statusText || error.message;
-            const statusCode = response.status;
-
-            throw new ProductServiceError(message, statusCode, error);
-        }
-        throw new ProductServiceError(error.message, undefined, error);
-    }
-    throw new ProductServiceError(`Unknown error occurred in ${context}`, undefined, error);
-}
+const errorHandler = new ErrorHandler();
 
 export async function getProducts(filters: ProductFilters = {}): Promise<ProductListResponse> {
     try {
@@ -62,13 +48,28 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
             }
         }
     } catch (error) {
-        handleApiError(error, "Error fetching products");
+        const processedError = ErrorFactory.createServiceError(
+            "product",
+            "Failed to fetch products",
+            (error as any).statusCode || 500,
+            error,
+            {
+                operation: "getProducts",
+                filters,
+                endpoint: API_ENDPOINTS.admin.products.list
+            }
+        );
+        throw errorHandler.handle(processedError);
     }
 }
 
 export async function getProduct(id: string): Promise<ProductDetails> {
     if (!id) {
-        throw new ProductServiceError("Product ID is required");
+        throw ErrorFactory.createValidationError(
+            [{ field: "id", message: "Product ID is required", code: "required" }],
+            "Product ID validation failed",
+            { operation: "getProduct" }
+        )
     }
 
     try {
@@ -80,9 +81,30 @@ export async function getProduct(id: string): Promise<ProductDetails> {
             return response.data.data;
         }
 
-        throw new ProductServiceError("Product not found", 404);
+        throw ErrorFactory.createServiceError(
+            "product",
+            "Product not found",
+            404,
+            undefined,
+            { operation: "getProduct", productId: id }
+        );
     } catch (error) {
-        handleApiError(error, "Error fetching product");
+        if (error instanceof ValidationError) {
+            throw error;
+        }
+
+        const processedError = ErrorFactory.createServiceError(
+            "product",
+            "Failed to fetch product",
+            (error as any).statusCode || 500,
+            error,
+            {
+                operation: 'getProduct',
+                productId: id,
+                endpoint: API_ENDPOINTS.admin.products.get(id)
+            }
+        );
+        throw errorHandler.handle(processedError);
     }
 }
 
@@ -96,16 +118,41 @@ export async function createProduct(data: createProductDto): Promise<ProductDeta
         const product = response.data.data || response.data;
 
         if (!product) {
-            throw new ProductServiceError("Invalid response format");
+            throw ErrorFactory.createServiceError(
+                "product",
+                "Invalid response format",
+                422,
+                undefined,
+                { operation: "createProduct", data }
+            );
         }
 
         return product;
     } catch (error) {
-        handleApiError(error, "Error creating product");
+        const processedError = ErrorFactory.createServiceError(
+            "product",
+            "Failed to create product",
+            (error as any).statusCode || 500,
+            undefined,
+            { 
+                operation: "createProduct", 
+                endpoint: API_ENDPOINTS.admin.products.create,
+                data 
+            }
+        );
+        throw errorHandler.handle(processedError);
     }
 }
 
 export async function updateProduct(id: string, data: updateProductDto): Promise<ProductDetails> {
+    if (!id) {
+        throw ErrorFactory.createValidationError(
+            [{ field: "id", message: "Product ID is required", code: "required" }],
+            "Product ID validation failed",
+            { operation: "updateProduct" }
+        );
+    }
+
     try {
         const response = await api.put<ApiResponse<ProductDetails>>(
             API_ENDPOINTS.admin.products.update(id),
@@ -115,23 +162,65 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
         const product = response.data.data || response.data;
 
         if (!product) {
-            throw new ProductServiceError("Invalid response format");
+            throw ErrorFactory.createServiceError(
+                "product",
+                "Invalid response format",
+                422,
+                undefined,
+                { operation: "updateProduct", productId: id, data }
+            );
         }
 
         return product;
     } catch (error) {
-        handleApiError(error, "Error updating product");
+        if (error instanceof ValidationError) {
+            throw error;
+        }
+
+        const processedError = ErrorFactory.createServiceError(
+            "product",
+            "Failed to update product",
+            (error as any).statusCode || 500,
+            error,
+            {
+                operation: "updateProduct",
+                productId: id,
+                endpoint: API_ENDPOINTS.admin.products.update(id),
+                data
+            }
+        );
+        throw errorHandler.handle(processedError);
     }
 }
 
 export async function deleteProduct(id: string): Promise<void> {
+    if (!id) {
+        throw ErrorFactory.createValidationError(
+            [{ field: "id", message: "Product ID is required", code: "required" }],
+            "Product ID validation failed",
+            { operation: "deleteProduct" },
+        )
+    }
+
     try {
-        if (!id) {
-            throw new Error("Product ID is required");
-        }
         await api.delete(API_ENDPOINTS.admin.products.delete(id));
     } catch (error) {
-        handleApiError(error, "Error deleting product");
+        if (error instanceof ValidationError) {
+            throw error;
+        }
+
+        const processedError = ErrorFactory.createServiceError(
+            "product",
+            "Failed to delete product",
+            (error as any).statusCode || 500,
+            error,
+            {
+                operation: 'deleteProduct',
+                productId: id,
+                endpoint: API_ENDPOINTS.admin.products.delete(id)
+            }
+        );
+        throw errorHandler.handle(processedError);
     }
 }
 

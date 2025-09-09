@@ -1,23 +1,9 @@
 import api from "@/lib/api/client";
 import {API_ENDPOINTS} from "@/lib/api/endpoints";
-import {CategoryServiceError} from "@/features/categories/lib/error";
 import { createCategoryDto } from "../utils/category.schema";
+import { ErrorFactory, ErrorHandler } from "@/lib/errors";
 
-function handleApiError(error: unknown, context: string): never {
-    console.error(`${context}:`, error);
-
-    if (error instanceof Error) {
-        if ("response" in error && typeof error.response === "object" && error.response) {
-            const response = error.response as any;
-            const message = response.data?.message || response.statusText || error.message;
-            const statusCode = response.status;
-
-            throw new CategoryServiceError(message, statusCode, error);
-        }
-        throw new CategoryServiceError(error.message, undefined, error);
-    }
-    throw new CategoryServiceError(`Unknown error occurred in ${context}`, undefined, error);
-}
+const errorHanlder = new ErrorHandler();
 
 export async function getAllCategories(): Promise<Category[]> {
     try {
@@ -31,7 +17,17 @@ export async function getAllCategories(): Promise<Category[]> {
 
         return [];
     } catch (error) {
-        handleApiError(error, "Error fetching categories");
+        const processedError = ErrorFactory.createServiceError(
+            "category",
+            "Failed to fetch categories",
+            (error as any).statusCode || 500,
+            error,
+            {
+                operation: "getAllCategories",
+                endpoing: API_ENDPOINTS.admin.categories.list
+            }
+        );
+        throw errorHanlder.handle(processedError);
     }
 }
 
@@ -45,10 +41,31 @@ export async function createCategory(data: createCategoryDto) {
         const category = response.data.data || response.data;
 
         if (!category) {
-            throw new Error("Invalid response format");
+            throw ErrorFactory.createServiceError(
+                "category",
+                "Invalid response format",
+                422,
+                undefined,
+                {
+                    operation: "createCategory",
+                    data
+                }
+            )
         }
+
+        return category;
     } catch (error) {
-        handleApiError(error, "Error creating category");
+        const processedError = ErrorFactory.createServiceError(
+            "category",
+            "Failed to create category",
+            (error as any).statusCode || 500,
+            error,
+            {
+                operation: "createCategory",
+                endpoint: API_ENDPOINTS.admin.categories.create,
+                data
+            }
+        )
     }
 }
 

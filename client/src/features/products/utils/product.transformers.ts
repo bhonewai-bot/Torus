@@ -61,7 +61,7 @@ export async function transformCreateFormDataToDto(data: createProductFormData):
         weight: data.dimensions?.weight,
 
         // Flatten pricing
-        price: data.pricing.price,
+        price: data.pricing?.price ?? 0,
         regularPrice: data.pricing.regularPrice,
         salePrice: data.pricing.salePrice,
         taxRate: data.pricing.taxRate,
@@ -70,9 +70,9 @@ export async function transformCreateFormDataToDto(data: createProductFormData):
         // Flatten inventory
         quantity: data.inventory.quantity,
 
-        // Processed images and isActive
+        // Processed images and status
         images: processedImages,
-        isActive: data.isActive || true,
+        status: data.status,
     };
 }
 
@@ -170,7 +170,7 @@ export async function transformUpdateFormDataToDto(
 
     // Handle images and status
     if (processedImages.length > 0) dto.images = processedImages;
-    if (data.isActive !== undefined) dto.isActive = data.isActive;
+    if (data.status !== undefined) dto.status = data.status;
 
     return dto;
 }
