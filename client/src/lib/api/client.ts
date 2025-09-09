@@ -1,7 +1,13 @@
 import axios from "axios";
 import {env} from "@/lib/config/env";
+import { ErrorHandler } from "../errors";
 
 export const BASE_URL = env.API_BASE_URL;
+const errorHandler = new ErrorHandler({
+    enableLogging: true,
+    logLevel: "error",
+    enableNotification: false,
+});
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -31,9 +37,11 @@ api.interceptors.request.use(
         return config;
     },
     (error) => {
-        return Promise.reject(error);
+        const processedError = errorHandler.handle(error, {
+            context: "request_interceptor",
+        });
+        return Promise.reject(processedError);
     }
-
 );
 
 // Response interceptor for error handling
@@ -45,7 +53,14 @@ api.interceptors.request.use(
             sessionStorage.removeItem("token");
             window.location.href = "/auth/login";
         }
-        return Promise.reject(error);
+        
+        const processedError = errorHandler.handle(error, {
+            context: "response_interceptor",
+            url: error.config?.url,
+            method: error.config?.method,
+            statusCode: error.response?.status,
+        });
+        return Promise.reject(processedError);
     }
 );
 

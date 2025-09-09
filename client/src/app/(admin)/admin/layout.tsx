@@ -10,6 +10,7 @@ import {AdminNavbar} from "@/components/layout/AdminNavbar";
 import {QueryProvider} from "@/components/providers/query-provider";
 import {ConfirmDialogProvider} from "@/components/providers/confirm-dialog-provider";
 import {Toaster} from "sonner";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -49,17 +50,19 @@ export default async function RootLayout({
                 <QueryProvider>
                     <ConfirmDialogProvider>
                         <SidebarProvider defaultOpen={defaultOpen}>
-                            <AdminSidebar />
-                            <main className={"w-full"}>
-                                <AdminNavbar />
-                                <div className={"px-6"}>
-                                    {children}
-                                    <Toaster
-                                        position={"bottom-right"}
-                                        richColors
-                                    />
-                                </div>
-                            </main>
+                            <ErrorBoundary>
+                                <AdminSidebar />
+                                <main className={"w-full"}>
+                                    <AdminNavbar />
+                                    <div className={"px-6"}>
+                                        {children}
+                                        <Toaster
+                                            position={"bottom-right"}
+                                            richColors
+                                        />
+                                    </div>
+                                </main>
+                            </ErrorBoundary>
                         </SidebarProvider>
                     </ConfirmDialogProvider>
                 </QueryProvider>
