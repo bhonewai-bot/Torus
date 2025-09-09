@@ -30,7 +30,7 @@ model Product {
   taxRate      Float?
   taxIncluded  Boolean        @default(false)
   quantity     Int            @default(0)
-  isActive     Boolean        @default(true)
+  status       ProductStatus    
   category     Category?      @relation(fields: [categoryId], references: [id])
   categoryId   String?
   images       ProductImage[]
@@ -95,6 +95,11 @@ model User {
   enabled   Boolean  @default(true)
   createdAt DateTime @default(now())
   orders    Order[]
+}
+
+enum ProductStatus {
+    ACTIVE
+    INACTIVE
 }
 
 enum PaymentStatus {
