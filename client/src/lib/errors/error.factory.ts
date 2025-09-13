@@ -2,6 +2,14 @@ import { ApiError, NetworkError, TimeoutError } from "./api.error";
 import { BaseError, ErrorContext } from "./base.error";
 import { CategoryServiceError, OrderServiceError, ProductServiceError, UploadServiceError } from "./service.error";
 import { ValidationError, ValidationIssue } from "./validation.error";
+import { 
+    BadRequestError, 
+    UnauthorizedError, 
+    ForbiddenError, 
+    NotFoundError, 
+    ConflictError, 
+    InternalServerError 
+} from "./http.errors";
 
 export class ErrorFactory {
     static createApiError(error: unknown, context?: ErrorContext): BaseError {
@@ -14,13 +22,36 @@ export class ErrorFactory {
                                 axiosError.response.statusText || 
                                 "Api request failed";
                 const statusCode = axiosError.response.status;
-                const errorCode = axiosError.response.data?.code || "API_ERROR";
+                const serverErrorCode = axiosError.response.data?.errorCode || axiosError.response.data?.code;
 
-                return new ApiError(message, statusCode, errorCode, error, {
+                const commonContext = {
                     ...context,
                     url: axiosError.config?.url,
                     method: axiosError.config?.method,
-                });
+                };
+
+                // Map HTTP status codes to specific error classes
+                switch (statusCode) {
+                    case 400:
+                        return new BadRequestError(message, commonContext);
+                    case 401:
+                        return new UnauthorizedError(message, commonContext);
+                    case 403:
+                        return new ForbiddenError(message, commonContext);
+                    case 404:
+                        return new NotFoundError(message, commonContext);
+                    case 409:
+                        return new ConflictError(message, commonContext);
+                    case 500:
+                    case 502:
+                    case 503:
+                    case 504:
+                        return new InternalServerError(message, commonContext);
+                    default:
+                        // For other status codes, use ApiError with server's error code if available
+                        const errorCode = serverErrorCode || this.getErrorCodeFromStatus(statusCode);
+                        return new ApiError(message, statusCode, errorCode, error, commonContext);
+                }
             }
 
             if (axiosError.request) {
@@ -44,7 +75,24 @@ export class ErrorFactory {
         }
 
         // Handle unknown errors
-        return new ApiError("An unexcepted error occurred", 500, "UNKNOWN_ERROR", error, context);
+        return new ApiError("An unexpected error occurred", 500, "UNKNOWN_ERROR", error, context);
+    }
+
+    private static getErrorCodeFromStatus(statusCode: number): string {
+        const statusCodeMap: Record<number, string> = {
+            400: "BAD_REQUEST",
+            401: "UNAUTHORIZED", 
+            403: "FORBIDDEN",
+            404: "NOT_FOUND",
+            409: "CONFLICT",
+            422: "VALIDATION_ERROR",
+            500: "INTERNAL_SERVER_ERROR",
+            502: "BAD_GATEWAY",
+            503: "SERVICE_UNAVAILABLE",
+            504: "GATEWAY_TIMEOUT"
+        };
+
+        return statusCodeMap[statusCode] || "API_ERROR";
     }
 
     static createValidationError(issues: ValidationIssue[], message?: string, context?: ErrorContext): ValidationError {
