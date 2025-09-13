@@ -7,7 +7,7 @@ export function CustomBreadcrumb({item}: { item: ReactNode }) {
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem>
-                    <BreadcrumbLink href={"/admin/overview"}>Overview</BreadcrumbLink>
+                    <BreadcrumbLink className="text-primary hover:text-primary hover:underline" href={"/admin/overview"}>Overview</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>

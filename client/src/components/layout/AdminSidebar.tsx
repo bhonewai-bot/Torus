@@ -17,6 +17,7 @@ import Image from "next/image";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
+import { ClientOnly } from "../common/ClientOnly";
 
 export function AdminSidebar() {
     const pathname = usePathname();

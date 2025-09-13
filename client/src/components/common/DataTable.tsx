@@ -1,12 +1,11 @@
 "use client";
 
-import {ColumnDef} from "@tanstack/table-core";
-import {Pagination} from "@/features/products/types/product.types";
+import {ColumnDef, TableMeta} from "@tanstack/table-core";
+import {Pagination, ProductList} from "@/features/products/types/product.types";
 import {flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
 import {useState} from "react";
-import {Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight} from "lucide-react";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Trash2} from "lucide-react";
 import {Button} from "@/components/ui/button";
 
 // Helper function to generate pagination range
@@ -48,6 +47,10 @@ interface DataTableProps<TData, TValue> {
     showingAll?: boolean;
 }
 
+interface CustomTableMeta extends TableMeta<ProductList> {
+    onBulkDelete?: (ids: string[]) => void;
+}
+
 export function DataTable<TData, TValue>({
     columns,
     data,
@@ -74,7 +77,14 @@ export function DataTable<TData, TValue>({
         },
         manualPagination: true,
         pageCount: pagination?.totalPages ?? 0,
+        meta: {
+            onBulkDelete: columns[0]?.meta?.onBulkDelete,
+            isBulkDeleting: columns[0]?.meta?.isBulkDeleting,
+        }
     });
+
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    const selectedCount = selectedRows.length;
 
     if (isLoading) {
         return (
@@ -86,6 +96,11 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className={"flex flex-col"}>
+            {/* {selectedCount > 0 && (
+                <div className="px-4 py-2 bg-blue-50/50 dark:bg-blue-950/10 border-l-4 border-blue-400 text-sm text-blue-800 dark:text-blue-200">
+                    {selectedCount} product{selectedCount > 1 ? 's' : ''} selected. Use the actions menu to delete them.
+                </div>
+            )} */}
             <Table>
                 <TableHeader className="border-separate border-spacing-0">
                     {table.getHeaderGroups().map((headerGroup) => (

@@ -25,6 +25,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
+function getCookieValue(name: string): boolean {
+  if (typeof document === 'undefined') return true; // SSR default
+  
+  const value = document.cookie
+    .split('; ')
+    .find(row => row.startsWith(`${name}=`))
+    ?.split('=')[1];
+    
+  return value === 'true';
+}
+
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
@@ -83,7 +94,9 @@ function SidebarProvider({
       }
 
       // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      if (typeof document !== 'undefined') {
+        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+    }
     },
     [setOpenProp, open]
   )
@@ -270,7 +283,7 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
-      className={cn("size-7", className)}
+      className={cn("size-7 hover:bg-secondary", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
