@@ -1,5 +1,5 @@
 import {UseFormReturn} from "react-hook-form";
-import {createProductFormData} from "@/features/products/utils/product.schema";
+import {createProductFormData, updateProductFormData} from "@/features/products/utils/product.schema";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {DollarSign} from "lucide-react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -7,7 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Switch} from "@/components/ui/switch";
 
 interface ProductPricingInventoryProps {
-    form: UseFormReturn<createProductFormData>;
+    form: UseFormReturn<createProductFormData | updateProductFormData>;
 }
 
 export function ProductPricingInventory({ form }: ProductPricingInventoryProps) {

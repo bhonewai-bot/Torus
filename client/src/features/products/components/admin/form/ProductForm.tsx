@@ -160,7 +160,7 @@ export function ProductForm({ mode, product }: ProductFormProps) {
             updateProduct({ id: product!.id, data: transformedData }, {
                 onSuccess: () => {
                     clearUploadRollbackData();
-                    /* router.push("/admin/products"); */
+                    router.push("/admin/products");
                 },
                 onError: async () => {
                     await rollbackUploadedImages();
