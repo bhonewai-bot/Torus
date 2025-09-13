@@ -7,6 +7,10 @@ interface ProductPricingCardProps {
     product: ProductDetails;
 }
 
+function isProductWithPricing(product: any): product is { pricing: { price: number; taxRate: number } } {
+  return product.pricing !== undefined;
+}
+
 export function ProductPricingCard({ product }: ProductPricingCardProps) {
     return (
         <Card className={"shadow-none"}>
@@ -45,12 +49,7 @@ export function ProductPricingCard({ product }: ProductPricingCardProps) {
                         </div>
                     </div>
                 ) : (
-                    <div>
-                        <label className="text-sm font-medium text-muted-foreground">Price</label>
-                        <p className="text-2xl font-bold">
-                            ฿{product?.pricing?.price.toLocaleString() ?? "-"}
-                        </p>
-                    </div>
+                    <div>No pricing information available</div>
                 )}
             </CardContent>
         </Card>

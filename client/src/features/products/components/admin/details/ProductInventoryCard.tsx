@@ -22,25 +22,25 @@ export function ProductInventoryCard({ product }: ProductInventoryCardProps) {
                     <div>
                         <label className="text-sm font-medium text-muted-foreground">Stock Quantity</label>
                         <p className={`text-2xl font-bold ${
-                            (product.inventory?.quantity ?? product.quantity) === 0
+                            (product.inventory?.quantity) === 0
                                 ? 'text-red-600'
-                                : (product.inventory?.quantity ?? product.quantity) < 10
+                                : (product.inventory?.quantity) < 10
                                     ? 'text-yellow-600'
                                     : 'text-green-600'
                         }`}>
-                            {product.inventory?.quantity ?? product.quantity}
+                            {product.inventory?.quantity}
                         </p>
                     </div>
                     <Badge variant={
-                        (product.inventory?.quantity ?? product.quantity) === 0
+                        (product.inventory?.quantity) === 0
                             ? "destructive"
-                            : (product.inventory?.quantity ?? product.quantity) < 10
+                            : (product.inventory?.quantity) < 10
                                 ? "outline"
                                 : "default"
                     }>
-                        {(product.inventory?.quantity ?? product.quantity) === 0
+                        {(product.inventory?.quantity) === 0
                             ? "Out of Stock"
-                            : (product.inventory?.quantity ?? product.quantity) < 10
+                            : (product.inventory?.quantity) < 10
                                 ? "Low Stock"
                                 : "In Stock"}
                     </Badge>

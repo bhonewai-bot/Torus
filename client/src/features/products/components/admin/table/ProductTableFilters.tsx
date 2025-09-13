@@ -51,12 +51,6 @@ export function ProductTableFilters({
         });
     }
 
-    /*const handleStatusChange = (status: boolean) => {
-        onFilterChange({
-            isActive: status === false ? undefined : status
-        });
-    }*/
-
     return (
         <div className={"space-y-4"}>
             <div className={"flex justify-between sm:flex-row gap-4 items-start sm:items-center"}>
@@ -73,7 +67,7 @@ export function ProductTableFilters({
                             placeholder={"Search products"}
                             value={searchTerm}
                             onChange={(e) => handleSearchChange(e.target.value)}
-                            className={"pl-9 lg:w-100 bg-secondary border-transparent h-9.5 font-light placeholder:text-[15px] dark:bg-secondary]:"}
+                            className={"pl-9 lg:w-100 bg-secondary border-transparent h-9.5 font-light placeholder:text-[15px] dark:bg-secondary"}
                         />
                         {searchTerm && (
                             <button
@@ -92,7 +86,7 @@ export function ProductTableFilters({
                         onValueChange={handleCategoryChange}
                         value={filters.categoryId || "all"}
                     >
-                        <SelectTrigger className={"w-48"}>
+                        <SelectTrigger className={"w-48 bg-secondary border-transparent h-9.5 font-light text-[15px] dark:bg-secondary focus:border-none"}>
                             <SelectValue placeholder={"Category"} />
                         </SelectTrigger>
                         <SelectContent>
@@ -104,21 +98,6 @@ export function ProductTableFilters({
                             ))}
                         </SelectContent>
                     </Select>
-
-                    {/* Status Filter */}
-                    {/*<Select
-                        onValueChange={handleStatusChange}
-                        value={filters.isActive || "all"}
-                    >
-                        <SelectTrigger className="w-32">
-                            <SelectValue placeholder="Status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Status</SelectItem>
-                            <SelectItem value="true">Active</SelectItem>
-                            <SelectItem value="false">Inactive</SelectItem>
-                        </SelectContent>
-                    </Select>*/}
                 </div>
             </div>
         </div>

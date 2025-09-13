@@ -16,12 +16,11 @@ interface ProductImageCarouselProps {
 export function ProductImageCarousel({product, className = ""}: ProductImageCarouselProps) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [carouselApi, setCarouselApi] = useState(null);
-    const [isZoomOpen, setIsZoomOpen] = useState(false);
 
     const images = product?.images && product?.images.length > 0
         ? product.images
-        : product?.mainImage
-            ? [{id: "main", url: product.mainImage, isMain: true}]
+        : product?.images[0]
+            ? [{id: "main", url: product.images[0].url, isMain: true}]
             : [];
 
     const sortedImages = [...images].sort((a, b) => {
@@ -63,10 +62,8 @@ export function ProductImageCarousel({product, className = ""}: ProductImageCaro
 
     const currentImage = sortedImages[selectedImageIndex];
 
-
-
     return (
-        <Card className={`lg:col-span-1 ${className} shadow-none`}>
+        <Card className={`lg:col-span-1 ${className}`}>
             <CardContent className={""}>
                 <div className={"space-y-4"}>
                     {/* Main Carousel */}
@@ -87,7 +84,7 @@ export function ProductImageCarousel({product, className = ""}: ProductImageCaro
                                             src={image.url}
                                             alt={product?.title || "Product image"}
                                             fill
-                                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                            className="object-cover transition-transform duration-300 group-hover:scale-100"
                                             sizes="(max-width: 768px) 100vw, 400px"
                                             priority={index === 0}
                                         />
@@ -95,32 +92,8 @@ export function ProductImageCarousel({product, className = ""}: ProductImageCaro
                                         {/* Overlay */}
                                         <div className="absolute inset-0">
                                             {image.isMain && (
-                                                <Badge className="absolute top-2 left-2 z-10">Main Image</Badge>
+                                                <Badge className="bg-primary/70 absolute top-2 left-2 z-10">Main Image</Badge>
                                             )}
-
-                                            {/* Zoom button */}
-                                            {/*<Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
-                                                <DialogTrigger asChild>
-                                                    <Button
-                                                        variant="secondary"
-                                                        size="icon"
-                                                        className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    >
-                                                        <ZoomIn className="h-4 w-4" />
-                                                    </Button>
-                                                </DialogTrigger>
-                                                <DialogContent className="max-w-4xl max-h-[90vh] p-0">
-                                                    <div className="relative aspect-square">
-                                                        <Image
-                                                            src={image.url}
-                                                            alt={product?.title || "Product image"}
-                                                            fill
-                                                            className="object-contain"
-                                                            sizes="(max-width: 1024px) 100vw, 800px"
-                                                        />
-                                                    </div>
-                                                </DialogContent>
-                                            </Dialog>*/}
                                         </div>
                                     </div>
                                 </CarouselItem>
@@ -129,8 +102,8 @@ export function ProductImageCarousel({product, className = ""}: ProductImageCaro
 
                         {sortedImages.length > 1 && (
                             <div>
-                                <CarouselPrevious className="left-2" />
-                                <CarouselNext className="right-2" />
+                                <CarouselPrevious className="left-2 hover:bg-muted" />
+                                <CarouselNext className="right-2 hover:bg-muted" />
                             </div>
                         )}
                     </Carousel>
@@ -148,8 +121,8 @@ export function ProductImageCarousel({product, className = ""}: ProductImageCaro
                                         onClick={() => handleThumbnailClick(index)}
                                         className={`relative flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-all duration-200 ${
                                             selectedImageIndex === index
-                                                ? 'border-primary shadow-md scale-105'
-                                                : 'border-muted hover:border-primary/50 hover:scale-102'
+                                                ? 'border-primary scale-100'
+                                                : 'border-muted hover:border-primary/20 hover:scale-102'
                                         }`}
                                     >
                                         <Image

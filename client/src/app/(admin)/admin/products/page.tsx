@@ -111,10 +111,10 @@ export default function ProductsPage() {
                 <CustomBreadcrumb item={"Products"} />
                 <div className={"flex justify-between"}>
                     <h1 className={"text-3xl font-medium"}>Products</h1>
-                    <div className={"flex gap-2"}>
+                    {/* <div className={"flex gap-2"}>
                         <Button variant={"secondary"}>Export</Button>
                         <Button variant={"secondary"}>Import</Button>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
