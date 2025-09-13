@@ -31,7 +31,7 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
                     <div className="flex justify-between">
                         <span className={"text-muted-foreground"}>Tax</span>
                         <span>
-                            {formatOrderCurrency(order.taxAmount)}
+                            {formatOrderCurrency(order.taxAmount ?? 0)}
                         </span>
                     </div>
                 </div>

@@ -16,18 +16,30 @@ import {toast} from "sonner";
 import {cn} from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {getOrderStatusBadge, getPaymentStatusBadge} from "@/features/orders/components/details/OrderBadge";
+import Link from "next/link";
 
 type TableHeaderCellProps = {
     children: ReactNode;
     className?: string;
 }
 
-export function TableHeaderCell({ children, className }: TableHeaderCellProps) {
+export function TableHeaderCell({ children }: TableHeaderCellProps) {
     return (
-        <div className={cn("text-sm font-semibold text-gray-700 dark:text-gray-300", className)}>
+        <div className="text-[15px] font-normal">
             {children}
         </div>
     );
+}
+
+function OrderCell({ order }: { order: any }) {
+    return (
+        <Link
+            href={`/admin/orders/${order.id}`}
+            className="truncate font-normal text-primary dark:text-primary hover:underline"
+        >
+            #{order.orderNumber}
+        </Link>
+    )
 }
 
 const formatDate = (dateString: string) => {
@@ -51,7 +63,6 @@ export const columns: ColumnDef<OrderList>[] = [
                 }
                 onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                 aria-label={"Select all orders"}
-                className="border-gray-300 dark:border-gray-600"
             />
         ),
         cell: ({ row }) => (
@@ -59,21 +70,13 @@ export const columns: ColumnDef<OrderList>[] = [
                 checked={row.getIsSelected()}
                 onCheckedChange={(value) => row.toggleSelected(!!value)}
                 aria-label={"Select row"}
-                className="border-gray-300 dark:border-gray-600"
             />
         )
     },
     {
         accessorKey: "orderNumber",
-        header: () => <TableHeaderCell>Order Number</TableHeaderCell>,
-         cell: ({ row }) => {
-            const orderNumber = row.getValue("orderNumber") as string;
-            return (
-                <div>
-                    #{orderNumber}
-                </div>
-            )
-        }
+        header: () => <TableHeaderCell>Order</TableHeaderCell>,
+         cell: ({ row }) => <OrderCell order={row.original} />
     },
     {
         accessorKey: "createdAt",
@@ -104,12 +107,10 @@ export const columns: ColumnDef<OrderList>[] = [
                         </AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">
+                        <Link href={`/admin/users/${user.id}`}
+                                className="truncate font-normal hover:underline">
                             {user.name}
-                        </div>
-                        {/* <div className="text-xs text-gray-500 dark:text-gray-400">
-                            {user.email}
-                        </div> */}
+                        </Link>
                     </div>
                 </div>
             )

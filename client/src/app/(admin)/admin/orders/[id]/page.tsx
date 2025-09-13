@@ -20,7 +20,7 @@ interface OrderDetailPageProps {
 
 export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     const router = useRouter();
-    const { id } = React.use(params);
+    const { id } = React.use(params) as { id: string };
     const { data: order, isLoading, error } = useOrder(id);
     console.log(order);
 

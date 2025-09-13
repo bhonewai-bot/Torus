@@ -32,25 +32,25 @@ export const getPaymentStatusConfig = (status: string) => {
     const config = {
         PENDING: {
             variant: "outline" as const,
-            className: "border-amber-200 text-amber-700 bg-amber-50 dark:border-amber-800 dark:text-amber-400 dark:bg-amber-950",
+            className: "rounded-full bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
             icon: Clock,
             label: "Pending",
         },
         PAID: {
             variant: "outline" as const,
-            className: "border-green-200 text-green-700 bg-green-50 dark:border-green-800 dark:text-green-400 dark:bg-green-950",
+            className: "rounded-full bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
             icon: Check,
             label: "Paid",
         },
         FAILED: {
             variant: "outline" as const,
-            className: "border-red-200 text-red-700 bg-red-50 dark:border-red-800 dark:text-red-400 dark:bg-red-950",
+            className: "rounded-full bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30",
             icon: X,
             label: "Failed",
         },
         REFUNDED: {
             variant: "outline" as const,
-            className: "border-red-200 text-red-700 bg-red-50 dark:border-red-800 dark:text-red-400 dark:bg-red-950",
+            className: "rounded bg-purple-100 text-purple-800 border-[1px] border-purple-300/50 dark:bg-purple-900/20 dark:text-purple-200 dark:border-purple-300/30",
             icon: X,
             label: "Refunded",
         },
@@ -63,37 +63,37 @@ export const getOrderStatusConfig = (status: string) => {
     const config = {
         PENDING: {
             variant: "outline" as const,
-            className: "border-amber-200 text-amber-700 bg-amber-50 dark:border-amber-800 dark:text-amber-400 dark:bg-amber-950",
+            className: "rounded-full bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
             icon: Clock,
             label: "Pending",
         },
         CONFIRMED: {
             variant: "outline" as const,
-            className: "border-amber-200 text-amber-700 bg-amber-50 dark:border-amber-800 dark:text-amber-400 dark:bg-amber-950",
+            className: "rounded-full bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
             icon: Clock,
             label: "Confirmed",
         },
         PROCESSING: {
             variant: "outline" as const,
-            className: "border-amber-200 text-amber-500 bg-amber-50 dark:border-amber-800 dark:text-amber-400 dark:bg-amber-950",
+            className: "rounded-full bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
             icon: Clock,
             label: "Processing",
         },
         SHIPPED: {
             variant: "outline" as const,
-            className: "border-purple-200 text-purple-700 bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:bg-purple-950",
+            className: "rounded bg-purple-100 text-purple-800 border-[1px] border-purple-300/50 dark:bg-purple-900/20 dark:text-purple-200 dark:border-purple-300/30",
             icon: Package,
             label: "Shipped",
         },
         DELIVERED: {
             variant: "outline" as const,
-            className: "border-green-200 text-green-700 bg-green-50 dark:border-green-800 dark:text-green-400 dark:bg-green-950",
+            className: "rounded-full bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
             icon: Package,
             label: "Delivered",
         },
         CANCELED: {
             variant: "outline" as const,
-            className: "border-red-200 text-red-700 bg-red-50 dark:border-red-800 dark:text-red-400 dark:bg-red-950",
+            className: "rounded-full bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30",
             icon: X,
             label: "Canceled",
         }

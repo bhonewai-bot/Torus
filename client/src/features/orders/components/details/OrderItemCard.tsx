@@ -51,7 +51,7 @@ export function OrderItemCard({ order }: OrderItemCardProps) {
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3 pt-3 border-t">
                                         <div className="flex items-center gap-4 text-muted-foreground">
                                             <span>Qty: {item.quantity}</span>
-                                            <span>Tax: {formatOrderCurrency(item.taxAmount)}</span>
+                                            <span>Tax: {formatOrderCurrency(item.taxAmount ?? 0)}</span>
 
                                         </div>
                                             Total: {formatOrderCurrency(item.lineTotal)}
