@@ -17,7 +17,7 @@ export const getAllProducts = asyncHandler(async (req: Request, res: Response) =
             pagination: result.pagination,
         }
     ));
-})
+});
 
 export const getProductById = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -36,7 +36,7 @@ export const getProductById = asyncHandler(async (req: Request, res: Response) =
         'Product retrieved successfully',
         product
     ));
-})
+});
 
 export const createProduct = asyncHandler(async (req: Request, res: Response) => {
     const newProduct: createProductDto = res.locals.validatedData;
@@ -47,7 +47,7 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
         "Product created successfully",
         result
     ));
-})
+});
 
 export const updateProduct = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -67,13 +67,13 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
         "Product updated successfully",
         result,
     ));
-})
+});
 
 export const deleteProduct = asyncHandler(async(req: Request, res: Response) => {
     const { id } = req.params;
 
     if (!id) {
-        throw ErrorFactory.badRequest("Product ID is required", req)
+        throw ErrorFactory.badRequest("Product ID is required", req);
     }
 
     const result = await productService.deleteProduct(id);
@@ -85,4 +85,23 @@ export const deleteProduct = asyncHandler(async(req: Request, res: Response) => 
     res.status(200).json(createSuccessResponse(
         "Product deleted successfully",
     ));
-})
+});
+
+export const bulkDeleteProducts = asyncHandler(async(req: Request, res: Response) => {
+    const { ids } = res.locals.validatedData;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        throw ErrorFactory.badRequest("At least one product ID is required", req);
+    }
+
+    const deletedCount = await productService.bulkDeleteProducts(ids);
+
+    if (!deletedCount) {
+        throw ErrorFactory.notFound("Products", req);
+    }
+
+    res.status(200).json(createSuccessResponse(
+        `${deletedCount} product(s) deleted successfully`,
+        { deletedCount }
+    ));
+});

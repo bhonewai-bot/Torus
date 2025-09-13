@@ -67,7 +67,23 @@ export const createProductSchema = z.object({
     status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
 });
 
-export const updateProductSchema = createProductSchema.partial();
+export const updateProductSchema = createProductSchema.partial().extend({
+    images: z.array(updateProductImageSchema)
+        .optional()
+        .default([])
+        .refine(
+            (images) => {
+                if (!images.length) return true;
+                const mainImages = images.filter((img) => img.isMain);
+                return mainImages.length <= 1;
+            },
+            { message: "Only one image can be marked as main" }
+        ),
+});
+
+export const bulkDeleteProductsSchema = z.object({
+    ids: z.array(z.string().uuid()).nonempty("At least one product ID is required"),
+});
 
 export type createProductDto = z.infer<typeof createProductSchema>;
 export type updateProductDto = z.infer<typeof updateProductSchema>;

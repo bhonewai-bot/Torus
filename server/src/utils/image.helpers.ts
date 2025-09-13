@@ -1,14 +1,14 @@
 import path from "path";
 import fs from "fs/promises";
-import {UpdateProductImageDto} from "@src/types/dto/product/UpdateProductDto";
 import { ProductImage } from "../../generated/prisma";
 import * as process from "node:process";
+import { updateProductImageDto } from "./product/product.schema";
 
 
 /**
  * Split images into groups
  */
-export function splitImages(images: UpdateProductImageDto[]) {
+export function splitImages(images: updateProductImageDto[]) {
     const existingImages = images.filter((img) => img.id);
     const newImages = images.filter((img) => !img.id);
     const existingImagesId = existingImages.map(img => img.id!);

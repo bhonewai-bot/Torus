@@ -1,3 +1,4 @@
+
 import {calculatePagination} from "@utils/helpers";
 import {productDetailInclude, productListInclude} from "@utils/product/product.include";
 import {buildProductWhereClause} from "@utils/product/product.helpers";
@@ -141,6 +142,12 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
     try {
         const { images = [], ...productData } = data;
 
+        console.log("🔍 BACKEND STEP 1 - Received data:");
+        console.log("Product ID:", id);
+        console.log("Images received:", images.length);
+        console.log("Images with IDs:", images.filter(img => img.id).map(img => ({ id: img.id, url: img.url })));
+        console.log("Images without IDs (new):", images.filter(img => !img.id).map(img => ({ url: img.url, filename: img.filename })));
+
         const existedProduct = await prisma.product.findUnique({
             where: { id },
             include: { images: true },
@@ -150,19 +157,25 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
             return null;
         }
 
+        console.log("🔍 BACKEND STEP 2 - Current images in DB:");
+        console.log("DB images:", existedProduct.images.map(img => ({ id: img.id, url: img.url, isMain: img.isMain })));
+
         const { existingImages, newImages, existingImagesId } = splitImages(images as updateProductImageDto[]);
+
+        console.log("🔍 BACKEND STEP 3 - Split results:");
+        console.log("existingImagesId (to keep):", existingImagesId);
+        console.log("newImages count:", newImages.length);
+
         const imagesToDelete = findImagesToDelete(existedProduct.images, existingImagesId);
+
+        console.log("🔍 BACKEND STEP 4 - Images to delete:");
+        console.log("imagesToDelete:", imagesToDelete.map(img => ({ id: img.id, url: img.url })));
 
         await deleteImageFiles(imagesToDelete);
 
         const updatedProduct = await prisma.$transaction(async (tx) => {
-            const product = await tx.product.update({
-                where: { id },
-                data: productData,
-                include: { images: true },
-            });
-
             if (imagesToDelete.length > 0) {
+                console.log("🗑️ Deleting images from DB:", imagesToDelete.map(img => img.id));
                 await tx.productImage.deleteMany({
                     where: { id: { in: imagesToDelete.map((img) => img.id) } },
                 });
@@ -178,6 +191,7 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
             );
 
             if (newImages.length > 0) {
+                console.log("➕ Creating new images in DB:", newImages.length);
                 await tx.productImage.createMany({
                     data: newImages.map((img) => ({
                         productId: id,
@@ -186,6 +200,12 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
                     }))
                 });
             }
+
+            const product = await tx.product.update({
+                where: { id },
+                data: productData,
+                include: { images: true },
+            });
 
             return tx.product.findUnique({
                 where: {id},
@@ -200,6 +220,9 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
                 "PRODUCT_UPDATE_FAILED",
             );
         }
+
+        console.log("🔍 BACKEND STEP 5 - Final result:");
+        console.log("Final images in product:", updatedProduct.images?.map(img => ({ id: img.id, url: img.url, isMain: img.isMain })));
 
         return formatProductDetail(updatedProduct);
     } catch (error) {
@@ -224,6 +247,8 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
     }
 }
 
+
+
 export async function deleteProduct(id: string) {
     try {
         const productWithImages = await prisma.product.findUnique({
@@ -241,10 +266,9 @@ export async function deleteProduct(id: string) {
 
         const deletedProduct = await prisma.product.delete({
             where: { id },
-            include: productDetailInclude,
         });
 
-        return formatProductDetail(deletedProduct);
+        return deletedProduct;
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             if (error.code === 'P2025') {
@@ -253,6 +277,41 @@ export async function deleteProduct(id: string) {
             throw ErrorFactory.fromPrismaError(error, undefined, {
                 operation: 'deleteProduct',
                 productId: id,
+            });
+        }
+        throw ErrorFactory.fromUnknownError(error);
+    }
+}
+
+export async function bulkDeleteProducts(ids: string[]) {
+    try {
+        const productsWithImages = await prisma.product.findMany({
+            where: { id: { in: ids } },
+            include: { images: true },
+        });
+
+        if (!productsWithImages) {
+            return null;
+        }
+
+        const allImages = productsWithImages.flatMap((product) => product.images ?? []);
+        if (allImages.length > 0) {
+            await deleteImageFiles(allImages);
+        }
+
+        const deleteProducts  = await prisma.product.deleteMany({
+            where: { id: { in: ids } },
+        });
+
+        return deleteProducts.count;
+    } catch(error) {    
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === "P2025") {
+                return null;
+            }
+            throw ErrorFactory.fromPrismaError(error, undefined, {
+                operation: "bulkDeleteProducts",
+                productIds: ids
             });
         }
         throw ErrorFactory.fromUnknownError(error);
