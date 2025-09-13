@@ -1,4 +1,4 @@
-import {uploadProductImages} from "@/features/products/services/image.upload.service";
+import {deleteProductImage, uploadProductImages} from "@/features/products/services/image.upload.service";
 import {ExistingImage} from "@/features/products/types/image.types";
 import {
     createProductDto,
@@ -6,6 +6,8 @@ import {
     updateProductDto,
     updateProductFormData
 } from "@/features/products/utils/product.schema";
+
+let uploadedFilesForRollback: string[] = [];
 
 export async function transformCreateFormDataToDto(data: createProductFormData):Promise<createProductDto> {
     let processedImages: Array<{
@@ -16,7 +18,9 @@ export async function transformCreateFormDataToDto(data: createProductFormData):
         isMain: boolean;
     }> = [];
 
-    console.log("Processing images in transform:", data.images);
+    uploadedFilesForRollback = [];
+
+    console.log("Processing image in transform:", uploadProductImages);
 
     if (data.images && data.images.length > 0) {
         const filesToUpload = data.images
@@ -29,6 +33,10 @@ export async function transformCreateFormDataToDto(data: createProductFormData):
             try {
                 const files = filesToUpload.map(item => item.file);
                 const uploadedImages = await uploadProductImages(files);
+
+                // Store filenames for potential rollback
+                uploadedFilesForRollback = uploadedImages.map(image => image.filename);
+
 
                 // Map uploaded images with their isMain flags
                 processedImages = uploadedImages.map((uploaded, index) => ({
@@ -89,25 +97,43 @@ export async function transformUpdateFormDataToDto(
         isMain: boolean;
     }> = [];
 
-    console.log("Processing update images:", data.images);
+    uploadedFilesForRollback = [];
+
+    console.log("🔍 STEP 1 - Raw form data.images:");
+    console.log(JSON.stringify(data.images, null, 2));
 
     if (data.images && data.images.length > 0) {
         const existingImageUpdates: Array<{ id: string; url: string; isMain: boolean }> = [];
         const filesToUpload: Array<{ file: File; isMain: boolean }> = [];
 
-        data.images.forEach((img) => {
-            if ('id' in img && img.id) {
-                // Existing image with ID
-                existingImageUpdates.push({
-                    id: img.id,
-                    url: img.url,
-                    isMain: img.isMain || false,
-                });
-            } else if ('file' in img && img.file instanceof File) {
-                // New file upload
-                filesToUpload.push({ file: img.file, isMain: img.isMain || false });
+        data.images.forEach((img, index) => {
+            console.log(`🔍 Processing image ${index}:`, img);
+
+            if (img && typeof img === 'object') {
+                if ('id' in img && img.id && typeof img.id === 'string') {
+                    console.log(`✅ Found existing image: ${img.id}`);
+                    existingImageUpdates.push({
+                        id: img.id,
+                        url: img.url,
+                        isMain: img.isMain || false,
+                    });
+                } 
+                // Check if it's a new file upload
+                else if ('file' in img && img.file instanceof File) {
+                    console.log(`✅ Found new file: ${img.file.name}`);
+                    filesToUpload.push({ 
+                        file: img.file, 
+                        isMain: img.isMain || false 
+                    });
+                }
+                else {
+                    console.warn(`⚠️ Unknown image format at index ${index}:`, img);
+                }
             }
         });
+
+        console.log("🔍 STEP 2 - Processing existing images:");
+        console.log("Existing images to keep:", existingImageUpdates.map(img => img.id));
 
         existingImageUpdates.forEach(img => {
             processedImages.push({
@@ -118,9 +144,14 @@ export async function transformUpdateFormDataToDto(
         });
 
         if (filesToUpload.length > 0) {
+            console.log("🔍 STEP 3 - Uploading new images:");
+            console.log("Files to upload:", filesToUpload.length);
+
             try {
                 const files = filesToUpload.map(item => item.file);
                 const uploadedImages = await uploadProductImages(files);
+
+                uploadedFilesForRollback = uploadedImages.map(img => img.filename);
 
                 uploadedImages.forEach((uploaded, index) => {
                     processedImages.push({
@@ -131,14 +162,19 @@ export async function transformUpdateFormDataToDto(
                         isMain: filesToUpload[index]?.isMain || false,
                     });
                 });
+
+                console.log("✅ New images uploaded successfully");
             } catch (error) {
-                console.error("Failed to upload new images:", error);
+                console.error("❌ Failed to upload new images:", error);
                 throw new Error("Failed to upload new images. Please try again");
             }
         }
     }
 
-    console.log("Final update processed images:", processedImages);
+    console.log("🔍 STEP 4 - Final payload to backend:");
+    console.log("Total images to send:", processedImages.length);
+    console.log("Images with IDs (existing):", processedImages.filter(img => img.id).map(img => img.id));
+    console.log("Images without IDs (new):", processedImages.filter(img => !img.id).length);
 
     const dto: updateProductDto = {};
 
@@ -169,8 +205,29 @@ export async function transformUpdateFormDataToDto(
     if (data.inventory?.quantity !== undefined) dto.quantity = data.inventory.quantity;
 
     // Handle images and status
-    if (processedImages.length > 0) dto.images = processedImages;
+    dto.images = processedImages;
     if (data.status !== undefined) dto.status = data.status;
 
     return dto;
+}
+
+// Function to rollback uploaded images on form error
+export async function rollbackUploadedImages(): Promise<void> {
+    if (uploadedFilesForRollback.length === 0) return;
+
+    console.log('Rolling back uploaded images:', uploadedFilesForRollback);
+
+    const deletePromises = uploadedFilesForRollback.map(filename => 
+        deleteProductImage(filename).catch(error => {
+            console.error(`Failed to delete ${filename} during rollback:`, error);
+        })
+    );
+
+    await Promise.allSettled(deletePromises);
+    uploadedFilesForRollback = [];
+}
+
+// Clear rollback data on successful form submission
+export function clearUploadRollbackData(): void {
+    uploadedFilesForRollback = [];
 }

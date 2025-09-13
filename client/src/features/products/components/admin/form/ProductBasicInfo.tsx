@@ -2,32 +2,30 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/co
 import {Info} from "lucide-react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useCategories} from "@/features/categories/hooks/useCategories";
 import {Textarea} from "@/components/ui/textarea";
 import {UseFormReturn} from "react-hook-form";
-import {CategoryCreateDialog} from "@/features/categories/components/CategoryCreateDialog";
-import {createProductFormData} from "@/features/products/utils/product.schema";
+import {createProductFormData, updateProductFormData} from "@/features/products/utils/product.schema";
 
 interface ProductBasicInfoProps {
-    form: UseFormReturn<createProductFormData>
+    form: UseFormReturn<createProductFormData | updateProductFormData>
 }
 
 export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
     const { data: categories = [], isLoading } = useCategories();
 
     return (
-        <Accordion type="single" collapsible defaultValue={"product-info"} className="bg-primary-foreground border rounded-lg">
+        <Accordion type="single" collapsible defaultValue={"product-info"} className="bg-card border rounded-lg">
             <AccordionItem value="product-info">
-                <AccordionTrigger className="flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50">
+                <AccordionTrigger className="flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50 hover:rounded-b-none">
                     <span className={"flex items-center text-lg font-medium"}>
                         <Info className={"h-5 w-5 mr-2"} />
                         Product Information
                     </span>
                 </AccordionTrigger>
-                <AccordionContent className="px-4 py-4 border-t">
+                <AccordionContent className="p-6">
                     <div className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 gap-6">
                             <FormField
                                 control={form.control}
                                 name="title"
@@ -44,6 +42,9 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                     </FormItem>
                                 )}
                             />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="sku"
@@ -52,7 +53,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                         <FormLabel className="text-sm font-medium">SKU<span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="e.g., PROD-001"
+                                                placeholder="e.g. PRD-001"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -60,9 +61,6 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                     </FormItem>
                                 )}
                             />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="brand"
@@ -74,34 +72,6 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                                 placeholder="Brand name"
                                                 {...field}
                                             />
-                                        </FormControl>
-                                        <FormMessage className="text-xs text-red-500 mt-1" />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="categoryId"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium flex justify-between">
-                                            <p>Category  <span className="text-primary"> *</span></p>
-                                            <CategoryCreateDialog />
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Select onValueChange={field.onChange} value={field.value}>
-                                                <SelectTrigger className={"w-full"}>
-                                                    <SelectValue placeholder={isLoading ? "Loading..." : "Select Category"} />
-
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {categories.map((category) => (
-                                                        <SelectItem key={category.id} value={category.id}>
-                                                            {category.title}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
                                         </FormControl>
                                         <FormMessage className="text-xs text-red-500 mt-1" />
                                     </FormItem>
@@ -119,7 +89,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                         <Textarea
                                             placeholder={"Write a product description..."}
                                             {...field}
-                                            className={"h-32"}
+                                            className={"h-40"}
                                         />
                                     </FormControl>
                                     <FormMessage className="text-xs text-red-500 mt-1" />

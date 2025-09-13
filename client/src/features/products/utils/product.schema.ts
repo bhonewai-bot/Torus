@@ -79,6 +79,10 @@ export const createProductSchema = z.object({
 
 export const updateProductSchema = createProductSchema.partial();
 
+export const bulkDeleteProductsSchema = z.object({
+    ids: z.array(z.string().uuid()).nonempty("At least one product ID is required")
+})
+
 export type createProductFormData = z.infer<typeof createProductSchema>;
 export type updateProductFormData = z.infer<typeof updateProductSchema>;
 
@@ -90,20 +94,20 @@ export interface createProductDto {
     categoryId?: string;
 
     // Flattened dimensions
-    length?: number | undefined;
-    width?: number | undefined;
-    height?: number | undefined;
-    weight?: number | undefined;
+    length?: number;
+    width?: number;
+    height?: number;
+    weight?: number;
 
     // Flattened pricing
-    price: number | undefined;
-    regularPrice?: number | undefined;
-    salePrice?: number | undefined;
-    taxRate?: number | undefined;
+    price: number;
+    regularPrice?: number;
+    salePrice?: number;
+    taxRate?: number;
     taxIncluded?: boolean;
 
     // Flattened inventory
-    quantity: number | undefined;
+    quantity: number;
 
     // Images and status
     images: Array<{

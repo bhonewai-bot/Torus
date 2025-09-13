@@ -5,6 +5,7 @@ import {ProductUpdateForm} from "@/features/products/components/admin/form/Produ
 import {useProduct} from "@/features/products/hooks/useProducts";
 import React from "react";
 import {ProductDimensions} from "@/features/products/components/admin/form/ProductDimensions";
+import { ProductForm } from "@/features/products/components/admin/form/ProductForm";
 
 interface ProductUpdatePageProps {
     params: {
@@ -16,7 +17,6 @@ export default function ProductUpdatePage({ params }: ProductUpdatePageProps) {
     const unwrappedParams = React.use(params);
     const { id } = unwrappedParams;
     const { data: product, isLoading } = useProduct(id);
-    console.log(product);
 
     if (isLoading) {
         return (
@@ -36,7 +36,7 @@ export default function ProductUpdatePage({ params }: ProductUpdatePageProps) {
                 <CustomBreadcrumb item={"Update Product"} />
                 <h1 className={"text-3xl font-medium"}>Update Product</h1>
             </div>
-            <ProductUpdateForm product={product} />
+            <ProductForm mode="edit" product={product} />
         </div>
     );
 }

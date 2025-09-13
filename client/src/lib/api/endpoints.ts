@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
             update: (id: string) => `/admin/products/${id}`,
             delete: (id: string) => `/admin/products/${id}`,
             get: (id: string) => `/admin/products/${id}`,
+            bulkDelete: "/admin/products/bulk-delete",
         },
         images: {
             create: "/admin/uploads/images",

@@ -12,7 +12,7 @@ import {ProductPricingInventory} from "@/features/products/components/admin/form
 import {Button} from "@/components/ui/button";
 import {ProductUpdateImageUpload} from "@/features/products/components/admin/form/ProductUpdateImageUpload";
 import {ExistingImage} from "@/features/products/types/image.types";
-import {transformUpdateFormDataToDto} from "@/features/products/utils/product.transformers";
+import {clearUploadRollbackData, rollbackUploadedImages, transformUpdateFormDataToDto} from "@/features/products/utils/product.transformers";
 
 interface ProductUpdateFormProps {
     product: ProductDetails;
@@ -31,20 +31,20 @@ export function ProductUpdateForm({ product }: ProductUpdateFormProps) {
             description: product.description || "",
             categoryId: product.category?.id,
             dimensions: {
-                length: product.dimensions?.length ?? undefined,
-                width: product.dimensions?.width ?? undefined,
-                height: product.dimensions?.height ?? undefined,
-                weight: product.dimensions?.weight ?? undefined,
+                length: product.dimensions?.length ?? "",
+                width: product.dimensions?.width ?? "",
+                height: product.dimensions?.height ?? "",
+                weight: product.dimensions?.weight ?? "",
             },
             pricing: {
-                price: product.pricing?.price ?? undefined,
-                regularPrice: product.pricing?.regularPrice ?? undefined,
-                salePrice: product.pricing?.salePrice ?? undefined,
-                taxRate: product.pricing?.taxRate ?? undefined,
+                price: product.pricing?.price ?? "",
+                regularPrice: product.pricing?.regularPrice ?? "",
+                salePrice: product.pricing?.salePrice ?? "",
+                taxRate: product.pricing?.taxRate ?? "",
                 taxIncluded: product.pricing?.taxIncluded ?? false,
             },
             inventory: {
-                quantity: product.inventory?.quantity ?? undefined,
+                quantity: product.inventory?.quantity ?? "",
             },
             images: product.images?.map((img) => ({
                 id: img.id,
@@ -66,7 +66,11 @@ export function ProductUpdateForm({ product }: ProductUpdateFormProps) {
 
         updateProduct({ id: product.id, data: transformedData }, {
             onSuccess: () => {
+                clearUploadRollbackData();
                 router.push("/admin/products");
+            },
+            onError: async () => {
+                await rollbackUploadedImages();
             }
         });
     }
@@ -82,7 +86,7 @@ export function ProductUpdateForm({ product }: ProductUpdateFormProps) {
                 <div className={"flex items-center gap-4"}>
                     <Button
                         type={"submit"}
-                        disabled={isPending}
+                        disabled={isPending || !form.formState.isDirty || !form.formState.isValid}
                         className={"min-w-[120px]"}
                     >
                         {isPending ? "Updating" : "Update Product"}

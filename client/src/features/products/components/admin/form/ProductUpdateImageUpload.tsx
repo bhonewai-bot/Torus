@@ -152,16 +152,16 @@ export function ProductUpdateImageUpload({ form, existingImages }: ProductUpdate
     }, [imagePreviews]);
 
     return (
-        <Accordion type={"single"} collapsible defaultValue={"product-image-upload"} className={"bg-primary-foreground border rounded-lg"}>
-            <AccordionItem value={"product-image-upload"}>
-                <AccordionTrigger className={"flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition"}>
-                    <span className={"flex items-center text-lg font-medium"}>
-                        <Package className={"h-5 w-5 mr-2"} />
+        <Accordion type={"single"} collapsible defaultValue={"product-image-upload"} className={"border rounded-lg shadow-sm dark:shadow-none"}>
+            <AccordionItem value={"product-image-upload"} className={"border-none"}>
+                <AccordionTrigger className={"flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50"}>
+                    <span className={"flex items-center text-lg font-medium text-foreground"}>
+                        <Package className={"h-5 w-5 mr-2 text-muted-foreground"} />
                         Images
                     </span>
                 </AccordionTrigger>
-                <AccordionContent className={"p-4 border-t"}>
-                    <div className={"space-y-6"}>
+                <AccordionContent className={"px-4 py-4 border-t border-border"}>
+                    <div className={"space-y-4"}>
                         <div>
                             <FormField
                                 control={form.control}
@@ -172,25 +172,27 @@ export function ProductUpdateImageUpload({ form, existingImages }: ProductUpdate
                                         <div
                                             {...getRootProps()}
                                             className={`
-                                                border-1 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+                                                border-1 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all duration-200
                                                 ${isDragActive
-                                                    ? "border-primary bg-primary/5"
-                                                    : "border-gray-300 hover:border-primary hover:bg-gray-50"
+                                                    ? "border-primary bg-primary/5 dark:bg-primary/10 scale-[1.02]"
+                                                    : "border-border hover:border-primary hover:bg-muted/30 dark:border-border dark:hover:border-primary dark:hover:bg-muted/20"
                                                 }
                                             `}
                                         >
                                             <input {...getInputProps()} />
-                                            <div className="flex flex-col items-center gap-2">
-                                                <Upload className="h-10 w-10 text-gray-400" />
+                                            <div className="flex flex-col items-center gap-3">
                                                 <div>
-                                                    <p className="text-sm font-medium">
-                                                        {isDragActive ? "Drop new images here..." : "Add more images"}
+                                                    <Upload className={`h-8 w-8 ${isDragActive ? "text-primary" : "text-muted-foreground"}`} />
+                                                </div>
+                                                <div className={"space-y-1"}>
+                                                    <p className={"text-sm font-medium text-foreground"}>
+                                                        {isDragActive ? "Drop images here..." : "Drag & drop images here"}
                                                     </p>
-                                                    <p className="text-xs text-gray-500 mt-1">
-                                                        or <span className="text-primary underline">browse files</span>
+                                                    <p className={"text-xs text-muted-foreground"}>
+                                                        or <span className={"text-primary underline font-medium"}>browse files</span>
                                                     </p>
                                                 </div>
-                                                <p className="text-xs text-gray-400">
+                                                <p className={"text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full"}>
                                                     PNG, JPG, WEBP up to 5MB each
                                                 </p>
                                             </div>

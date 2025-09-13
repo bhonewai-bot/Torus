@@ -81,24 +81,79 @@ export function useDeleteProduct() {
             queryClient.removeQueries({ queryKey: productKeys.detail(deletedId) });
 
             // Remove from all list caches
-            queryClient.getQueryCache().findAll({
-                queryKey: productKeys.lists(),
-            }).forEach((query) => {
-                queryClient.setQueryData(query.queryKey, (old: ProductListResponse | undefined) => {
-                    if (!old || !Array.isArray(old.products)) return old;
-
-                    return {
-                        ...old,
-                        products: old.products.filter((product) => product.id !== deletedId),
-                        total: Math.max(0, old.pagination.total - 1),
+            queryClient.getQueriesData({ queryKey: productKeys.lists() }).forEach(([queryKey, data]) => {
+                if (data && typeof data === 'object' && 'products' in data) {
+                    const currentData = data as ProductListResponse;
+                    
+                    const updatedProducts = currentData.products.filter(
+                        (product) => product.id !== deletedId
+                    );
+                    
+                    const updatedData = {
+                        ...currentData,
+                        products: updatedProducts,
+                        pagination: {
+                            ...currentData.pagination,
+                            total: Math.max(0, currentData.pagination.total - 1),
+                        }
                     };
-                });
+
+                    queryClient.setQueryData(queryKey, updatedData);
+                }
             });
+
+            // Invalidate queries to ensure fresh data
+            queryClient.invalidateQueries({ queryKey: productKeys.lists() });
 
             showSuccess("Product deleted successfully");
         },
         onError: (error: unknown) => {
             handleError(error, "useDeleteProduct");
         },
+    });
+}
+
+export function useBulkDeleteProducts() {
+    const queryClient = useQueryClient();
+    const { handleError } = useErrorHandler();
+
+    return useMutation({
+        mutationFn: (ids: string[]) => productService.bulkDeleteProducts(ids),
+        onSuccess: (_, deletedIds) => {
+            // Remove the products from detail cache
+            deletedIds.forEach((id) => {
+                queryClient.removeQueries({ queryKey: productKeys.detail(id) });
+            });
+
+            // Remove from all list caches
+            queryClient.getQueriesData({ queryKey: productKeys.lists() }).forEach(([queryKey, data]) => {
+                if (data && typeof data === 'object' && 'products' in data) {
+                    const currentData = data as ProductListResponse;
+                    
+                    const updatedProducts = currentData.products.filter(
+                        (product) => !deletedIds.includes(product.id)
+                    );
+                    
+                    const updatedData = {
+                        ...currentData,
+                        products: updatedProducts,
+                        pagination: {
+                            ...currentData.pagination,
+                            total: Math.max(0, currentData.pagination.total - deletedIds.length),
+                        }
+                    };
+
+                    queryClient.setQueryData(queryKey, updatedData);
+                }
+            });
+
+            // Invalidate queries to ensure fresh data
+            queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+
+            showSuccess("Products deleted successfully");
+        },
+        onError: (error: unknown) => {
+            handleError(error, "useBulkDeleteProducts");
+        }
     });
 }

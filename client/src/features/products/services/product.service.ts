@@ -129,11 +129,8 @@ export async function createProduct(data: createProductDto): Promise<ProductDeta
 
         return product;
     } catch (error) {
-        const processedError = ErrorFactory.createServiceError(
-            "product",
-            "Failed to create product",
-            (error as any).statusCode || 500,
-            undefined,
+        const processedError = ErrorFactory.createApiError(
+            error,
             { 
                 operation: "createProduct", 
                 endpoint: API_ENDPOINTS.admin.products.create,
@@ -177,10 +174,7 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
             throw error;
         }
 
-        const processedError = ErrorFactory.createServiceError(
-            "product",
-            "Failed to update product",
-            (error as any).statusCode || 500,
+        const processedError = ErrorFactory.createApiError(
             error,
             {
                 operation: "updateProduct",
@@ -224,10 +218,39 @@ export async function deleteProduct(id: string): Promise<void> {
     }
 }
 
+export async function bulkDeleteProducts(ids: string[]): Promise<void> {
+    if (!ids || ids.length === 0) {
+        throw ErrorFactory.createValidationError(
+            [{ field: "ids", message: "Product IDs are required", code: "required" }],
+            "Product IDs validation failed",
+            { operation: "bulkDeleteProducts" },
+        )
+    }
+
+    try {
+        await api.post(API_ENDPOINTS.admin.products.bulkDelete, { ids });
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            throw error;
+        }
+
+        const processedError = ErrorFactory.createApiError(
+            error,
+            {
+                operation: 'bulkDeleteProducts',
+                endpoint: API_ENDPOINTS.admin.products.bulkDelete,
+                ids
+            }
+        );
+        throw errorHandler.handle(processedError);
+    }
+}
+
 export const productService = {
     getProducts,
     getProduct,
     createProduct,
     updateProduct,
     deleteProduct,
+    bulkDeleteProducts,
 }

@@ -10,12 +10,13 @@ import {createProductFormData, createProductSchema} from "@/features/products/ut
 import {Button} from "@/components/ui/button";
 import {ProductPricingInventory} from "@/features/products/components/admin/form/ProductPricingInventory";
 import {ProductDimensions} from "@/features/products/components/admin/form/ProductDimensions";
-import {transformCreateFormDataToDto} from "@/features/products/utils/product.transformers";
+import {clearUploadRollbackData, rollbackUploadedImages, transformCreateFormDataToDto} from "@/features/products/utils/product.transformers";
 import {ProductImageUpload} from "@/features/products/components/admin/form/ProductImageUpload";
-import {useState} from "react";
+import { useState } from "react";
 
 export function ProductCreateForm() {
     const router = useRouter();
+    // const [isSubmitting, setIsSubmitting] = useState(false);
     const { mutate: createProduct, isPending } = useCreateProduct();
 
     const form = useForm<createProductFormData>({
@@ -48,13 +49,22 @@ export function ProductCreateForm() {
     });
 
     const onSubmit = async (data: createProductFormData) => {
+       /*  if (isSubmitting) return;
+
+        setIsSubmitting(true); */
+
         console.log("Form data before transform:", data);
         const transformedData = await transformCreateFormDataToDto(data);
         console.log("Transformed data:", transformedData);
 
         createProduct(transformedData, {
             onSuccess: () => {
+                clearUploadRollbackData();
                 router.push("/admin/products");
+            },
+            onError: async () => {
+                await rollbackUploadedImages();
+                /* setIsSubmitting(false); */
             }
         });
     }
