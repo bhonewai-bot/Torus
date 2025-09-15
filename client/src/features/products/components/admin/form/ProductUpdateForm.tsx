@@ -8,7 +8,7 @@ import {updateProductFormData, updateProductSchema} from "@/features/products/ut
 import {zodResolver} from "@hookform/resolvers/zod";
 import {ProductBasicInfo} from "@/features/products/components/admin/form/ProductBasicInfo";
 import {ProductDimensions} from "@/features/products/components/admin/form/ProductDimensions";
-import {ProductPricingInventory} from "@/features/products/components/admin/form/ProductPricingInventory";
+import {ProductPricingInventory} from "@/features/products/components/admin/form/ProductDetails";
 import {Button} from "@/components/ui/button";
 import {ProductUpdateImageUpload} from "@/features/products/components/admin/form/ProductUpdateImageUpload";
 import {ExistingImage} from "@/features/products/types/image.types";

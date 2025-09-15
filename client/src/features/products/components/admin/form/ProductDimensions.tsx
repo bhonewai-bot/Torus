@@ -11,7 +11,7 @@ interface ProductDimensionsProps {
 
 export function ProductDimensions({ form }: ProductDimensionsProps) {
     return (
-        <Accordion type={"single"} collapsible defaultValue={"product-pricing-inventory"} className={"bg-primary-foreground border rounded-lg"}>
+        <Accordion type={"single"} collapsible defaultValue={"product-pricing-inventory"} className={"bg-card border rounded-lg"}>
             <AccordionItem value={"product-pricing-inventory"}>
                 <AccordionTrigger className={"flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50"}>
                     <span className={"flex items-center text-lg font-medium"}>

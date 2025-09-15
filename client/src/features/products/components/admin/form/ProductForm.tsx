@@ -11,15 +11,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { ProductBasicInfo } from "./ProductBasicInfo";
-import { ProductPricingInventory } from "./ProductPricingInventory";
-import { ProductDimensions } from "./ProductDimensions";
-import { ProductImageUpload } from "./ProductImageUpload";
-import { ProductUpdateImageUpload } from "./ProductUpdateImageUpload";
 import { Button } from "@/components/ui/button";
 import { ProductImageManager } from "./ProductImageManager";
-import { toast } from "sonner";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ProductCategory } from "./ProductCategory";
+import { ProductDetails as ProductDetailsForm } from "./ProductDetails";
 
 interface ProductFormProps {
     mode: "create" | "edit";
@@ -43,18 +37,8 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                 brand: "",
                 description: "",
                 categoryId: "",
-                dimensions: {
-                    length: "",
-                    width: "",
-                    height: "",
-                    weight: "",
-                },
                 pricing: {
                     price: "",
-                    regularPrice: "",
-                    salePrice: "",
-                    taxRate: "",
-                    taxIncluded: false,
                 },
                 inventory: {
                     quantity: "",
@@ -70,18 +54,8 @@ export function ProductForm({ mode, product }: ProductFormProps) {
             brand: product?.brand || "",
             description: product?.description || "",
             categoryId: product?.category?.id || "",
-            dimensions: {
-                length: product?.dimensions?.length ?? "",
-                width: product?.dimensions?.width ?? "",
-                height: product?.dimensions?.height ?? "",
-                weight: product?.dimensions?.weight ?? "",
-            },
             pricing: {
                 price: product?.pricing?.price ?? "",
-                regularPrice: product?.pricing?.regularPrice ?? "",
-                salePrice: product?.pricing?.salePrice ?? "",
-                taxRate: product?.pricing?.taxRate ?? "",
-                taxIncluded: product?.pricing?.taxIncluded ?? false,
             },
             inventory: {
                 quantity: product?.inventory?.quantity ?? "",
@@ -109,18 +83,9 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                 const changed = !(
                     currentValues.sku === originalValues.sku &&
                     currentValues.title === originalValues.title &&
-                    currentValues.brand === originalValues.brand &&
                     currentValues.description === originalValues.description &&
                     currentValues.categoryId === originalValues.categoryId &&
-                    Number(currentValues.dimensions?.length) == Number(originalValues.dimensions.length) &&
-                    Number(currentValues.dimensions?.width) == Number(originalValues.dimensions.width) &&
-                    Number(currentValues.dimensions?.height) == Number(originalValues.dimensions.height) &&
-                    Number(currentValues.dimensions?.weight) == Number(originalValues.dimensions.weight) &&
                     Number(currentValues.pricing?.price) == Number(originalValues.pricing.price) &&
-                    Number(currentValues.pricing?.regularPrice) == Number(originalValues.pricing.regularPrice) &&
-                    Number(currentValues.pricing?.salePrice) == Number(originalValues.pricing.salePrice) &&
-                    Number(currentValues.pricing?.taxRate) == Number(originalValues.pricing.taxRate) &&
-                    currentValues.pricing?.taxIncluded === originalValues.pricing.taxIncluded &&
                     Number(currentValues.inventory?.quantity) == Number(originalValues.inventory.quantity) &&
                     deepEqual(currentValues.images, originalValues.images) &&
                     currentValues.status === originalValues.status
@@ -190,25 +155,12 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="space-y-6">
                         <ProductImageManager form={form} mode={mode} existingImages={product?.images} />
-                        <ProductCategory form={form} />
                     </div>
                     <div className="lg:col-span-2 space-y-6">
                         <ProductBasicInfo form={form} /> 
-                        <ProductPricingInventory form={form} />
-                        <ProductDimensions form={form} />
+                        <ProductDetailsForm form={form} />
                     </div>
                 </div>
-                
-                
-
-                {/* {mode === "create" ? (
-                    <ProductImageUpload form={form} />
-                ) : (
-                    <ProductUpdateImageUpload 
-                        form={form}
-                        existingImages={product?.images || []}
-                    />
-                )} */}
 
                 <div className="flex items-center justify-end gap-4">
                     <Button

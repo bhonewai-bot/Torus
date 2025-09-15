@@ -1,4 +1,4 @@
-export const PRODUCT_STATUSES = ["ACTIVE", "INACTIVE"] as const;
+export const PRODUCT_STATUSES = ["ACTIVE", "INACTIVE", "DISCONTINUED"] as const;
 export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
 
 interface CategoryInfo {
@@ -10,15 +10,13 @@ export interface ProductList {
     id: string;
     sku: string;
     title: string;
-    brand?: string;
-    description?: string;
     price: number;
     quantity: number;
     mainImage?: string;
     category?: CategoryInfo;
     status: ProductStatus;
-    createdAt?: string;
-    updatedAt?: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface ProductDetails {
@@ -28,18 +26,8 @@ export interface ProductDetails {
     brand?: string;
     description?: string;
     category?: CategoryInfo;
-    dimensions: {
-        length?: number;
-        width?: number;
-        height?: number;
-        weight?: number;
-    };
     pricing: {
         price: number;
-        salePrice?: number;
-        regularPrice?: number;
-        taxRate?: number;
-        taxIncluded?: boolean;
     };
     images: Array<{
         id: string;
@@ -73,7 +61,6 @@ export interface ProductFilters {
     limit?: number;
     search?: string;
     categoryId?: string;
-    brand?: string;
     isActive?: boolean;
     sortBy?: string;
     sortOrder?: "asc" | "desc";

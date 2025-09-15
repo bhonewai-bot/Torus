@@ -2,7 +2,6 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/co
 import {Info} from "lucide-react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {useCategories} from "@/features/categories/hooks/useCategories";
 import {Textarea} from "@/components/ui/textarea";
 import {UseFormReturn} from "react-hook-form";
 import {createProductFormData, updateProductFormData} from "@/features/products/utils/product.schema";
@@ -12,20 +11,19 @@ interface ProductBasicInfoProps {
 }
 
 export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
-    const { data: categories = [], isLoading } = useCategories();
 
     return (
-        <Accordion type="single" collapsible defaultValue={"product-info"} className="bg-card border rounded-lg">
+        <Accordion type="single" collapsible defaultValue={"product-info"} className="bg-card shadow-sm rounded-lg dark:bg-transparent dark:text-card-foreground dark:shadow-none">
             <AccordionItem value="product-info">
-                <AccordionTrigger className="flex items-center justify-between px-4 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50 hover:rounded-b-none">
+                <AccordionTrigger className="flex items-center justify-between px-6 py-3 decoration-transparent rounded-lg transition-colors hover:bg-muted/50 hover:rounded-b-none">
                     <span className={"flex items-center text-lg font-medium"}>
-                        <Info className={"h-5 w-5 mr-2"} />
+                        <Info className={"h-5 w-5 mr-2 text-primary"} />
                         Product Information
                     </span>
                 </AccordionTrigger>
                 <AccordionContent className="p-6">
                     <div className="space-y-6">
-                        <div className="grid grid-cols-1 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="title"
@@ -34,7 +32,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                         <FormLabel className="text-sm font-medium">Title<span className="text-primary">*</span></FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="Title"
+                                                placeholder="Enter Product Title"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -42,9 +40,7 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                     </FormItem>
                                 )}
                             />
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="sku"
@@ -54,22 +50,6 @@ export function ProductBasicInfo({ form }: ProductBasicInfoProps) {
                                         <FormControl>
                                             <Input
                                                 placeholder="e.g. PRD-001"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage className="text-xs text-red-500 mt-1" />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="brand"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="text-sm font-medium">Brand<span className="text-primary">*</span></FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="Brand name"
                                                 {...field}
                                             />
                                         </FormControl>

@@ -13,7 +13,6 @@ interface ProductCategoryProps {
 }
 
 export function ProductCategory({ form }: ProductCategoryProps) {
-    const { data: products = [] } = useProduct();
     const { data: categories = [], isLoading } = useCategories();
 
     return (

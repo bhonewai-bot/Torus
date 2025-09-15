@@ -1,8 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createProductFormData, updateProductFormData } from "@/features/products/utils/product.schema";
-import { ImageIcon, Star, Upload, X } from "lucide-react";
+import { ImageIcon, ImageUp, Star, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone";
 import { UseFormReturn } from "react-hook-form";
@@ -170,7 +170,6 @@ export function ProductImageManager({ form, mode, existingImages = [], productId
                         });
 
                     } catch (error) {
-                        console.error("Failed to delete image from server:", error);
                         deleteSuccess = false;
                         showError("Failed to delete image from server");
                     }
@@ -198,7 +197,6 @@ export function ProductImageManager({ form, mode, existingImages = [], productId
                 }
             }
         } catch (error) {
-            console.error("Error deleting image:", error);
             showError("Failed to delete image");
         } finally {
             setIsDeletingImage(false);
@@ -245,7 +243,6 @@ export function ProductImageManager({ form, mode, existingImages = [], productId
                                 resolve();
                             },
                             onError: (error) => {
-                                console.error("Failed to update main image:", error);
                                 // Revert local state on error
                                 setImages(originalImages);
                                 reject(error);
@@ -269,6 +266,11 @@ export function ProductImageManager({ form, mode, existingImages = [], productId
     if (activeImages.length === 0) {
         return (
             <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center text-lg font-medium">
+                        Media
+                    </CardTitle>
+                </CardHeader>
                 <CardContent className="p-6">
                     <div 
                         {...getRootProps()} 
@@ -304,6 +306,12 @@ export function ProductImageManager({ form, mode, existingImages = [], productId
 
     return (
         <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center text-lg font-medium">
+                    <ImageIcon className="h-5 w-5 mr-2 text-primary" />
+                    Media
+                </CardTitle>
+            </CardHeader>
             <CardContent className="p-4 space-y-4">
                 {/* Main Image Display */}
                 <div className="relative aspect-square rounded-lg overflow-hidden bg-muted group">

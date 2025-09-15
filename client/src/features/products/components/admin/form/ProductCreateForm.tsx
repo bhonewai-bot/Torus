@@ -8,7 +8,7 @@ import {useRouter} from "next/navigation";
 import {useCreateProduct} from "@/features/products/hooks/useProducts";
 import {createProductFormData, createProductSchema} from "@/features/products/utils/product.schema";
 import {Button} from "@/components/ui/button";
-import {ProductPricingInventory} from "@/features/products/components/admin/form/ProductPricingInventory";
+import {ProductPricingInventory} from "@/features/products/components/admin/form/ProductDetails";
 import {ProductDimensions} from "@/features/products/components/admin/form/ProductDimensions";
 import {clearUploadRollbackData, rollbackUploadedImages, transformCreateFormDataToDto} from "@/features/products/utils/product.transformers";
 import {ProductImageUpload} from "@/features/products/components/admin/form/ProductImageUpload";

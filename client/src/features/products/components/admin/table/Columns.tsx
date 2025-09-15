@@ -9,7 +9,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {ColumnDef} from "@tanstack/table-core";
-import {Edit, Eye, MoreHorizontal, Trash2} from "lucide-react";
+import {Edit, MoreHorizontal, Trash2} from "lucide-react";
 import {Checkbox} from "@/components/ui/checkbox";
 import {ReactNode, useState} from "react";
 import {ProductList} from "@/features/products/types/product.types";
@@ -107,16 +107,6 @@ export const columns: ColumnDef<ProductList>[] = [
         size: 200
     },
     {
-        accessorKey: "brand",
-        header: () => <TableHeaderCell>Brand</TableHeaderCell>,
-        cell: ({ row }) => {
-            const product = row.original;
-            return (
-                <div>{product?.brand || "-"}</div>
-            )
-        }
-    },
-    {
         accessorKey: "category",
         header: () => <TableHeaderCell>Category</TableHeaderCell>,
         cell: ({ row }) => {
@@ -145,10 +135,6 @@ export const columns: ColumnDef<ProductList>[] = [
         cell: ({ row }) => {
             const quantity = row.getValue("quantity") as number;
             return (
-                /*<div className={`${quantity === 0 ? 'text-red-500 font-medium' : ''}`}>
-                    {quantity}
-                    {quantity === 0 && <span className="ml-1 text-xs">(Out of stock)</span>}
-                </div>*/
                 <div>
                     {quantity === 0 ? "out of stock" : quantity}
                 </div>
@@ -161,7 +147,7 @@ export const columns: ColumnDef<ProductList>[] = [
         cell: ({ row }) => {
             const status = row.getValue("status") as string;
             return (
-                <Badge className={`inline-flex items-center rounded-full text-foreground text-xs font-semibold ${
+                <Badge className={`inline-flex items-center rounded-lg text-foreground text-xs font-semibold ${
                     status === "ACTIVE"
                         ? 'bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30'
                         : 'bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30'
@@ -222,7 +208,6 @@ export const columns: ColumnDef<ProductList>[] = [
                         }
                     }
                 } catch (error) {
-                    console.error('Error in handleBulkDelete:', error);
                     toast.error('An error occurred while trying to delete the products');
                 }
             }
@@ -232,7 +217,6 @@ export const columns: ColumnDef<ProductList>[] = [
                     await navigator.clipboard.writeText(product.id);
                     toast.success("Product ID copied to clipboard");
                 } catch (error) {
-                    console.error("Failed to copy:", error);
                     toast.error("Failed to copy product ID");
                 }
             }
@@ -260,10 +244,10 @@ export const columns: ColumnDef<ProductList>[] = [
                                 Copy product ID
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleView}>
+                            {/* <DropdownMenuItem onClick={handleView}>
                                 <Eye className="mr-2 h-4 w-4" />
                                 View product
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             <DropdownMenuItem onClick={handleEdit}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit product
