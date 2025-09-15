@@ -117,7 +117,7 @@
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.269 0 0);
+  --popover: oklch(31.838% 0.01452 274.429);
   --popover-foreground: oklch(0.985 0 0);
   
   /* Custom Primary Color for Dark Mode - lighter version */
@@ -126,7 +126,7 @@
   
   /* Dark mode secondary matching your design */
   --secondary: oklch(25% 0.015 254.898); /* Dark secondary */
-  --secondary-foreground: oklch(0.9 0.008 255.742); /* Light text */
+  --secondary-foreground: oklch(92.938% 0.00812 254.084); /* Light text */
   
   /* Dark muted colors matching dark secondary */
   --muted: oklch(25% 0.015 254.898); /* Match dark secondary */

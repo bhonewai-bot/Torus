@@ -38,7 +38,7 @@ function SelectTrigger({
       data-size={size}
       className={cn(
         // Match Input styling exactly
-        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-1 flex w-full min-w-0 rounded-md bg-transparent px-3 py-1 text-[15px] transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        "bg-secondary/40 border-0 file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-secondary/80 flex w-full min-w-0 rounded-md px-3 py-1 text-[15px] transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
         // Focus states matching Input
         "focus-visible:border-ring focus-visible:ring-ring/0 focus-visible:ring-[3px]",
         // Error states matching Input  
