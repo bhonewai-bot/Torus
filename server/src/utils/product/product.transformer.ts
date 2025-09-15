@@ -5,7 +5,6 @@ export function formatProductList(product: any): ProductList {
         id: product.id,
         sku: product.sku,
         title: product.title,
-        brand: product.brand,
         price: product.price,
         quantity: product.quantity,
         mainImage: product?.images?.[0]?.url,
@@ -14,6 +13,8 @@ export function formatProductList(product: any): ProductList {
             title: product.category.title,
         } : undefined,
         status: product.status,
+        createdAt: product.createdAt.toISOString(),
+        updatedAt: product.updatedAt.toISOString(),
     }
 }
 
@@ -22,24 +23,13 @@ export function formatProductDetail(product: any): ProductDetail {
         id: product.id,
         sku: product.sku,
         title: product.title,
-        brand: product.brand,
         description: product.description,
         category: product.category ? {
             id: product.category.id,
             title: product.category.title,
         } : undefined,
-        dimensions: {
-            length: product.length,
-            width: product.width,
-            height: product.height,
-            weight: product.weight,
-        },
         pricing: {
             price: product.price,
-            salePrice: product.salePrice,
-            regularPrice: product.regularPrice,
-            taxRate: product.taxRate,
-            taxIncluded: product.taxIncluded,
         },
         inventory: {
             quantity: product.quantity,

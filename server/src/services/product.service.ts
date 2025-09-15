@@ -14,7 +14,6 @@ export interface GetAllProductsParams {
     page?: number;
     limit?: number;
     categoryId?: string;
-    brand?: string;
     status?: boolean;
     search?: string;
     sortBy?: "title" | "price" | "createdAt" | "updatedAt";
@@ -142,12 +141,6 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
     try {
         const { images = [], ...productData } = data;
 
-        console.log("🔍 BACKEND STEP 1 - Received data:");
-        console.log("Product ID:", id);
-        console.log("Images received:", images.length);
-        console.log("Images with IDs:", images.filter(img => img.id).map(img => ({ id: img.id, url: img.url })));
-        console.log("Images without IDs (new):", images.filter(img => !img.id).map(img => ({ url: img.url, filename: img.filename })));
-
         const existedProduct = await prisma.product.findUnique({
             where: { id },
             include: { images: true },
@@ -157,25 +150,14 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
             return null;
         }
 
-        console.log("🔍 BACKEND STEP 2 - Current images in DB:");
-        console.log("DB images:", existedProduct.images.map(img => ({ id: img.id, url: img.url, isMain: img.isMain })));
-
         const { existingImages, newImages, existingImagesId } = splitImages(images as updateProductImageDto[]);
 
-        console.log("🔍 BACKEND STEP 3 - Split results:");
-        console.log("existingImagesId (to keep):", existingImagesId);
-        console.log("newImages count:", newImages.length);
-
         const imagesToDelete = findImagesToDelete(existedProduct.images, existingImagesId);
-
-        console.log("🔍 BACKEND STEP 4 - Images to delete:");
-        console.log("imagesToDelete:", imagesToDelete.map(img => ({ id: img.id, url: img.url })));
 
         await deleteImageFiles(imagesToDelete);
 
         const updatedProduct = await prisma.$transaction(async (tx) => {
             if (imagesToDelete.length > 0) {
-                console.log("🗑️ Deleting images from DB:", imagesToDelete.map(img => img.id));
                 await tx.productImage.deleteMany({
                     where: { id: { in: imagesToDelete.map((img) => img.id) } },
                 });
@@ -191,7 +173,6 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
             );
 
             if (newImages.length > 0) {
-                console.log("➕ Creating new images in DB:", newImages.length);
                 await tx.productImage.createMany({
                     data: newImages.map((img) => ({
                         productId: id,
@@ -220,9 +201,6 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
                 "PRODUCT_UPDATE_FAILED",
             );
         }
-
-        console.log("🔍 BACKEND STEP 5 - Final result:");
-        console.log("Final images in product:", updatedProduct.images?.map(img => ({ id: img.id, url: img.url, isMain: img.isMain })));
 
         return formatProductDetail(updatedProduct);
     } catch (error) {

@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -15,28 +8,19 @@ datasource db {
 }
 
 model Product {
-  id           String         @id @default(uuid())
-  sku          String         @unique
-  title        String
-  brand        String?
-  description  String?
-  length       Float?
-  width        Float?
-  height       Float?
-  weight       Float?
-  price        Float
-  regularPrice Float?
-  salePrice    Float?
-  taxRate      Float?
-  taxIncluded  Boolean        @default(false)
-  quantity     Int            @default(0)
-  status       ProductStatus    
-  category     Category?      @relation(fields: [categoryId], references: [id])
-  categoryId   String?
-  images       ProductImage[]
-  orderItems   OrderItem[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id          String         @id @default(uuid())
+  sku         String         @unique
+  title       String
+  description String?
+  price       Float
+  quantity    Int            @default(0) // simple stock control
+  status      ProductStatus  @default(ACTIVE)
+  category    Category?      @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  images      ProductImage[]
+  orderItems  OrderItem[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
 model Category {
@@ -54,22 +38,78 @@ model ProductImage {
   createdAt DateTime @default(now())
 }
 
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  phone     String?
+  enabled   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  orders    Order[]
+  addresses Address[]
+  payments  Payment[]
+}
+
+model Address {
+  id           String   @id @default(uuid())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+  firstName    String
+  lastName     String
+  company      String?
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String
+  postalCode   String
+  country      String
+  phone        String?
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Only shipping is needed
+  shippingOrders Order[]
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String
+  order         Order?        @relation(fields: [orderId], references: [id])
+  orderId       String?
+  method        PaymentMethod
+  provider      String // e.g., "stripe", "paypal"
+  transactionId String?
+  amount        Float
+  currency      String        @default("USD")
+  status        PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
 model Order {
-  id              String        @id @default(uuid())
-  orderNumber     String        @unique
-  user            User          @relation(fields: [userId], references: [id])
-  userId          String
-  items           OrderItem[]
-  total           Float
-  subtotal        Float
-  taxAmount       Float
-  shippingAddress String?
-  billingAddress  String?
-  notes           String?
-  paymentStatus   PaymentStatus @default(PENDING)
-  orderStatus     OrderStatus   @default(PENDING)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id          String      @id @default(uuid())
+  orderNumber String      @unique
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  items       OrderItem[]
+  payments    Payment[]
+
+  subtotal       Float
+  taxAmount      Float @default(0)
+  shippingAmount Float @default(0)
+  discountAmount Float @default(0)
+  total          Float
+
+  shippingAddress   Address? @relation(fields: [shippingAddressId], references: [id])
+  shippingAddressId String?
+
+  orderStatus OrderStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model OrderItem {
@@ -81,32 +121,33 @@ model OrderItem {
   productTitle String
   productSku   String
   productImage String?
-  price        Float
+  unitPrice    Float
   quantity     Int
-  taxAmount    Float?
-  lineTotal    Float?
-}
-
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  enabled   Boolean  @default(true)
-  createdAt DateTime @default(now())
-  orders    Order[]
+  lineTotal    Float
 }
 
 enum ProductStatus {
-    ACTIVE
-    INACTIVE
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
 }
 
 enum PaymentStatus {
   PENDING
-  PAID
+  PROCESSING
+  COMPLETED
   FAILED
   REFUNDED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PAYPAL
+  APPLE_PAY
+  GOOGLE_PAY
+  BANK_TRANSFER
+  CASH_ON_DELIVERY
 }
 
 enum OrderStatus {
@@ -116,4 +157,5 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELED
+  RETURNED
 }

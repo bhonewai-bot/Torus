@@ -6,7 +6,6 @@ export const productQuerySchema = z.object({
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(-1).max(1000).default(10),
     categoryId: z.string().uuid().optional(),
-    brand: z.string().optional(),
     status: z.boolean().optional(),
     search: z.string().optional(),
     sortBy: z.enum(["title", "price", "createdAt", "updatedAt"]).default("createdAt"),
@@ -32,23 +31,11 @@ export const createProductSchema = z.object({
     title: z.string()
         .min(2, "Title is required")
         .max(100, "Title too long"),
-    brand: z.string()
-        .max(50, "Brand name too long")
-        .optional(),
     description: z.string()
         .max(1000, "Description too long")
         .optional(),
 
-    length: z.number().positive("Length must be positive").optional(),
-    width: z.number().positive("Width must be positive").optional(),
-    height: z.number().positive("Height must be positive").optional(),
-    weight: z.number().positive( "Weight must be positive").optional(),
-
     price: z.number().positive("Price must be positive"),
-    regularPrice: z.number().positive("Regular price must be positive").optional(),
-    salePrice: z.number().positive("Sale price must be positive").optional(),
-    taxRate: z.number().min(0).max(100, "Tax rate must be between 0 and 100").optional(),
-    taxIncluded: z.boolean().default(false),
 
     quantity: z.number().int().min(0, "Quantity must be positive").default(0),
 
