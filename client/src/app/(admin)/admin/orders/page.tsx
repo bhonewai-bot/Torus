@@ -76,10 +76,6 @@ export default function OrderPage() {
                 <CustomBreadcrumb item={"Order"} />
                 <div className={"flex justify-between"}>
                     <h1 className={"text-3xl font-medium"}>Orders</h1>
-                    <div className={"flex gap-2"}>
-                        <Button className={"bg-muted-foreground"}>Export</Button>
-                        <Button className={"bg-muted-foreground"}>Import</Button>
-                    </div>
                 </div>
             </div>
 

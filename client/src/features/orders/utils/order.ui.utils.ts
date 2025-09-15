@@ -32,19 +32,19 @@ export const getPaymentStatusConfig = (status: string) => {
     const config = {
         PENDING: {
             variant: "outline" as const,
-            className: "rounded-full bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
+            className: "rounded bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
             icon: Clock,
             label: "Pending",
         },
         PAID: {
             variant: "outline" as const,
-            className: "rounded-full bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
+            className: "rounded bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
             icon: Check,
             label: "Paid",
         },
         FAILED: {
             variant: "outline" as const,
-            className: "rounded-full bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30",
+            className: "rounded bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30",
             icon: X,
             label: "Failed",
         },
@@ -63,19 +63,19 @@ export const getOrderStatusConfig = (status: string) => {
     const config = {
         PENDING: {
             variant: "outline" as const,
-            className: "rounded-full bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
+            className: "rounded bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
             icon: Clock,
             label: "Pending",
         },
         CONFIRMED: {
             variant: "outline" as const,
-            className: "rounded-full bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
+            className: "rounded bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
             icon: Clock,
             label: "Confirmed",
         },
         PROCESSING: {
             variant: "outline" as const,
-            className: "rounded-full bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
+            className: "rounded bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
             icon: Clock,
             label: "Processing",
         },
@@ -87,13 +87,13 @@ export const getOrderStatusConfig = (status: string) => {
         },
         DELIVERED: {
             variant: "outline" as const,
-            className: "rounded-full bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
+            className: "rounded bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
             icon: Package,
             label: "Delivered",
         },
         CANCELED: {
             variant: "outline" as const,
-            className: "rounded-full bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30",
+            className: "rounded bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30",
             icon: X,
             label: "Canceled",
         }

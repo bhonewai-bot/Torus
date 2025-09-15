@@ -3,14 +3,13 @@
 import { OrderHeader } from "@/features/orders/components/details/OrderHeader";
 import { useOrder } from "@/features/orders/hooks/useOrders";
 import React from "react";
-import {OrderInfoCard} from "@/features/orders/components/details/OrderInfoCard";
 import {CustomerInfoCard} from "@/features/orders/components/details/CustomerInfoCard";
 import {OrderItemCard} from "@/features/orders/components/details/OrderItemCard";
 import {AddressInfoCard} from "@/features/orders/components/details/AddressInfoCard";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 import {OrderSummaryCard} from "@/features/orders/components/details/OrderSummaryCard";
-import {OrderStatusCard} from "@/features/orders/components/details/OrderStatusCard";
+import { OrderStatusCard } from "@/features/orders/components/details/OrderStatusCard";
 
 interface OrderDetailPageProps {
     params: {
@@ -61,32 +60,23 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             {/* Header */}
             <OrderHeader order={order} />
 
-            <div>
+            <div className="flex flex-col gap-6">
                 {/* Order Information */}
-                <OrderInfoCard order={order} />
+                <OrderStatusCard order={order} />
 
+                <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
+                
+                        {/* Customer Information */}
+                        <CustomerInfoCard order={order} />
 
-            </div>
+                        {/* Address Information */}
+                        <AddressInfoCard order={order} />
 
-            <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
-                <div className="lg:col-span-2 space-y-6">
-                    {/* Order Items */}
-                    <OrderItemCard order={order} />
+                        {/* Order Summary */}
+                        <OrderSummaryCard order={order} />
                 </div>
 
-                <div className="space-y-6">
-                    {/* Customer Information */}
-                    <CustomerInfoCard order={order} />
-
-                    {/* Address Information */}
-                    <AddressInfoCard order={order} />
-
-                    {/* Order Summary */}
-                    <OrderSummaryCard order={order} />
-
-                    {/* Order Status */}
-                    <OrderStatusCard order={order} />
-                </div>
+                <OrderItemCard order={order} />
             </div>
         </div>
     )

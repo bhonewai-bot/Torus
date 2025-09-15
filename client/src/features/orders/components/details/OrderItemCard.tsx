@@ -1,9 +1,34 @@
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
 import { OrderDetail, OrderItem } from "@/features/orders/types/order.types";
 import { formatOrderCurrency } from "@/features/orders/utils/order.ui.utils";
 
 interface OrderItemCardProps {
     order: OrderDetail;
+}
+
+// Simple image component with fallback
+function ImageWithFallback({ 
+    src, 
+    alt, 
+    className 
+}: { 
+    src?: string; 
+    alt: string; 
+    className?: string; 
+}) {
+    return (
+        <img
+            src={src || '/placeholder-image.jpg'} // Add your placeholder image path
+            alt={alt}
+            className={className}
+            onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/placeholder-image.jpg'; // Fallback image
+            }}
+        />
+    );
 }
 
 export function OrderItemCard({ order }: OrderItemCardProps) {
@@ -15,54 +40,76 @@ export function OrderItemCard({ order }: OrderItemCardProps) {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="space-y-4">
-                    {order.items.map((item: OrderItem) => {
-                        const priceDifference = item.product.price - item.price;
-                        const hasPriceChange = priceDifference !== 0;
-
-                        return (
-                            <div key={item.id} className="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg hover:bg-muted/30 transition-colors">
-                                {/* Product Image */}
-                                <div className="flex-shrink-0">
-                                    <img
-                                        src={item.productImage}
-                                        alt={item.productTitle}
-                                        className="w-20 h-20 object-cover rounded-lg border"
-                                    />
-                                </div>
-
-                                {/* Product Details */}
-                                <div className={"flex-1 min-w-0"}>
-                                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
-                                        <div>
-                                            <h3 className="font-medium text-foreground">{item.productTitle}</h3>
-                                            <p className="text-muted-foreground mt-1">SKU: {item.productSku}</p>
+                <div className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-16"></TableHead>
+                                <TableHead>Product</TableHead>
+                                <TableHead>SKU</TableHead>
+                                <TableHead className="text-right">Price</TableHead>
+                                <TableHead className="text-right">Quantity</TableHead>
+                                <TableHead className="text-right">Tax</TableHead>
+                                <TableHead className="text-right">Total</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {order.items.map((item: OrderItem) => (
+                                <TableRow key={item.id}>
+                                    <TableCell>
+                                        <ImageWithFallback
+                                            src={item.productImage}
+                                            alt={item.productTitle}
+                                            className="w-12 h-12 object-cover rounded-lg"
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="space-y-1">
+                                            <p className="font-medium">{item.productTitle}</p>
                                         </div>
-
-                                        <div className="flex flex-col sm:items-end gap-1">
-                                            <p className="text-muted-foreground">
-                                                {formatOrderCurrency(item.price)} × {item.quantity}
-                                            </p>
-                                            <p>Subtotal: {formatOrderCurrency(item.price * item.quantity)}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Tax Information */}
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3 pt-3 border-t">
-                                        <div className="flex items-center gap-4 text-muted-foreground">
-                                            <span>Qty: {item.quantity}</span>
-                                            <span>Tax: {formatOrderCurrency(item.taxAmount ?? 0)}</span>
-
-                                        </div>
-                                            Total: {formatOrderCurrency(item.lineTotal)}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    }
+                                    </TableCell>
+                                    <TableCell>
+                                        <code className="text-xs bg-muted px-2 py-1 rounded">
+                                            {item.productSku}
+                                        </code>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {formatOrderCurrency(item.price)}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {item.quantity}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {formatOrderCurrency(item.taxAmount ?? 0)}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {formatOrderCurrency(item.lineTotal)}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+                
+                <Separator className="my-4" />
+                
+                {/* Order Totals */}
+                <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Subtotal</span>
+                        <span>{formatOrderCurrency(order.subtotal)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Tax</span>
+                        <span>{formatOrderCurrency(order.taxAmount ?? 0)}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between">
+                        <span>Total</span>
+                        <span>{formatOrderCurrency(order.total)}</span>
+                    </div>
                 </div>
             </CardContent>
         </Card>
-    )
+    );
 }

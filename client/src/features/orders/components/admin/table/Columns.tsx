@@ -194,7 +194,7 @@ export const columns: ColumnDef<OrderList>[] = [
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleView}>
                                 <Eye className={"mr-2 h-4 w-4"} />
-                                View order
+                                Update Status
                             </DropdownMenuItem>
                             {/*<DropdownMenuItem onClick={handleEdit}>
                                 <Edit className={"mr-2 h-4 w-4"} />
@@ -205,7 +205,7 @@ export const columns: ColumnDef<OrderList>[] = [
                                 className={"text-destructive focus:text-destructive"}
                             >
                                 <Trash2 className={"mr-2 h-4 w-4"} />
-                                Delete product
+                                Cancel Order
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
