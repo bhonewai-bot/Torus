@@ -7,7 +7,7 @@ export function formatProductList(product: any): ProductList {
         title: product.title,
         price: product.price,
         quantity: product.quantity,
-        mainImage: product?.images?.[0]?.url,
+        mainImage: product.images?.find((img: any) => img.isMain)?.url,
         category: product.category ? {
             id: product.category.id,
             title: product.category.title,
@@ -28,17 +28,13 @@ export function formatProductDetail(product: any): ProductDetail {
             id: product.category.id,
             title: product.category.title,
         } : undefined,
-        pricing: {
-            price: product.price,
-        },
-        inventory: {
-            quantity: product.quantity,
-        },
+        price: product.price,
+        quantity: product.quantity,
         images: product.images.map((img: any) => ({
             id: img.id,
             url: img.url,
             isMain: img.isMain,
-        })),
+        })) ?? [],
         status: product.status,
         createdAt: product.createdAt.toISOString(),
         updatedAt: product.updatedAt.toISOString(),

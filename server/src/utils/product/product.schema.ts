@@ -1,12 +1,12 @@
 import {z} from "zod";
 
-export const productStatusSchema = z.enum(["ACTIVE", "INACTIVE"]);
+export const productStatusSchema = z.enum(["ACTIVE", "INACTIVE", "DISCONTINUED"]);
 
 export const productQuerySchema = z.object({
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(-1).max(1000).default(10),
     categoryId: z.string().uuid().optional(),
-    status: z.boolean().optional(),
+    status: productStatusSchema.optional(),
     search: z.string().optional(),
     sortBy: z.enum(["title", "price", "createdAt", "updatedAt"]).default("createdAt"),
     sortOrder: z.enum(["asc", "desc"]).default("desc"),
@@ -17,11 +17,9 @@ export const createProductImageSchema = z.object({
     isMain: z.boolean().default(false),
 });
 
-export const updateProductImageSchema = z.object({
+export const updateProductImageSchema = createProductImageSchema.extend({
     id: z.string().uuid().optional(),
-    url: z.string().url("Invalid image URL"),
-    isMain: z.boolean().default(false),
-});
+})
 
 export const createProductSchema = z.object({
     sku: z.string()
@@ -51,7 +49,7 @@ export const createProductSchema = z.object({
             },
             { message: "Only one image can be marked as main" }
         ),
-    status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+    status: productStatusSchema.default("ACTIVE"),
 });
 
 export const updateProductSchema = createProductSchema.partial().extend({

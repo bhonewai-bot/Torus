@@ -7,14 +7,6 @@ export interface ProductImage {
     isMain: boolean;
 }
 
-export interface ProductPricing {
-    price: number;
-}
-
-export interface ProductInventory {
-    quantity: number;
-}
-
 // Core product interfaces
 export interface ProductList {
     id: string;
@@ -35,8 +27,8 @@ export interface ProductDetail {
     title: string;
     description?: string;
     category?: Category;
-    pricing: ProductPricing;
-    inventory: ProductInventory;
+    price: number;
+    quantity: number;
     images: ProductImage[];
     status: ProductStatus;
     createdAt: string;

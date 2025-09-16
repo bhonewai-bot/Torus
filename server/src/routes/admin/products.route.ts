@@ -12,7 +12,6 @@ import {
     postgresIdPathSchema,
 } from "@utils/validation";
 import {bulkDeleteProductsSchema, createProductSchema, productQuerySchema, updateProductSchema} from "@utils/product/product.schema";
-import z from "zod";
 
 const router = Router();
 
