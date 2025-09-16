@@ -1,7 +1,11 @@
-export interface UserTypes {
+export interface User {
     id: string;
     name: string;
     email: string;
+}
+
+export interface UserDetail extends User {
+    phone?: string;
     enabled: boolean;
-    createdAt: Date;
+    createdAt: string;
 }
