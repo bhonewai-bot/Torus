@@ -117,17 +117,6 @@ export const columns: ColumnDef<OrderList>[] = [
         }
     },
     {
-        accessorKey: "paymentStatus",
-        header: () => <TableHeaderCell>Payment</TableHeaderCell>,
-        cell: ({ row }) => {
-            const status = row.getValue("paymentStatus") as string;
-
-            return (
-                <div>{getPaymentStatusBadge(status)}</div>
-            )
-        }
-    },
-    {
         accessorKey: "orderStatus",
         header: () => <TableHeaderCell>Order Status</TableHeaderCell>,
         cell: ({ row }) => {
@@ -181,7 +170,7 @@ export const columns: ColumnDef<OrderList>[] = [
                 <div className={"text-right"}>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant={"ghost"} className={"h-8 w-8 p-0"}>
+                            <Button variant={"ghost"} className={"h-8 w-8 p-0 hover:bg-secondary"}>
                                 <span className={"sr-only"}>Open menu</span>
                                 <MoreHorizontal className={"h-4 w-4"} />
                             </Button>

@@ -1,10 +1,9 @@
 import { OrderDetail } from "@/features/orders/types/order.types";
-import { OrderCard } from "./OrderCard";
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, DollarSign, Receipt, TrendingUp } from "lucide-react";
-import { formatOrderCurrency } from "@/features/orders/utils/order.ui.utils";
-import { getPaymentStatusBadge, getOrderStatusBadge } from "./OrderBadge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatOrderCurrency, formatOrderDate, formatOrderTime } from "@/features/orders/utils/order.ui.utils";
 import { Separator } from "@/components/ui/separator";
+import { Mail, Phone } from "lucide-react";
+import { getPaymentStatusBadge } from "./OrderBadge";
 
 interface OrderSummaryCardProps {
     order: OrderDetail;
@@ -12,39 +11,57 @@ interface OrderSummaryCardProps {
 
 export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
     return (
-        <OrderCard>
-            <CardHeader>
-                <CardTitle>
-                    Summary
-                </CardTitle>
+        <Card>
+            <CardHeader className="pb-6">
+                <CardTitle>Order Summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-                {/* Financial Breakdown */}
-                <div className="space-y-3">
-                    <div className="flex justify-between dark:bg-gray-800 rounded-lg">
-                        <span className="text-muted-foreground">
-                            Subtotal ({order.items.length} {order.items.length === 1 ? 'item' : 'items'})
-                        </span>
-                        <span>{formatOrderCurrency(order.subtotal)}</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                        <div>
+                            <p className="text-[15px] font-medium text-muted-foreground/80 mb-1">
+                                Customer
+                            </p>
+                            <p className="text-[16px] font-medium">{order.user.name}</p>
+                            <div className="flex items-center gap-2 text-[15px] font-medium text-muted-foreground/80 mb-1">
+                                <Mail className="w-3 h-3" />
+                                <span>{order.user.email}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[15px] font-medium text-muted-foreground/80">
+                                <Phone className="w-3 h-3" />
+                                <span>{/* {order.user.phone} */}+66-800-932-347</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p className="text-[15px] font-medium text-muted-foreground/80 mb-1">
+                                Order Date
+                            </p>
+                            <p className="text-[16px] font-medium">{formatOrderDate(order.createdAt)} at {formatOrderTime(order.createdAt)}</p>
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        <div>
+                            <p className="text-[15px] font-medium text-muted-foreground/80 mb-1">
+                                Payment Method
+                            </p>
+                            <p className="text-[16px] font-medium" >{order.payments?.[0]?.method}</p>
+                            <div className="mt-1">
+                                {getPaymentStatusBadge(order.payments?.[0]?.status ?? undefined)}
+                            </div>
+                        </div>
+                        {/* <div>
+                            <p className="text-sm text-muted-foreground mb-1">
+                                Shipping
+                            </p>
+                            <p>{order.shippingMethod}</p>
+                            <p className="text-sm text-muted-foreground">
+                                Tracking: {orderData.trackingNumber}
+                            </p>
+                        </div> */}
                     </div>
 
-                    <div className="flex justify-between">
-                        <span className={"text-muted-foreground"}>Tax</span>
-                        <span>
-                            {formatOrderCurrency(order.taxAmount ?? 0)}
-                        </span>
-                    </div>
-                </div>
-
-                <Separator className="my-4" />
-
-                <div className="flex justify-between text-lg font-medium">
-                    <span>Total</span>
-                    <span>
-                        {formatOrderCurrency(order.total)}
-                    </span>
                 </div>
             </CardContent>
-        </OrderCard>
+        </Card>
     )
 }

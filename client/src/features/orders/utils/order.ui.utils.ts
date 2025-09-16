@@ -32,25 +32,25 @@ export const getPaymentStatusConfig = (status: string) => {
     const config = {
         PENDING: {
             variant: "outline" as const,
-            className: "rounded bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300",
             icon: Clock,
             label: "Pending",
         },
         PAID: {
             variant: "outline" as const,
-            className: "rounded bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300",
             icon: Check,
             label: "Paid",
         },
         FAILED: {
             variant: "outline" as const,
-            className: "rounded bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300",
             icon: X,
             label: "Failed",
         },
         REFUNDED: {
             variant: "outline" as const,
-            className: "rounded bg-purple-100 text-purple-800 border-[1px] border-purple-300/50 dark:bg-purple-900/20 dark:text-purple-200 dark:border-purple-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300",
             icon: X,
             label: "Refunded",
         },
@@ -63,37 +63,37 @@ export const getOrderStatusConfig = (status: string) => {
     const config = {
         PENDING: {
             variant: "outline" as const,
-            className: "rounded bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300",
             icon: Clock,
             label: "Pending",
         },
         CONFIRMED: {
             variant: "outline" as const,
-            className: "rounded bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300",
             icon: Clock,
             label: "Confirmed",
         },
         PROCESSING: {
             variant: "outline" as const,
-            className: "rounded bg-amber-100 text-amber-600 border-[1px] border-amber-300/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300",
             icon: Clock,
             label: "Processing",
         },
         SHIPPED: {
             variant: "outline" as const,
-            className: "rounded bg-purple-100 text-purple-800 border-[1px] border-purple-300/50 dark:bg-purple-900/20 dark:text-purple-200 dark:border-purple-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300",
             icon: Package,
             label: "Shipped",
         },
         DELIVERED: {
             variant: "outline" as const,
-            className: "rounded bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300",
             icon: Package,
             label: "Delivered",
         },
         CANCELED: {
             variant: "outline" as const,
-            className: "rounded bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30",
+            className: "border-none px-[9px] py-[5px] rounded-md font-semibold bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300",
             icon: X,
             label: "Canceled",
         }

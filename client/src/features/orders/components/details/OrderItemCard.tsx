@@ -34,79 +34,94 @@ function ImageWithFallback({
 export function OrderItemCard({ order }: OrderItemCardProps) {
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className="pb-6">
                 <CardTitle>
-                    Order Items ({order.items.length} {order.items.length === 1 ? 'item' : 'items'})
+                    Products ({order.items.length} items) 
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-16"></TableHead>
-                                <TableHead>Product</TableHead>
-                                <TableHead>SKU</TableHead>
-                                <TableHead className="text-right">Price</TableHead>
-                                <TableHead className="text-right">Quantity</TableHead>
-                                <TableHead className="text-right">Tax</TableHead>
-                                <TableHead className="text-right">Total</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {order.items.map((item: OrderItem) => (
-                                <TableRow key={item.id}>
-                                    <TableCell>
-                                        <ImageWithFallback
-                                            src={item.productImage}
-                                            alt={item.productTitle}
-                                            className="w-12 h-12 object-cover rounded-lg"
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="space-y-1">
-                                            <p className="font-medium">{item.productTitle}</p>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <code className="text-xs bg-muted px-2 py-1 rounded">
-                                            {item.productSku}
-                                        </code>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {formatOrderCurrency(item.price)}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {item.quantity}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {formatOrderCurrency(item.taxAmount ?? 0)}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {formatOrderCurrency(item.lineTotal)}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+            <CardContent className="space-y-0">
+                <div className="space-y-6">
+                    {order.items.map((item: OrderItem, index) => (
+                        <div 
+                            key={item.id}
+                            className={`flex gap-4 ${index !== order.items.length - 1 ? "pb-6 border-b border-muted/30" : ""}`}
+                        >
+                            <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                                <ImageWithFallback
+                                    src={item.productImage}
+                                    alt={item.productTitle}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h4 className="text-sm font-medium">
+                                            {item.productTitle}
+                                        </h4>
+                                        <p className="text-sm font-medium text-muted-foreground/80">
+                                            SKU: {item.productSku}
+                                        </p>
+                                        <p className="text-sm font-medium text-muted-foreground/80">
+                                            Qty: {item.quantity}
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-medium">
+                                            {formatOrderCurrency(item.unitPrice)}
+                                        </p>
+                                        <p className="text-sm font-medium">
+                                            {formatOrderCurrency(item.lineTotal)}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-                
-                <Separator className="my-4" />
-                
-                {/* Order Totals */}
-                <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Subtotal</span>
-                        <span>{formatOrderCurrency(order.subtotal)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Tax</span>
-                        <span>{formatOrderCurrency(order.taxAmount ?? 0)}</span>
-                    </div>
-                    <Separator />
-                    <div className="flex justify-between">
-                        <span>Total</span>
-                        <span>{formatOrderCurrency(order.total)}</span>
+
+                <div className="mt-8 pt-6 border-t border-muted/30">
+                    <div className="space-y-3 max-w-sm ml-auto">
+                        <div className="flex justify-between text-sm font-medium">
+                            <span className="text-muted-foreground/80">
+                                Subtotal
+                            </span>
+                            <span>
+                                {formatOrderCurrency(order.pricing.subtotal)}
+                            </span>
+                        </div>
+                        <div className="flex justify-between text-sm font-medium">
+                            <span className="text-muted-foreground/80">
+                                Tax
+                            </span>
+                            <span>
+                                {formatOrderCurrency(order.pricing.taxAmount)}
+                            </span>
+                        </div>
+                        <div className="flex justify-between text-sm font-medium">
+                            <span className="text-muted-foreground/80">
+                                Shipping
+                            </span>
+                            <span>
+                                {formatOrderCurrency(order.pricing.shippingAmount)}
+                            </span>
+                        </div>
+                        {order.pricing.discountAmount > 0 && (
+                            <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">
+                                    Discount
+                                </span>
+                                <span className="text-green-600">
+                                    -{formatOrderCurrency(order.pricing.discountAmount)}
+                                </span>
+                            </div>
+                        )}
+                        <div className="flex justify-between pt-2 border-t border-muted/30 font-medium">
+                            <span>Total</span>
+                            <span>
+                                {formatOrderCurrency(order.pricing.total)}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </CardContent>

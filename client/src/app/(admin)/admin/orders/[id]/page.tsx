@@ -3,13 +3,11 @@
 import { OrderHeader } from "@/features/orders/components/details/OrderHeader";
 import { useOrder } from "@/features/orders/hooks/useOrders";
 import React from "react";
-import {CustomerInfoCard} from "@/features/orders/components/details/CustomerInfoCard";
 import {OrderItemCard} from "@/features/orders/components/details/OrderItemCard";
-import {AddressInfoCard} from "@/features/orders/components/details/AddressInfoCard";
+import {OrderShippingAddresss} from "@/features/orders/components/details/OrderShippingAddresss";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 import {OrderSummaryCard} from "@/features/orders/components/details/OrderSummaryCard";
-import { OrderStatusCard } from "@/features/orders/components/details/OrderStatusCard";
 
 interface OrderDetailPageProps {
     params: {
@@ -56,28 +54,37 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         );
     }
     return (
-        <div className="space-y-6 pb-4">
+        <div className="space-y-6 pb-6">
             {/* Header */}
             <OrderHeader order={order} />
 
-            <div className="flex flex-col gap-6">
-                {/* Order Information */}
-                <OrderStatusCard order={order} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                 <div className="lg:col-span-2 space-y-6">
+                    <OrderSummaryCard order={order} />
+                    <OrderItemCard order={order} />
+                    <OrderShippingAddresss order={order} />
+                 </div>
+                 <OrderSummaryCard order={order} />
+            </div>
 
-                <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
+            {/* <div className="flex flex-col gap-6"> */}
+                {/* Order Information */}
+                {/* <OrderStatusCard order={order} /> */}
+
+                {/* <div className="grid gap-6 lg:grid-cols-3 lg:gap-8"> */}
                 
                         {/* Customer Information */}
-                        <CustomerInfoCard order={order} />
+                        {/* <CustomerInfoCard order={order} /> */}
 
                         {/* Address Information */}
-                        <AddressInfoCard order={order} />
+                        {/* <AddressInfoCard order={order} /> */}
 
                         {/* Order Summary */}
-                        <OrderSummaryCard order={order} />
-                </div>
+                        {/* <OrderSummaryCard order={order} /> */}
+                {/* </div> */}
 
-                <OrderItemCard order={order} />
-            </div>
+                {/* <OrderItemCard order={order} /> */}
+            {/* </div> */}
         </div>
     )
 }
