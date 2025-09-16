@@ -1,60 +1,51 @@
-import {OrderStatus, PaymentStatus} from "@prisma/client";
-
-export interface User {
-    id: string;
-    name: string;
-    email: string;
-}
+import {OrderStatus, PaymentMethod, PaymentStatus, ProductStatus} from "@prisma/client";
+import { User } from "./user.types";
+import { ShippingAddress } from "./address.types";
+import { Payment } from "./payment.type";
 
 export interface OrderItem {
     id: string;
+    productId: string;
     productSku: string;
     productTitle: string;
     productImage?: string;
-    price: number;
+    unitPrice: number;
     quantity: number;
-    taxAmount?: number;
     lineTotal: number;
     product: {
         id: string;
         sku: string;
         title: string;
         price: number;
-        status: boolean;
-        mainImage?: string;
+        status: ProductStatus;
     }
 }
 
 export interface OrderList {
     id: string;
     orderNumber: string;
-    subtotal: number;
-    taxAmount?: number;
     total: number;
-    paymentStatus: PaymentStatus;
     orderStatus: OrderStatus;
+    user: User;
     createdAt: string;
     updatedAt: string;
-    user: User;
-    itemCount: number;
-    notes?: string;
 }
 
 export interface OrderDetail {
     id: string;
     orderNumber: string;
-    subtotal: number;
-    taxAmount?: number;
-    total: number;
-    shippingAddress?: string;
-    billingAddress?: string;
-    notes?: string;
-    paymentStatus: PaymentStatus;
     orderStatus: OrderStatus;
-    createdAt: string;
-    updatedAt: string;
     user: User;
     items: OrderItem[];
-    itemCount: number;
-    totalQuantity: number;
+    pricing: {
+        subtotal: number;
+        taxAmount: number;
+        shippingAmount: number;
+        discountAmount: number;
+        total: number;
+    };
+    shippingAddress?: ShippingAddress;
+    payments: Payment[];
+    createdAt: string;
+    updatedAt: string;
 }

@@ -11,11 +11,10 @@ import { ErrorFactory } from "@src/lib/errors";
 export interface GetAllOrdersParams {
     page?: number;
     limit?: number;
-    paymentStatus?: PaymentStatus;
     orderStatus?: OrderStatus;
     userId?: string;
     search?: string;
-    sortBy?: "total" | "subtotal" | "paymentStatus" | "orderStatus" | "createdAt" | "updatedAt";
+    sortBy?: "total" | "createdAt" | "orderNumber";
     sortOrder?: "asc" | "desc";
 }
 
