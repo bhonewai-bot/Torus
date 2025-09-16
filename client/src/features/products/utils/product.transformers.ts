@@ -53,14 +53,8 @@ export async function transformCreateFormDataToDto(data: createProductFormData):
         title: data.title,
         description: data.description || undefined,
         categoryId: data.categoryId || undefined,
-
-        // Flatten pricing
-        price: data.pricing?.price ?? 0,
-
-        // Flatten inventory
-        quantity: data.inventory.quantity,
-
-        // Processed images and status
+        price: data.price ?? 0,
+        quantity: data.quantity,
         images: processedImages,
         status: data.status,
     };
@@ -145,18 +139,11 @@ export async function transformUpdateFormDataToDto(
     if (data.title !== undefined) dto.title = data.title;
     if (data.description !== undefined) dto.description = data.description;
     if (data.categoryId !== undefined) dto.categoryId = data.categoryId;
-
-    // Handle pricing
-    if (data.pricing) {
-        if (data.pricing.price !== undefined) dto.price = data.pricing.price;
-    }
-
-    // Handle inventory
-    if (data.inventory?.quantity !== undefined) dto.quantity = data.inventory.quantity;
-
-    // Handle images and status
-    dto.images = processedImages;
+    if (data.price) { if (data.price !== undefined) dto.price = data.price }
+    if (data.quantity !== undefined) dto.quantity = data.quantity;
     if (data.status !== undefined) dto.status = data.status;
+
+    dto.images = processedImages;
 
     return dto;
 }

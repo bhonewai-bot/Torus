@@ -23,20 +23,15 @@ export interface ProductDetails {
     id: string;
     sku: string;
     title: string;
-    brand?: string;
     description?: string;
     category?: CategoryInfo;
-    pricing: {
-        price: number;
-    };
+    price: number;
     images: Array<{
         id: string;
         url: string;
         isMain: boolean;
     }>;
-    inventory: {
-        quantity: number,
-    },
+    quantity: number,
     status: ProductStatus;
     createdAt: string;
     updatedAt: string;

@@ -3,8 +3,6 @@ import { PRODUCT_STATUSES, ProductStatus } from "../types/product.types";
 
 export const productStatusSchema = z.enum(PRODUCT_STATUSES);
 
-const emptyToUndefined = (val: unknown) => val === "" ? undefined : Number(val);
-
 export const productImageSchema = z.union([
     z.object({
         id: z.string().optional(),
@@ -38,19 +36,18 @@ export const createProductSchema = z.object({
         .transform(val => val === "" ? undefined : val)
         .optional(),
 
-    pricing: z.object({
-        price: z.union([z.string(), z.number()])
-            .transform(val => val === "" ? undefined : Number(val))
-            .refine(val => val !== undefined && val > 0, {
-                message: "Price must be greater than 0"
-}),
-    }),
+    price: z.union([z.string(), z.number()])
+        .transform(val => val === "" || val === undefined ? undefined : Number(val))
+        .refine(val => val !== undefined && val > 0, {
+            message: "Price must be greater than 0"
+        }),
 
-    inventory: z.object({
-        quantity: z.union([z.string(), z.number()])
-            .transform(val => Number(val))
-            .refine(val => val >= 1, { message: "Quantity must be at least 1" }),
-    }),
+    quantity: z.union([z.string(), z.number()])
+        .transform(val => val === "" || val === undefined ? 0 : Number(val))
+        .refine(val => val >= 0, { 
+            message: "Quantity must be 0 or greater" 
+        })
+        .default(0),
 
     images: z.array(productImageSchema)
         .optional()
@@ -70,17 +67,10 @@ export type updateProductFormData = z.infer<typeof updateProductSchema>;
 export interface createProductDto {
     sku: string;
     title: string;
-    brand?: string;
     description?: string;
     categoryId?: string;
-
-    // Flattened pricing
     price: number;
-
-    // Flattened inventory
     quantity: number;
-
-    // Images and status
     images: Array<{
         url: string;
         filename?: string;
@@ -94,27 +84,10 @@ export interface createProductDto {
 export interface updateProductDto {
     sku?: string;
     title?: string;
-    brand?: string;
     description?: string;
     categoryId?: string;
-
-    // Flattened dimensions
-    length?: number;
-    width?: number;
-    height?: number;
-    weight?: number;
-
-    // Flattened pricing
     price?: number;
-    regularPrice?: number;
-    salePrice?: number;
-    taxRate?: number;
-    taxIncluded?: boolean;
-
-    // Flattened inventory
     quantity?: number;
-
-    // Images and status
     images?: Array<{
         id?: string;
         url: string;

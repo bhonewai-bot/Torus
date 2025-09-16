@@ -146,13 +146,36 @@ export const columns: ColumnDef<ProductList>[] = [
         header: () => <TableHeaderCell>Status</TableHeaderCell>,
         cell: ({ row }) => {
             const status = row.getValue("status") as string;
+            
+            const getStatusStyles = (status: string) => {
+                switch (status) {
+                    case "ACTIVE":
+                        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300";
+                    case "INACTIVE":
+                        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200";
+                    case "DISCONTINUED":
+                        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300";
+                    default:
+                        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300";
+                }
+            };
+            
+            const getStatusLabel = (status: string) => {
+                switch (status) {
+                    case "ACTIVE":
+                        return "Active";
+                    case "INACTIVE":
+                        return "Inactive";
+                    case "DISCONTINUED":
+                        return "Discontinued";
+                    default:
+                        return status;
+                }
+            };
+            
             return (
-                <Badge className={`inline-flex items-center rounded-lg text-foreground text-xs font-semibold ${
-                    status === "ACTIVE"
-                        ? 'bg-green-100 text-green-800 border-[1px] border-green-300/50 dark:bg-green-900/20 dark:text-green-300 dark:border-green-300/30'
-                        : 'bg-red-100 text-red-800 border-[1px] border-red-300/50 dark:bg-red-900/20 dark:text-red-200 dark:border-red-300/30'
-                }`}>
-                    {status === "ACTIVE" ? 'Active' : 'Inactive'}
+                <Badge className={`border-none px-[9px] py-[5px] rounded-md font-semibold ${getStatusStyles(status)}`}>
+                    {getStatusLabel(status)}
                 </Badge>
             );
         },

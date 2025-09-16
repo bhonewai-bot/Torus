@@ -34,15 +34,10 @@ export function ProductForm({ mode, product }: ProductFormProps) {
             return {
                 sku: "",
                 title: "",
-                brand: "",
                 description: "",
                 categoryId: "",
-                pricing: {
-                    price: "",
-                },
-                inventory: {
-                    quantity: "",
-                },
+                price: "",
+                quantity: "",
                 images: [],
                 status: "ACTIVE" as const
             }
@@ -51,15 +46,10 @@ export function ProductForm({ mode, product }: ProductFormProps) {
         return {
             sku: product?.sku || "",
             title: product?.title || "",
-            brand: product?.brand || "",
             description: product?.description || "",
             categoryId: product?.category?.id || "",
-            pricing: {
-                price: product?.pricing?.price ?? "",
-            },
-            inventory: {
-                quantity: product?.inventory?.quantity ?? "",
-            },
+            price: product?.price ?? "",
+            quantity: product?.quantity ?? "",
             images: product?.images?.map((img) => ({
                 id: img.id,
                 url: img.url,
@@ -85,8 +75,8 @@ export function ProductForm({ mode, product }: ProductFormProps) {
                     currentValues.title === originalValues.title &&
                     currentValues.description === originalValues.description &&
                     currentValues.categoryId === originalValues.categoryId &&
-                    Number(currentValues.pricing?.price) == Number(originalValues.pricing.price) &&
-                    Number(currentValues.inventory?.quantity) == Number(originalValues.inventory.quantity) &&
+                    Number(currentValues.price) == Number(originalValues.price) &&
+                    Number(currentValues.quantity) == Number(originalValues.quantity) &&
                     deepEqual(currentValues.images, originalValues.images) &&
                     currentValues.status === originalValues.status
                 );

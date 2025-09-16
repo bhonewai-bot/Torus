@@ -30,7 +30,7 @@ export function ProductDetails({ form }: ProductDetailsProps) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
-                                name={"pricing.price"}
+                                name={"price"}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className={"text-sm font-medium"}>Price <span className="text-primary">*</span></FormLabel>
@@ -49,7 +49,7 @@ export function ProductDetails({ form }: ProductDetailsProps) {
 
                             <FormField
                                 control={form.control}
-                                name={"inventory.quantity"}
+                                name={"quantity"}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className={"text-sm font-medium"}>Quantity <span className="text-primary">*</span></FormLabel>
@@ -73,29 +73,52 @@ export function ProductDetails({ form }: ProductDetailsProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="text-sm font-medium flex justify-between">
-                                            <p>Status  <span className="text-primary"> *</span></p>
+                                            <p>Status <span className="text-primary"> *</span></p>
                                         </FormLabel>
                                         <FormControl>
                                             <Select onValueChange={field.onChange} value={field.value}>
                                                 <SelectTrigger className={"w-full"}>
-                                                    <SelectValue placeholder={isLoading ? "Loading..." : "Select Category"} />
-
+                                                    <SelectValue placeholder={isLoading ? "Loading..." : "Select Status"} />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {PRODUCT_STATUSES.map((status) => (
-                                                        <SelectItem key={status} value={status}>
-                                                            <div className="flex items-center gap-2">
-                                                                <div 
-                                                                    className={`w-2 h-2 rounded-full ${
-                                                                        status === 'ACTIVE' 
-                                                                            ? 'bg-green-500' 
-                                                                            : 'bg-gray-400'
-                                                                    }`}
-                                                                />
-                                                                {status === 'ACTIVE' ? 'Active' : 'Inactive'}
-                                                            </div>
-                                                        </SelectItem>
-                                                    ))}
+                                                    {PRODUCT_STATUSES.map((status) => {
+                                                        const getStatusColor = (status: string) => {
+                                                            switch (status) {
+                                                                case 'ACTIVE':
+                                                                    return 'bg-green-500';
+                                                                case 'INACTIVE':
+                                                                    return 'bg-red-500';
+                                                                case 'DISCONTINUED':
+                                                                    return 'bg-gray-500';
+                                                                default:
+                                                                    return 'bg-gray-400';
+                                                            }
+                                                        };
+                                                        
+                                                        const getStatusLabel = (status: string) => {
+                                                            switch (status) {
+                                                                case 'ACTIVE':
+                                                                    return 'Active';
+                                                                case 'INACTIVE':
+                                                                    return 'Inactive';
+                                                                case 'DISCONTINUED':
+                                                                    return 'Discontinued';
+                                                                default:
+                                                                    return status;
+                                                            }
+                                                        };
+                                                        
+                                                        return (
+                                                            <SelectItem key={status} value={status}>
+                                                                <div className="flex items-center gap-2">
+                                                                    <div 
+                                                                        className={`w-2 h-2 rounded-full ${getStatusColor(status)}`}
+                                                                    />
+                                                                    {getStatusLabel(status)}
+                                                                </div>
+                                                            </SelectItem>
+                                                        );
+                                                    })}
                                                 </SelectContent>
                                             </Select>
                                         </FormControl>
