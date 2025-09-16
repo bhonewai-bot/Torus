@@ -131,7 +131,7 @@ export default async function AdminLayout({
                                         {children}
                                     </ErrorBoundary>
                                     {<Toaster
-                                        position={"bottom-right"}
+                                        position={"bottom-center"}
                                         richColors
                                     />}
                                 </div>
