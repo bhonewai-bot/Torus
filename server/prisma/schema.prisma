@@ -134,8 +134,7 @@ enum ProductStatus {
 
 enum PaymentStatus {
   PENDING
-  PROCESSING
-  COMPLETED
+  PAID
   FAILED
   REFUNDED
 }
@@ -157,5 +156,4 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELED
-  RETURNED
 }
