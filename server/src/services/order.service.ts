@@ -27,8 +27,27 @@ export async function getAllOrders(params: GetAllOrdersParams = {}) {
             sortOrder = "desc",
         } = params;
 
-        const skip = (page - 1) * limit;
         const where = buildOrderWithWhereClause(params);
+
+        if (limit === -1) {
+            const orders = await prisma.order.findMany({
+                where,
+                include: orderListInclude,
+                orderBy: {
+                    [sortBy]: sortOrder
+                }
+            });
+
+            const formattedOrders = orders.map(formatOrderList);
+            const pagination = calculatePagination(orders.length, page, -1);
+
+            return {
+                orders: formattedOrders,
+                pagination
+            }
+        }
+
+        const skip = (page - 1) * limit;
 
         const [orders, total] = await prisma.$transaction([
             prisma.order.findMany({

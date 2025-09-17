@@ -51,7 +51,7 @@ async function main() {
 
   const taxRate = 0; // change if you want
 
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 12; i++) {
     const orderItems = [
       { product: products[0], quantity: 2 },
       { product: products[1], quantity: 1 },
