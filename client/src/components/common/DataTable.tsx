@@ -206,31 +206,43 @@ export function DataTable<TData, TValue>({
                         )}
                     </div>
 
-                    {/* Only show pagination buttons when NOT showing all */}
-                    {!showingAll && (
-                        <div className="flex items-center space-x-1">
-                            {/* Your existing pagination buttons */}
+                    {/* Always show pagination buttons, but disable when showing all */}
+                    <div className="flex items-center space-x-1">
+                        {/* Your existing pagination buttons */}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onPageChange(1)}
+                            disabled={showingAll || pagination.page === 1 || pagination.totalPages <= 1}
+                            title="First page"
+                        >
+                            <ChevronsLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onPageChange(pagination.page - 1)}
+                            disabled={showingAll || !pagination.hasPreviousPage || pagination.totalPages <= 1}
+                            title="Previous page"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        
+                        {/* Page numbers */}
+                        {showingAll ? (
+                            // When showing all, only show page 1 (disabled)
                             <Button
-                                variant="ghost"
+                                key={1}
+                                variant="default"
                                 size="sm"
                                 onClick={() => onPageChange(1)}
-                                disabled={pagination.page === 1 || pagination.totalPages <= 1}
-                                title="First page"
+                                disabled={true}
+                                className="min-w-8"
                             >
-                                <ChevronsLeft className="h-4 w-4" />
+                                1
                             </Button>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onPageChange(pagination.page - 1)}
-                                disabled={!pagination.hasPreviousPage || pagination.totalPages <= 1}
-                                title="Previous page"
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                            </Button>
-                            
-                            {/* Page numbers */}
-                            {getPaginationRange(pagination.page, pagination.totalPages).map((pageNum, index) => (
+                        ) : (
+                            getPaginationRange(pagination.page, pagination.totalPages).map((pageNum, index) => (
                                 pageNum === '...' ? (
                                     <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">...</span>
                                 ) : (
@@ -239,33 +251,34 @@ export function DataTable<TData, TValue>({
                                         variant={pagination.page === pageNum ? "default" : "ghost"}
                                         size="sm"
                                         onClick={() => onPageChange(pageNum as number)}
+                                        disabled={showingAll}
                                         className="min-w-8"
                                     >
                                         {pageNum}
                                     </Button>
                                 )
-                            ))}
-                            
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onPageChange(pagination.page + 1)}
-                                disabled={!pagination.hasNextPage || pagination.totalPages <= 1}
-                                title="Next page"
-                            >
-                                <ChevronRight className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onPageChange(pagination.totalPages)}
-                                disabled={pagination.page === pagination.totalPages || pagination.totalPages <= 1}
-                                title="Last page"
-                            >
-                                <ChevronsRight className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    )}
+                            ))
+                        )}
+                        
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onPageChange(pagination.page + 1)}
+                            disabled={showingAll || !pagination.hasNextPage || pagination.totalPages <= 1}
+                            title="Next page"
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onPageChange(pagination.totalPages)}
+                            disabled={showingAll || pagination.page === pagination.totalPages || pagination.totalPages <= 1}
+                            title="Last page"
+                        >
+                            <ChevronsRight className="h-4 w-4" />
+                        </Button>
+                    </div>
                 </div>
             )}
         </div>
