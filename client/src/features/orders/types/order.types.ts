@@ -109,7 +109,6 @@ export interface OrderResponse {
 export interface OrderFilters {
     page?: number;
     limit?: number;
-    paymentStatus?: PaymentStatus;
     orderStatus?: OrderStatus;
     userId?: string;
     search?: string;

@@ -7,6 +7,7 @@ interface OrderDataTableProps {
     pagination?: Pagination;
     onPageChange: (page: number) => void;
     onLimitChange: (limit: number) => void;
+    showingAll?: boolean;
 }
 
 export function OrderDataTable({
@@ -14,6 +15,7 @@ export function OrderDataTable({
     pagination,
     onPageChange,
     onLimitChange,
+    showingAll = false,
 }: OrderDataTableProps) {
     return (
         <DataTable
@@ -22,6 +24,7 @@ export function OrderDataTable({
             pagination={pagination}
             onPageChange={onPageChange}
             onLimitChange={onLimitChange}
+            showingAll={showingAll}
         />
     )
 }

@@ -7,7 +7,8 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel, DropdownMenuSeparator,
+    DropdownMenuLabel, 
+    DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {cn} from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {getOrderStatusBadge, getPaymentStatusBadge} from "@/features/orders/components/details/OrderBadge";
 import Link from "next/link";
+import { OrderStatusUpdateDialog } from "@/features/products/components/admin/OrderStatusUpdateDialog";
 
 type TableHeaderCellProps = {
     children: ReactNode;
@@ -97,7 +99,7 @@ export const columns: ColumnDef<OrderList>[] = [
         header: () => <TableHeaderCell>Customer</TableHeaderCell>,
         cell: ({ row }) => {
             const user = row.original.user;
-            const initials = use.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+            const initials = user.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 
             return (
                 <div className="flex items-center gap-2">
@@ -118,7 +120,7 @@ export const columns: ColumnDef<OrderList>[] = [
     },
     {
         accessorKey: "orderStatus",
-        header: () => <TableHeaderCell>Order Status</TableHeaderCell>,
+        header: () => <TableHeaderCell>Status</TableHeaderCell>,
         cell: ({ row }) => {
             const status = row.getValue("orderStatus") as string;
 
@@ -162,9 +164,19 @@ export const columns: ColumnDef<OrderList>[] = [
                 window.location.href = `/admin/orders/${order.id}`;
             }
 
-            /*const handleEdit = () => {
-                window.location.href = `/admin/orders/${order.id}/edit`;
-            }*/
+            // Convert OrderList to OrderDetail for the dialog
+            // You might need to adjust this based on your actual data structure
+            const orderDetail = {
+                ...order,
+                items: [],
+                pricing: {
+                    subtotal: order.total,
+                    taxAmount: 0,
+                    shippingAmount: 0,
+                    discountAmount: 0,
+                    total: order.total
+                }
+            };
 
             return (
                 <div className={"text-right"}>
@@ -181,20 +193,18 @@ export const columns: ColumnDef<OrderList>[] = [
                                 Copy order ID
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleView}>
-                                <Eye className={"mr-2 h-4 w-4"} />
-                                Update Status
-                            </DropdownMenuItem>
-                            {/*<DropdownMenuItem onClick={handleEdit}>
-                                <Edit className={"mr-2 h-4 w-4"} />
-                                Edit order
-                            </DropdownMenuItem>*/}
+                            <OrderStatusUpdateDialog order={orderDetail}>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <Edit className={"mr-2 h-4 w-4"} />
+                                    Update Status
+                                </DropdownMenuItem>
+                            </OrderStatusUpdateDialog>
                             <DropdownMenuItem
                                 disabled
                                 className={"text-destructive focus:text-destructive"}
                             >
                                 <Trash2 className={"mr-2 h-4 w-4"} />
-                                Cancel Order
+                                Refund Order
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

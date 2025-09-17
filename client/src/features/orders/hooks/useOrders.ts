@@ -29,13 +29,61 @@ export function useUpdateOrderStatus(orderId: string) {
 
     return useMutation({
         mutationFn: (data: updateOrderStatusDto) => orderService.updateOrderStatus(orderId, data),
+        onMutate: async (variables) => {
+            // Cancel outgoing refetches
+            await queryClient.cancelQueries({ queryKey: orderKeys.lists() });
+            await queryClient.cancelQueries({ queryKey: orderKeys.detail(orderId) });
+
+            // Snapshot previous values
+            const previousOrderLists = queryClient.getQueriesData({ queryKey: orderKeys.lists() });
+            const previousOrderDetail = queryClient.getQueryData(orderKeys.detail(orderId));
+
+            // Optimistically update order lists
+            queryClient.setQueriesData(
+                { queryKey: orderKeys.lists() },
+                (oldData: any) => {
+                    if (!oldData?.orders) return oldData;
+                    
+                    return {
+                        ...oldData,
+                        orders: oldData.orders.map((order: any) => 
+                            order.id === orderId 
+                                ? { ...order, ...variables }
+                                : order
+                        )
+                    };
+                }
+            );
+
+            // Optimistically update order detail
+            if (previousOrderDetail) {
+                queryClient.setQueryData(
+                    orderKeys.detail(orderId),
+                    (oldData: any) => ({ ...oldData, ...variables })
+                );
+            }
+
+            return { previousOrderLists, previousOrderDetail };
+        },
         onSuccess: () => {
+            // Invalidate to ensure we have fresh data from server
             queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
-            queryClient.invalidateQueries({ queryKey: orderKeys.list() });
+            queryClient.invalidateQueries({ queryKey: orderKeys.lists() });
+            queryClient.invalidateQueries({ queryKey: orderKeys.all });
 
             showSuccess("Order status updated successfully");
         },
-        onError: (error: unknown) => {
+        onError: (error: unknown, variables, context) => {
+            // Rollback optimistic updates
+            if (context?.previousOrderLists) {
+                context.previousOrderLists.forEach(([queryKey, data]) => {
+                    queryClient.setQueryData(queryKey, data);
+                });
+            }
+            if (context?.previousOrderDetail) {
+                queryClient.setQueryData(orderKeys.detail(orderId), context.previousOrderDetail);
+            }
+            
             handleError(error, `useUpdateOrderStatus:${orderId}`);
         }
     });

@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Download, Edit, Printer, RefreshCw } from "lucide-react";
-import { ORDER_STATUSES, OrderDetail, PAYMENT_STATUSES, PaymentStatus } from "../../types/order.types";
+import { ORDER_STATUSES, OrderDetail, OrderStatus } from "../../types/order.types";
 import { getOrderStatusBadge } from "./OrderBadge";
 import { Select } from "@radix-ui/react-select";
 import { useState } from "react";
 import { useUpdateOrderStatus } from "../../hooks/useOrders";
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getOrderStatusConfig, getPaymentStatusConfig } from "../../utils/order.ui.utils";
+import { getOrderStatusConfig } from "../../utils/order.ui.utils";
 
 interface OrderHeaderProps {
     order: OrderDetail;
@@ -48,7 +48,7 @@ export function OrderHeader({ order }: OrderHeaderProps) {
                 <Select
                     value={status.orderStatus}
                     // defaultValue={order.paymentStatus}
-                    onValueChange={(value: PaymentStatus) => handleStatusChange("orderStatus", value)}
+                    onValueChange={(value: OrderStatus) => handleStatusChange("orderStatus", value)}
                 >
                     <SelectTrigger className={"w-full h-4"} size="default">
                         <SelectValue placeholder={order.orderStatus} />

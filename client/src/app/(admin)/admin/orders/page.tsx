@@ -3,30 +3,116 @@
 import {CustomBreadcrumb} from "@/components/common/CustomBreadcrumb";
 import {Button} from "@/components/ui/button";
 import {useOrders} from "@/features/orders/hooks/useOrders";
-import {useRouter} from "next/navigation";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {OrderFilters} from "@/features/orders/types/order.types";
 import {OrderDataTable} from "@/features/orders/components/admin/table/OrderDataTable";
+import { OrderTableFilters } from "@/features/orders/components/admin/table/OrderTableFilters";
 
 export default function OrderPage() {
-    const router = useRouter();
-
-    const [filters, setFilters] = useState<OrderFilters>({
+    const [serverFilters, setServerFilters] = useState<OrderFilters>({
         page: 1,
-        limit: 10,
+        limit: -1,
         sortBy: "createdAt",
         sortOrder: "desc",
     });
 
-    const { data, isLoading, error, refetch } = useOrders(filters);
-    console.log(data);
+    const [clientFilters, setClientFilters] = useState<{
+        search?: string;
+        orderStatus?: string;
+    }>({});
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [showingAll, setShowingAll] = useState(false);
+
+    const { data, isLoading, error, refetch } = useOrders(serverFilters);
+
+    const filteredOrders = useMemo(() => {
+        let filtered = data?.orders || [];
+
+        if (clientFilters.search && clientFilters.search.trim() !== "") {
+            const searchLower = clientFilters.search.toLowerCase().trim();
+            filtered = filtered.filter(order => 
+                order.orderNumber.toLowerCase().includes(searchLower) ||
+                order.user.name.toLowerCase().includes(searchLower)
+            )
+        }
+
+        if (clientFilters.orderStatus && clientFilters.orderStatus !== "all") {
+            filtered = filtered.filter(order => 
+                order.orderStatus === clientFilters.orderStatus
+            );
+        }
+
+        return filtered;
+    }, [data?.orders, clientFilters]);
+
+    const paginatedOrders = useMemo(() => {
+        if (showingAll) {
+            return filteredOrders;
+        }
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return filteredOrders.slice(startIndex, endIndex);
+    }, [filteredOrders, currentPage, itemsPerPage, showingAll]);
+
+    const paginationInfo = useMemo(() => {
+        const total = filteredOrders.length;
+        const totalPages = Math.ceil(total / itemsPerPage); 
+
+        return {
+            total,
+            page: currentPage,
+            limit: itemsPerPage,
+            totalPages,
+            hasNextPage: currentPage < totalPages,
+            hasPreviousPage: currentPage > 1,
+        }
+    }, [filteredOrders.length, currentPage, itemsPerPage]);
+
+    const handleFilterChange = (newFilters: Partial<OrderFilters>) => {
+        if ("search" in newFilters || "orderStatus" in newFilters) {
+            setClientFilters(prev => {
+                const updated = { ...prev };
+
+                if ("search" in newFilters) {
+                    if (newFilters.search === undefined || newFilters.search === "") {
+                        delete updated.search; // Remove the property entirely
+                    } else {
+                        updated.search = newFilters.search;
+                    }
+                }
+
+                if ('orderStatus' in newFilters) {
+                    if (newFilters.orderStatus === undefined || newFilters.orderStatus === "all") {
+                        delete updated.orderStatus; // Remove the property entirely
+                    } else {
+                        updated.orderStatus = newFilters.orderStatus;
+                    }
+                }
+
+                return updated;
+            });
+
+            setCurrentPage(1);
+        } else {
+            setServerFilters(prev => ({ ...prev, ...newFilters }))
+        }
+    }
 
     const handlePageChange = (page: number) => {
-        setFilters(prev => ({ ...prev, page }));
+        setCurrentPage(page);
     }
 
     const handleLimitChange = (limit: number) => {
-        setFilters(prev => ({ ...prev, limit, page: 1 }));
+        if (limit === -1) {
+            setShowingAll(true);
+        } else {
+            setShowingAll(false);
+            setItemsPerPage(limit);
+            setCurrentPage(1); // Reset to first page
+        }
     }
 
     if (isLoading) {
@@ -75,11 +161,17 @@ export default function OrderPage() {
                 </div>
             </div>
 
+            <OrderTableFilters
+                filters={{ ...serverFilters, ...clientFilters }}
+                onFilterChange={handleFilterChange}
+            />
+
             <OrderDataTable
-                orders={data?.orders || []}
-                pagination={data?.pagination}
+                orders={paginatedOrders}
+                pagination={paginationInfo}
                 onPageChange={handlePageChange}
                 onLimitChange={handleLimitChange}
+                showingAll={showingAll}
             />
         </div>
     )
