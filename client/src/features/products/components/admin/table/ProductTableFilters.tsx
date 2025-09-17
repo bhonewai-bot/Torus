@@ -1,12 +1,11 @@
 "use client"
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {ProductFilters} from "@/features/products/types/product.types";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {Search, X} from "lucide-react";
 import {Input} from "@/components/ui/input";
-import {useDebounce} from "use-debounce";
 
 interface Category {
     id: string;
@@ -27,29 +26,35 @@ export function ProductTableFilters({
     onCreateProduct,
 }: ProductTableFiltersProps) {
     const [searchTerm, setSearchTerm] = useState(filters.search || "");
-    const [debouncedSearch] = useDebounce(searchTerm, 500);
 
+    // Sync search term with external filters
     useEffect(() => {
-        const newSearchValue = debouncedSearch || undefined;
-        if (newSearchValue !== filters.search) {
-            onFilterChange({ search: newSearchValue });
-        }
-    }, [debouncedSearch]);
+        setSearchTerm(filters.search || "");
+    }, [filters.search]);
 
-    const handleSearchChange = (value: string) => {
-        setSearchTerm(value);
-    }
+    const handleSearchChange = useCallback((value: string) => {
+        const trimmedValue = value.trim();
+        setSearchTerm(value); // Keep the raw value for UI
+        
+        // Only send non-empty search terms, send undefined for empty
+        onFilterChange({ 
+            search: trimmedValue === "" ? undefined : trimmedValue 
+        });
+    }, [onFilterChange]);
 
-    const clearSearch = () => {
+    const clearSearch = useCallback(() => {
         setSearchTerm("");
-    }
+        onFilterChange({ search: undefined });
+    }, [onFilterChange]);
 
-    const handleCategoryChange = (categoryId: string) => {
+    const handleCategoryChange = useCallback((categoryId: string) => {
         onFilterChange({
             categoryId: categoryId === "all" ? undefined : categoryId,
-            page: 1
         });
-    }
+    }, [onFilterChange]);
+
+    // Ensure we have a proper value for the category select
+    const categorySelectValue = filters.categoryId || "all";
 
     return (
         <div className={"space-y-4"}>
@@ -63,10 +68,10 @@ export function ProductTableFilters({
                     <div className={"relative flex-1 max-w-sm"}>
                         <Search className={"absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"} />
                         <Input
-                            key={"product-search"}
-                            placeholder={"Search products"}
+                            placeholder={"Search products..."}
                             value={searchTerm}
                             onChange={(e) => handleSearchChange(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                             className={"pl-9 lg:w-100 bg-secondary border-transparent h-9.5 font-light placeholder:text-[15px] dark:bg-secondary"}
                         />
                         {searchTerm && (
@@ -84,7 +89,7 @@ export function ProductTableFilters({
                     {/* Category Filter */}
                     <Select
                         onValueChange={handleCategoryChange}
-                        value={filters.categoryId || "all"}
+                        value={categorySelectValue}
                     >
                         <SelectTrigger className={"w-48 bg-secondary border-transparent h-9.5 font-light text-[15px] dark:bg-secondary focus:border-none"}>
                             <SelectValue placeholder={"Category"} />

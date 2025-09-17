@@ -4,7 +4,7 @@ import {CustomBreadcrumb} from "@/components/common/CustomBreadcrumb";
 import {ProductDataTable} from "@/features/products/components/admin/table/ProductDataTable";
 import {Button} from "@/components/ui/button";
 import {useProducts} from "@/features/products/hooks/useProducts";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {ProductFilters} from "@/features/products/types/product.types";
 import {useCategories} from "@/features/categories/hooks/useCategories";
 import {ProductTableFilters} from "@/features/products/components/admin/table/ProductTableFilters";
@@ -13,35 +13,107 @@ import {useRouter} from "next/navigation";
 export default function ProductsPage() {
     const router = useRouter();
 
-    const [filters, setFilters] = useState<ProductFilters>({
+    const [serverFilters, setServerFilters] = useState<ProductFilters>({
         page: 1,
-        limit: 10,
+        limit: -1,
         sortBy: "createdAt",
         sortOrder: "desc",
     });
 
+    const [clientFilters, setClientFilters] = useState<{
+        search?: string;
+        categoryId?: string;
+    }>({});
+
+    // Client-side pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
     const [showingAll, setShowingAll] = useState(false);
 
-    const {
-        data,
-        isLoading,
-        error,
-        refetch
-    } = useProducts(filters);
+    const {data, isLoading, error} = useProducts(serverFilters);
+    const {data: categories = []} = useCategories();
 
-    const { data: categories = [] } = useCategories();
+    // First filter, then paginate
+    const filteredProducts = useMemo(() => {
+        let filtered = data?.products || [];
 
-    // Filter handler
+        // Search filter - ensure we handle both empty strings and undefined
+        if (clientFilters.search && clientFilters.search.trim() !== "") {
+            const searchLower = clientFilters.search.toLowerCase().trim();
+            filtered = filtered.filter(product => 
+                product.title.toLowerCase().includes(searchLower) ||
+                product.sku?.toLowerCase().includes(searchLower)
+            );
+        }
+
+        // Category filter - ensure we properly check for valid categoryId
+        if (clientFilters.categoryId && clientFilters.categoryId !== "all") {
+            filtered = filtered.filter(product => 
+                product.category?.id === clientFilters.categoryId
+            );
+        }
+
+        return filtered;
+    }, [data?.products, clientFilters]);
+
+    // Client-side pagination
+    const paginatedProducts = useMemo(() => {
+        if (showingAll) {
+            return filteredProducts;
+        }
+        
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return filteredProducts.slice(startIndex, endIndex);
+    }, [filteredProducts, currentPage, itemsPerPage, showingAll]);
+
+    // Create pagination info for filtered results
+    const paginationInfo = useMemo(() => {
+        const total = filteredProducts.length;
+        const totalPages = Math.ceil(total / itemsPerPage);
+        
+        return {
+            total,
+            page: currentPage,
+            limit: itemsPerPage,
+            totalPages,
+            hasNextPage: currentPage < totalPages,
+            hasPreviousPage: currentPage > 1,
+        };
+    }, [filteredProducts.length, currentPage, itemsPerPage]);
+
+    // Filter handler - improved to handle clearing filters properly
     const handleFilterChange = (newFilters: Partial<ProductFilters>) => {
-        setFilters(prev => ({
-            ...prev,
-            ...newFilters,
-            // Reset page when filters change (except pagination)
-            ...(newFilters.page === undefined && { page: 1 })
-        }));
-
-        if (newFilters.search !== undefined || newFilters.categoryId !== undefined) {
-            setShowingAll(true);
+        if ('search' in newFilters || 'categoryId' in newFilters) {
+            setClientFilters(prev => {
+                const updated = { ...prev };
+                
+                // Handle search filter
+                if ('search' in newFilters) {
+                    if (newFilters.search === undefined || newFilters.search === "") {
+                        delete updated.search; // Remove the property entirely
+                    } else {
+                        updated.search = newFilters.search;
+                    }
+                }
+                
+                // Handle category filter
+                if ('categoryId' in newFilters) {
+                    if (newFilters.categoryId === undefined || newFilters.categoryId === "all") {
+                        delete updated.categoryId; // Remove the property entirely
+                    } else {
+                        updated.categoryId = newFilters.categoryId;
+                    }
+                }
+                
+                return updated;
+            });
+            
+            // Reset to first page when filtering
+            setCurrentPage(1);
+        } else {
+            // Other filters trigger server requests
+            setServerFilters(prev => ({ ...prev, ...newFilters }));
         }
     }
 
@@ -50,16 +122,16 @@ export default function ProductsPage() {
     }
 
     const handlePageChange = (page: number) => {
-        setFilters(prev => ({ ...prev, page }));
+        setCurrentPage(page);
     }
 
     const handleLimitChange = (limit: number) => {
         if (limit === -1) {
             setShowingAll(true);
-            setFilters(prev => ({ ...prev, limit: -1, page: 1 }));
         } else {
             setShowingAll(false);
-            setFilters(prev => ({ ...prev, limit, page: 1 }))
+            setItemsPerPage(limit);
+            setCurrentPage(1); // Reset to first page
         }
     }
 
@@ -70,10 +142,6 @@ export default function ProductsPage() {
                     <CustomBreadcrumb item={"Products"} />
                     <div className={"flex justify-between"}>
                         <h1 className={"text-3xl font-medium"}>Products</h1>
-                        <div className={"flex gap-2"}>
-                            <Button variant={"secondary"}>Export</Button>
-                            <Button variant={"secondary"}>Import</Button>
-                        </div>
                     </div>
                 </div>
                 <div className={"flex items-center justify-center h-64"}>
@@ -95,7 +163,7 @@ export default function ProductsPage() {
                 <div className={"flex items-center justify-center h-64"}>
                     <div className="text-center">
                         <p className="text-red-600 mb-4">Error loading products</p>
-                        <Button onClick={() => refetch()} variant="outline">
+                        <Button variant="outline">
                             Try Again
                         </Button>
                     </div>
@@ -111,24 +179,20 @@ export default function ProductsPage() {
                 <CustomBreadcrumb item={"Products"} />
                 <div className={"flex justify-between"}>
                     <h1 className={"text-3xl font-medium"}>Products</h1>
-                    {/* <div className={"flex gap-2"}>
-                        <Button variant={"secondary"}>Export</Button>
-                        <Button variant={"secondary"}>Import</Button>
-                    </div> */}
                 </div>
             </div>
 
             {/* Filters */}
             <ProductTableFilters
-                filters={filters}
+                filters={{...serverFilters, ...clientFilters}}
                 categories={categories}
                 onFilterChange={handleFilterChange}
                 onCreateProduct={handleCreateProduct}
             />
 
             <ProductDataTable
-                products={data?.products || []}
-                pagination={data?.pagination}
+                products={paginatedProducts}
+                pagination={paginationInfo}
                 onPageChange={handlePageChange}
                 onLimitChange={handleLimitChange}
                 showingAll={showingAll}

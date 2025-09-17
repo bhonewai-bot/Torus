@@ -11,7 +11,7 @@ interface ProductDataTableProps {
     pagination?: Pagination;
     onPageChange: (page: number) => void;
     onLimitChange: (limit: number) => void;
-    showingAll?: boolean
+    showingAll?: boolean;
 }
 
 export function ProductDataTable({
