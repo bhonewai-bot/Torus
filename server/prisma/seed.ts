@@ -18,10 +18,12 @@ async function main() {
   // Create user
   const user = await prisma.user.create({
     data: {
-      name: "kuzu",
-      email: "kuzu@pro.com",
+      avatar: "http://localhost:8000/uploads/products/a9c242b4-9e64-482d-9f74-fa17b495e4ae-1758205213560-clown.png",
+      name: "Bhone Wai",
+      email: "bhonewai@bot.com",
       password: hashPassword,
-      enabled: true,
+      role: "ADMIN",
+      status: "ACTIVE",
     },
   });
 
@@ -111,6 +113,8 @@ async function main() {
         amount: order.total,
         currency: "THB",
         status: "PAID",
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     });
   }

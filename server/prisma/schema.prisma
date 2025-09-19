@@ -13,7 +13,7 @@ model Product {
   title       String
   description String?
   price       Float
-  quantity    Int            @default(0) // simple stock control
+  quantity    Int            @default(0)
   status      ProductStatus  @default(ACTIVE)
   category    Category?      @relation(fields: [categoryId], references: [id])
   categoryId  String?
@@ -40,12 +40,15 @@ model ProductImage {
 
 model User {
   id        String    @id @default(uuid())
+  avatar    String?
   name      String
   email     String    @unique
   password  String
   phone     String?
-  enabled   Boolean   @default(true)
-  createdAt DateTime  @default(now())
+  role      UserRole   @default(USER)
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   orders    Order[]
   addresses Address[]
   payments  Payment[]
@@ -80,7 +83,7 @@ model Payment {
   order         Order?        @relation(fields: [orderId], references: [id])
   orderId       String?
   method        PaymentMethod
-  provider      String // e.g., "stripe", "paypal"
+  provider      String
   transactionId String?
   amount        Float
   currency      String        @default("USD")
@@ -156,4 +159,14 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELED
+}
+
+enum UserRole {
+    USER
+    ADMIN
+}
+
+enum UserStatus {
+    ACTIVE
+    BANNED
 }
