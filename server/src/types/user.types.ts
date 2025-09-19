@@ -1,11 +1,26 @@
-export interface User {
+import { UserRole, UserStatus } from '@prisma/client';
+
+export interface UserList {
     id: string;
+    avatar?: string;
     name: string;
     email: string;
+    role: UserRole;
+    status: UserStatus;
+    createdAt: string;
 }
 
-export interface UserDetail extends User {
+export interface UserDetail {
+    id: string;
+    avatar?: string;
+    name: string;
+    email: string;
     phone?: string;
-    enabled: boolean;
+    role: UserRole;
+    status: UserStatus;
     createdAt: string;
+    updatedAt: string;
+    orders?: {
+        
+    }
 }

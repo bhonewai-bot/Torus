@@ -1,27 +1,50 @@
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 import * as userService from '@services/user.service';
-import {calculatePagination, createSuccessResponse} from "@utils/helpers";
-import {UpdateUserStatusDto} from "@src/types/dto/user/UpdateUserStatusDto";
+import {createSuccessResponse} from "@utils/helpers";
+import { asyncHandler } from "@src/middlewares/error.handlers";
+import { updateUserRoleDto, updateUserStatusDto, userQuerySchema } from "@src/utils/user/user.schema";
 
-export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
-    try {
-        const page = parseInt(req.params.page as string) || 1;
-        const limit = parseInt(req.params.limit as string) || 10;
+export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+    const validatedQuery = userQuerySchema.parse(req.query);
 
-        const result = await userService.getAllUsers(page, limit);
-        const pagination = calculatePagination(result.pagination.total, page, limit);
+    const result = await userService.getAllUsers(validatedQuery);
 
-        res.status(200).json(createSuccessResponse(
-            'Users fetched successfully',
-            result.data,
-            pagination
-        ));
-    } catch (error) {
-        next(error);
-    }
-}
+    res.status(200).json(createSuccessResponse(
+        'Users fetched successfully',
+        {
+            users: result.users,
+            pagination: result.pagination
+        }
+    ));
+});
 
-export async function getUserById(req: Request, res: Response, next: NextFunction) {
+export const updateUserRole = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const updateUserRole: updateUserRoleDto = res.locals.validatedData;
+
+    const result = await userService.updateUserRole(id, updateUserRole);
+
+    res.status(200).json(createSuccessResponse(
+        'User role updated successfully',
+        result,
+    ));
+});
+
+export const updateUserStatus = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const updateUserStatus: updateUserStatusDto = res.locals.validatedData;
+
+    const result = await userService.updateUserStatus(id, updateUserStatus);
+
+    res.status(200).json(createSuccessResponse(
+        'User Status updated successfully',
+        result,
+    ));
+});
+
+/* export async function getUserById(req: Request, res: Response, next: NextFunction) {
     try {
         const { id } = req.params;
 
@@ -64,4 +87,4 @@ export async function getUserAnalytics(req: Request, res: Response, next: NextFu
     } catch (error) {
         next(error);
     }
-}
+} */

@@ -1,41 +1,66 @@
-import {UserTypes} from "@src/types/user.types";
-import prisma from "@config/prisma";
-import {UpdateUserStatusDto} from "@src/types/dto/user/UpdateUserStatusDto";
+import {UserRole, UserStatus, Prisma } from "@prisma/client";
+import prisma from "@src/config/prisma";
+import { ErrorFactory } from "@src/lib/errors";
+import { calculatePagination } from "@src/utils/helpers";
+import { buildUserWhereClause } from "@src/utils/user/user.helpers";
+import { updateUserRoleDto, updateUserStatusDto } from "@src/utils/user/user.schema";
+import { formatUserList, formatUserRole, formatUserStatus } from "@src/utils/user/user.transformer";
+import { th } from "zod/v4/locales/index.cjs";
 
-export async function getAllUsers(page = 1, limit = 10): Promise<{
-    data: UserTypes[];
-    pagination: { total: number; page: number; limit: number; totalPage: number };
-}> {
-    const skip = (page - 1) * limit;
+export interface GetAllUsersParams {
+    page?: number;
+    limit?: number;
+    name?: string;
+    email?: string;
+    role?: UserRole;
+    status?: UserStatus;
+    search?: string;
+    sortBy?: "name" | "email" | "createdAt";
+    sortOrder?: "asc" | "desc";
+}
 
-    const [users, total] = await prisma.$transaction([
-        prisma.user.findMany({
-            skip,
-            take: limit,
-            orderBy: { createdAt: 'desc' },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                enabled: true,
-                createdAt: true,
-            }
-        }),
-        prisma.user.count(),
-    ]);
+export async function getAllUsers(params: GetAllUsersParams = {}) {
+    try {
+        const {
+            page = 1,
+            limit = -1,
+            sortBy = "createdAt",
+            sortOrder = "desc",
+        } = params;
 
-    return {
-        data: users,
-        pagination: {
-            total,
-            page,
-            limit,
-            totalPage: Math.ceil(total / limit)
+        const where = buildUserWhereClause(params);
+        const skip = (page - 1) * limit;
+
+        const [users, total] = await prisma.$transaction([
+            prisma.user.findMany({
+                where,
+                orderBy: {
+                    [sortBy]: sortOrder,
+                },
+                skip,
+                take: limit
+            }),
+            prisma.user.count({
+                where
+            })
+        ]);
+
+        const formattedUsers = users.map(formatUserList);
+        const pagination = calculatePagination(total, page, limit);
+
+        return {
+            users: formattedUsers,
+            pagination
         }
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            throw ErrorFactory.fromPrismaError(error);
+        }
+        throw ErrorFactory.fromUnknownError(error);
     }
 }
 
-export async function getUserById(id: string): Promise<UserTypes | null> {
+/* export async function getUserById(id: string): Promise<UserTypes | null> {
     const user = await prisma.user.findUnique({
         where: { id },
         select: {
@@ -95,5 +120,69 @@ export async function getUserAnalytics() {
         newUserThisWeek,
         activeUsers,
         inactiveUsers
+    }
+} */
+
+export async function updateUserRole(id: string, data: updateUserRoleDto) {
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { id },
+            data,
+            select: {
+                id: true,
+                role: true,
+                updatedAt: true
+            }
+        });
+
+        if (!updatedUser) {
+            throw ErrorFactory.createError(
+                "Failed to update user role",
+                500,
+                "USER_ROLE_UPDATE_FAILED",
+            );
+        }
+
+        return formatUserRole(updatedUser);
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            throw ErrorFactory.fromPrismaError(error, undefined, {
+                operation: "updateUserRole",
+                userId: id,
+                updateData: data,
+            })
+        }
+    }
+}
+
+export async function updateUserStatus(id: string, data: updateUserStatusDto) {
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { id },
+            data,
+            select: {
+                id: true,
+                status: true,
+                updatedAt: true
+            }
+        });
+
+        if (!updatedUser) {
+            throw ErrorFactory.createError(
+                "Failed to update user status",
+                500,
+                "USER_STATUS_UPDATE_FAILED",
+            );
+        }
+
+        return formatUserStatus(updatedUser);
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            throw ErrorFactory.fromPrismaError(error, undefined, {
+                operation: "updateUserSTATUS",
+                userId: id,
+                updateData: data,
+            })
+        }
     }
 }
