@@ -56,7 +56,7 @@ export interface ProductFilters {
     limit?: number;
     search?: string;
     categoryId?: string;
-    status?: string;
+    status?: ProductStatus;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
 }

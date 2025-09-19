@@ -100,7 +100,7 @@ export class ErrorFactory {
     }
 
     static createServiceError(
-        service: "product" | "category" | "order" | "upload",
+        service: "product" | "category" | "order" | "upload" | "user",
         message: string, 
         statusCode: number = 500,
         originalError?: unknown,
@@ -115,6 +115,8 @@ export class ErrorFactory {
                 return new OrderServiceError(message, statusCode, "ORDER_ERROR", originalError, context);
             case "upload":
                 return new UploadServiceError(message, statusCode, "UPLOAD_ERROR", originalError, context);
+            case "user":
+                return new ApiError(message, statusCode, "USER_ERROR", originalError, context);
             default:
                 return new ApiError(message, statusCode, "SERVICE_ERROR", originalError, context);
         }
