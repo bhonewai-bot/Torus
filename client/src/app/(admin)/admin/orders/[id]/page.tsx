@@ -64,7 +64,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     <OrderItemCard order={order} />
                     <OrderShippingAddresss order={order} />
                  </div>
-                 <OrderSummaryCard order={order} />
+                 {/* <OrderSummaryCard order={order} /> */}
             </div>
 
             {/* <div className="flex flex-col gap-6"> */}

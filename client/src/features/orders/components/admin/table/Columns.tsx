@@ -1,8 +1,9 @@
-import {ReactNode, use} from "react";
+"use client";
+
+import {ReactNode, useState} from "react";
 import {ColumnDef} from "@tanstack/table-core";
 import {OrderList} from "@/features/orders/types/order.types";
 import {Checkbox} from "@/components/ui/checkbox";
-import {useConfirmDialog} from "@/hooks/useConfirmDialog";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,9 +15,8 @@ import {
 import {Button} from "@/components/ui/button";
 import {Edit, Eye, MoreHorizontal, Trash2} from "lucide-react";
 import {toast} from "sonner";
-import {cn} from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {getOrderStatusBadge, getPaymentStatusBadge} from "@/features/orders/components/details/OrderBadge";
+import {getOrderStatusBadge} from "@/features/orders/components/details/OrderBadge";
 import Link from "next/link";
 import { OrderStatusUpdateDialog } from "@/features/products/components/admin/OrderStatusUpdateDialog";
 
@@ -146,26 +146,25 @@ export const columns: ColumnDef<OrderList>[] = [
         id: "actions",
         cell: ({ row }) => {
             const order = row.original;
-
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const { confirm } = useConfirmDialog();
+            const [dropdownOpen, setDropdownOpen] = useState(false); 
+            const [dialogOpen, setDialogOpen] = useState(false);   
 
             const handleCopyId = async () => {
                 try {
                     await navigator.clipboard.writeText(order.id);
                     toast.success("Order ID copied to clipboard");
                 } catch (error) {
-                    console.error("Failed to copy:", error);
                     toast.error("Failed to copy order ID");
                 }
             }
 
-            const handleView = () => {
-                window.location.href = `/admin/orders/${order.id}`;
-            }
+            const handleUpdateStatusClick = () => {
+                setDropdownOpen(false);
+                setTimeout(() => {
+                    setDialogOpen(true);
+                }, 100);
+            };
 
-            // Convert OrderList to OrderDetail for the dialog
-            // You might need to adjust this based on your actual data structure
             const orderDetail = {
                 ...order,
                 items: [],
@@ -180,7 +179,7 @@ export const columns: ColumnDef<OrderList>[] = [
 
             return (
                 <div className={"text-right"}>
-                    <DropdownMenu>
+                    <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                         <DropdownMenuTrigger asChild>
                             <Button variant={"ghost"} className={"h-8 w-8 p-0 hover:bg-secondary"}>
                                 <span className={"sr-only"}>Open menu</span>
@@ -193,12 +192,10 @@ export const columns: ColumnDef<OrderList>[] = [
                                 Copy order ID
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <OrderStatusUpdateDialog order={orderDetail}>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                    <Edit className={"mr-2 h-4 w-4"} />
-                                    Update Status
-                                </DropdownMenuItem>
-                            </OrderStatusUpdateDialog>
+                            <DropdownMenuItem onClick={handleUpdateStatusClick}>
+                                <Edit className={"mr-2 h-4 w-4"} />
+                                Update Status
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                                 disabled
                                 className={"text-destructive focus:text-destructive"}
@@ -208,6 +205,11 @@ export const columns: ColumnDef<OrderList>[] = [
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <OrderStatusUpdateDialog 
+                        order={orderDetail}
+                        isOpen={dialogOpen}
+                        onOpenChange={setDialogOpen}
+                    />
                 </div>
             )
         }

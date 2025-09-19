@@ -1,3 +1,5 @@
+import { update } from "lodash";
+
 export const API_ENDPOINTS = {
     // Admin endpoins
     admin: {
@@ -30,6 +32,8 @@ export const API_ENDPOINTS = {
         users: {
             list: "/admin/users",
             get: (id: string) => `/admin/users/${id}`,
+            updateRole: (id: string) => `/admin/users/${id}/role`,
+            updateStatus: (id: string) => `/admin/users/${id}/status`,
         },
     },
 } as const;

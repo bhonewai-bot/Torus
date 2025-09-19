@@ -9,18 +9,23 @@ import { OrderDetail, ORDER_STATUSES, OrderStatus } from "@/features/orders/type
 
 interface OrderStatusUpdateDialogProps {
     order: OrderDetail;
+    isOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
     children?: React.ReactNode;
 }
 
-export function OrderStatusUpdateDialog({ order, children }: OrderStatusUpdateDialogProps) {
-    const [isOpen, setIsOpen] = useState(false);
+export function OrderStatusUpdateDialog({ order, isOpen, onOpenChange, children }: OrderStatusUpdateDialogProps) {
+    const [internalOpen, setInternalOpen] = useState(false);
     const [orderStatus, setOrderStatus] = useState<OrderStatus>(order.orderStatus);
     const [error, setError] = useState("");
     const { mutate: updateOrderStatus, isPending } = useUpdateOrderStatus(order.id);
 
+    const dialogOpen = isOpen !== undefined ? isOpen : internalOpen;
+    const setDialogOpen = onOpenChange || setInternalOpen;
+
     const handleSubmit = () => {
         if (orderStatus === order.orderStatus) {
-            setIsOpen(false);
+            setDialogOpen(false);
             return;
         }
 
@@ -30,7 +35,7 @@ export function OrderStatusUpdateDialog({ order, children }: OrderStatusUpdateDi
             { orderStatus },
             {
                 onSuccess: () => {
-                    setIsOpen(false);
+                    setDialogOpen(false);
                     setError("");
                 },
                 onError: (error: any) => {
@@ -41,16 +46,16 @@ export function OrderStatusUpdateDialog({ order, children }: OrderStatusUpdateDi
     };
 
     const handleOpenChange = (open: boolean) => {
-        setIsOpen(open);
+        setDialogOpen(open);
         if (!open) {
             setOrderStatus(order.orderStatus);
             setError("");
         }
-    };
+    }
 
     const handleStatusChange = (value: OrderStatus) => {
         setOrderStatus(value);
-        if (error) setError(""); // Clear error when user makes changes
+        if (error) setError(""); 
     };
 
     const getStatusLabel = (status: OrderStatus): string => {
@@ -72,15 +77,75 @@ export function OrderStatusUpdateDialog({ order, children }: OrderStatusUpdateDi
         }
     };
 
+    if (children) {
+        return (
+            <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
+                <DialogContent>
+                    {/* Same dialog content */}
+                    <DialogHeader>
+                        <DialogTitle>Update Order Status</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <div className="text-sm text-muted-foreground">
+                                Order #{order.orderNumber}
+                            </div>
+                            <Select
+                                value={orderStatus}
+                                onValueChange={handleStatusChange}
+                                disabled={isPending}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select order status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {ORDER_STATUSES.map((status) => (
+                                        <SelectItem key={status} value={status}>
+                                            {getStatusLabel(status)}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {error && (
+                                <p className="text-sm text-red-500">{error}</p>
+                            )}
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-4">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setDialogOpen(false)}
+                                disabled={isPending}
+                                className="flex-0"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={handleSubmit}
+                                disabled={isPending || orderStatus === order.orderStatus}
+                                className="flex-0"
+                            >
+                                {isPending ? "Updating..." : "Update Status"}
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        );
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
+            {/* <DialogTrigger asChild>
                 {children || (
                     <button className="font-medium hover:underline text-[13px] text-primary">
                         Update Status
                     </button>
                 )}
-            </DialogTrigger>
+            </DialogTrigger> */}
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Update Order Status</DialogTitle>
@@ -116,7 +181,7 @@ export function OrderStatusUpdateDialog({ order, children }: OrderStatusUpdateDi
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => setDialogOpen(false)}
                             disabled={isPending}
                             className="flex-0"
                         >
