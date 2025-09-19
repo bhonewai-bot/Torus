@@ -1,5 +1,5 @@
 import {OrderStatus, PaymentMethod, PaymentStatus, ProductStatus} from "@prisma/client";
-import { User } from "./user.types";
+import { UserList } from "./user.types";
 import { ShippingAddress } from "./address.types";
 import { Payment } from "./payment.type";
 
@@ -26,7 +26,7 @@ export interface OrderList {
     orderNumber: string;
     total: number;
     orderStatus: OrderStatus;
-    user: User;
+    user: UserList;
     createdAt: string;
     updatedAt: string;
 }
@@ -35,7 +35,7 @@ export interface OrderDetail {
     id: string;
     orderNumber: string;
     orderStatus: OrderStatus;
-    user: User;
+    user: UserList;
     items: OrderItem[];
     pricing: {
         subtotal: number;

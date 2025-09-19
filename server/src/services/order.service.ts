@@ -1,5 +1,5 @@
 import prisma from "@config/prisma";
-import {OrderStatus, PaymentStatus, Prisma} from "@prisma/client";
+import {OrderStatus, Prisma} from "@prisma/client";
 import {orderDetailInclude, orderListInclude} from "@utils/order/order.include";
 import {calculatePagination} from "@utils/helpers";
 import {buildOrderWithWhereClause} from "@utils/order/order.helpers";

@@ -14,9 +14,13 @@ export const orderListInclude = {
 export const orderDetailInclude = {
     user: {
         select: {
-        id: true,
-        name: true,
-        email: true,
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+            role: true,
+            status: true,
+            createdAt: true
         },
     },
     items: {

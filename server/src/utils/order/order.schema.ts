@@ -13,7 +13,7 @@ export const orderQuerySchema = z.object({
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(-1).max(1000).default(10),
 
-    orderStatus: orderStatusSchema.optional(),
+    orderStatus: orderStatusSchema.default("PENDING"),
     userId: z.string().uuid().optional(),
     search: z.string().optional(),
 

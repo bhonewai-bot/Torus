@@ -1,7 +1,12 @@
 import {OrderDetail, OrderItem, OrderList} from "@src/types/order.types";
-import { formatUser } from "../user/user.transformer";
+import { formatUserList } from "../user/user.transformer";
 import { formatShippingAddress } from "../address/address.transformer";
 import { formatPayment } from "../payment/payment.transformer";
+
+/* const formatDate = (value: any): string => {
+  if (!value) return new Date().toISOString();
+  return (value instanceof Date ? value : new Date(value)).toISOString();
+}; */
 
 export const formatOrderItem = (item: any): OrderItem => {
     return {
@@ -29,9 +34,9 @@ export const formatOrderList = (order: any): OrderList => {
         orderNumber: order.orderNumber,
         total: order.total,
         orderStatus: order.orderStatus,
-        user: formatUser(order.user),
-        createdAt: order.createdAt.toISOString(),
-        updatedAt: order.updatedAt.toISOString(),
+        user: formatUserList(order.user),
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
     }
 }
 
@@ -40,7 +45,7 @@ export const formatOrderDetail = (order: any): OrderDetail => {
         id: order.id,
         orderNumber: order.orderNumber,
         orderStatus: order.orderStatus,
-        user: formatUser(order.user),
+        user: formatUserList(order.user),
         items: order.items.map(formatOrderItem),
         pricing: {
             subtotal: order.subtotal,
@@ -51,7 +56,7 @@ export const formatOrderDetail = (order: any): OrderDetail => {
         },
         shippingAddress: order.shippingAddress ? formatShippingAddress(order.shippingAddress) : undefined,
         payments: order.payments.map(formatPayment),
-        createdAt: order.createdAt.toISOString(),
-        updatedAt: order.updatedAt.toISOString(),
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
     }
 }

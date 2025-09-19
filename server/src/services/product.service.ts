@@ -14,7 +14,7 @@ export interface GetAllProductsParams {
     page?: number;
     limit?: number;
     categoryId?: string;
-    status?: boolean;
+    status?: "ACTIVE" | "INACTIVE" | "DISCONTINUED";
     search?: string;
     sortBy?: "title" | "price" | "createdAt" | "updatedAt";
     sortOrder?: "asc" | "desc";
