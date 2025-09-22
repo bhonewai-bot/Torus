@@ -1,6 +1,6 @@
-import {getOrderStatusConfig, getPaymentStatusConfig} from "@/features/orders/utils/order.ui.utils";
 import {cn} from "@/lib/utils";
 import {Badge} from "@/components/ui/badge";
+import { getOrderStatusConfig, getPaymentStatusConfig } from "@/lib/utils/status.config";
 
 export const getPaymentStatusBadge = (status: string) => {
     const config = getPaymentStatusConfig(status);

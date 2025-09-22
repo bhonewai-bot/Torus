@@ -1,9 +1,8 @@
 import { OrderDetail } from "@/features/orders/types/order.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatOrderCurrency, formatOrderDate, formatOrderTime } from "@/features/orders/utils/order.ui.utils";
-import { Separator } from "@/components/ui/separator";
 import { Mail, Phone } from "lucide-react";
 import { getPaymentStatusBadge } from "./OrderBadge";
+import { formatOrderDate, formatOrderTime } from "@/lib/utils/format.utils";
 
 interface OrderSummaryCardProps {
     order: OrderDetail;

@@ -18,7 +18,7 @@ function buildQueryString(filters: OrderFilters): string {
 
 const errorHandler = new ErrorHandler();
 
-export async function getAllOrders(filters: OrderFilters = {}): Promise<OrderResponse> {
+export async function getOrders(filters: OrderFilters = {}): Promise<OrderResponse> {
     try {
         const queryString = buildQueryString(filters);
         const url = queryString
@@ -57,7 +57,7 @@ export async function getAllOrders(filters: OrderFilters = {}): Promise<OrderRes
     }
 }
 
-export async function getOrderById(id: string): Promise<OrderDetail> {
+export async function getOrder(id: string): Promise<OrderDetail> {
     if (!id) {
         throw ErrorFactory.createValidationError(
             [{ field: "id", message: "Order ID is required", code: "required" }],
@@ -139,7 +139,7 @@ export async function updateOrderStatus(id: string, data: updateOrderStatusDto) 
 }
 
 export const orderService = {
-    getAllOrders,
-    getOrderById,
+    getOrders,
+    getOrder,
     updateOrderStatus
 }

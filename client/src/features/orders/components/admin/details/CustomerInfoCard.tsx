@@ -3,7 +3,7 @@ import {Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OrderDetail } from "@/features/orders/types/order.types";
 import { Mail, Phone, User, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getUserInitials } from "../../utils/order.ui.utils";
+import { getUserInitials } from "@/lib/utils/display.utils";
 
 interface CustomerInfoCardProps {
     order: OrderDetail;

@@ -1,8 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
 import { OrderDetail, OrderItem } from "@/features/orders/types/order.types";
-import { formatOrderCurrency } from "@/features/orders/utils/order.ui.utils";
+import { formatCurrency } from "@/lib/utils/format.utils";
 
 interface OrderItemCardProps {
     order: OrderDetail;
@@ -68,10 +66,10 @@ export function OrderItemCard({ order }: OrderItemCardProps) {
                                     </div>
                                     <div className="text-right">
                                         <p className="text-sm font-medium">
-                                            {formatOrderCurrency(item.unitPrice)}
+                                            {formatCurrency(item.unitPrice)}
                                         </p>
                                         <p className="text-sm font-medium">
-                                            {formatOrderCurrency(item.lineTotal)}
+                                            {formatCurrency(item.lineTotal)}
                                         </p>
                                     </div>
                                 </div>
@@ -87,7 +85,7 @@ export function OrderItemCard({ order }: OrderItemCardProps) {
                                 Subtotal
                             </span>
                             <span>
-                                {formatOrderCurrency(order.pricing.subtotal)}
+                                {formatCurrency(order.pricing.subtotal)}
                             </span>
                         </div>
                         <div className="flex justify-between text-sm font-medium">
@@ -95,7 +93,7 @@ export function OrderItemCard({ order }: OrderItemCardProps) {
                                 Tax
                             </span>
                             <span>
-                                {formatOrderCurrency(order.pricing.taxAmount)}
+                                {formatCurrency(order.pricing.taxAmount)}
                             </span>
                         </div>
                         <div className="flex justify-between text-sm font-medium">
@@ -103,7 +101,7 @@ export function OrderItemCard({ order }: OrderItemCardProps) {
                                 Shipping
                             </span>
                             <span>
-                                {formatOrderCurrency(order.pricing.shippingAmount)}
+                                {formatCurrency(order.pricing.shippingAmount)}
                             </span>
                         </div>
                         {order.pricing.discountAmount > 0 && (
@@ -112,14 +110,14 @@ export function OrderItemCard({ order }: OrderItemCardProps) {
                                     Discount
                                 </span>
                                 <span className="text-green-600">
-                                    -{formatOrderCurrency(order.pricing.discountAmount)}
+                                    -{formatCurrency(order.pricing.discountAmount)}
                                 </span>
                             </div>
                         )}
                         <div className="flex justify-between pt-2 border-t border-muted/30 font-medium">
                             <span>Total</span>
                             <span>
-                                {formatOrderCurrency(order.pricing.total)}
+                                {formatCurrency(order.pricing.total)}
                             </span>
                         </div>
                     </div>

@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Download, Edit, Printer, RefreshCw } from "lucide-react";
-import { ORDER_STATUSES, OrderDetail, OrderStatus } from "../../types/order.types";
+import { Download, RefreshCw } from "lucide-react";
+import { ORDER_STATUSES, OrderDetail, OrderStatus } from "../../../types/order.types";
 import { getOrderStatusBadge } from "./OrderBadge";
 import { Select } from "@radix-ui/react-select";
 import { useState } from "react";
-import { useUpdateOrderStatus } from "../../hooks/useOrders";
+import { useUpdateOrderStatus } from "../../../hooks/useOrders";
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getOrderStatusConfig } from "../../utils/order.ui.utils";
+import { getOrderStatusConfig } from "@/lib/utils/status.config";
 
 interface OrderHeaderProps {
     order: OrderDetail;

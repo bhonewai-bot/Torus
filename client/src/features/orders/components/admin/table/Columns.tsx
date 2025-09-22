@@ -16,7 +16,7 @@ import {Button} from "@/components/ui/button";
 import {Edit, Eye, MoreHorizontal, Trash2} from "lucide-react";
 import {toast} from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {getOrderStatusBadge} from "@/features/orders/components/details/OrderBadge";
+import {getOrderStatusBadge} from "@/features/orders/components/admin/details/OrderBadge";
 import Link from "next/link";
 import { OrderStatusUpdateDialog } from "@/features/products/components/admin/OrderStatusUpdateDialog";
 

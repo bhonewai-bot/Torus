@@ -1,13 +1,13 @@
 "use client";
 
-import { OrderHeader } from "@/features/orders/components/details/OrderHeader";
+import { OrderHeader } from "@/features/orders/components/admin/details/OrderHeader";
 import { useOrder } from "@/features/orders/hooks/useOrders";
 import React from "react";
-import {OrderItemCard} from "@/features/orders/components/details/OrderItemCard";
-import {OrderShippingAddresss} from "@/features/orders/components/details/OrderShippingAddresss";
+import {OrderItemCard} from "@/features/orders/components/admin/details/OrderItemCard";
+import {OrderShippingAddresss} from "@/features/orders/components/admin/details/OrderShippingAddresss";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
-import {OrderSummaryCard} from "@/features/orders/components/details/OrderSummaryCard";
+import {OrderSummaryCard} from "@/features/orders/components/admin/details/OrderSummaryCard";
 
 interface OrderDetailPageProps {
     params: {
@@ -20,10 +20,6 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     const { id } = React.use(params) as { id: string };
     const { data: order, isLoading, error } = useOrder(id);
     console.log(order);
-
-    const onBack = () => {
-
-    }
 
     const onPrint = () => {
 
@@ -53,9 +49,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             </div>
         );
     }
+
     return (
         <div className="space-y-6 pb-6">
-            {/* Header */}
             <OrderHeader order={order} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -64,27 +60,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     <OrderItemCard order={order} />
                     <OrderShippingAddresss order={order} />
                  </div>
-                 {/* <OrderSummaryCard order={order} /> */}
             </div>
-
-            {/* <div className="flex flex-col gap-6"> */}
-                {/* Order Information */}
-                {/* <OrderStatusCard order={order} /> */}
-
-                {/* <div className="grid gap-6 lg:grid-cols-3 lg:gap-8"> */}
-                
-                        {/* Customer Information */}
-                        {/* <CustomerInfoCard order={order} /> */}
-
-                        {/* Address Information */}
-                        {/* <AddressInfoCard order={order} /> */}
-
-                        {/* Order Summary */}
-                        {/* <OrderSummaryCard order={order} /> */}
-                {/* </div> */}
-
-                {/* <OrderItemCard order={order} /> */}
-            {/* </div> */}
         </div>
     )
 }
