@@ -1,15 +1,20 @@
+// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      'm.media-amazon.com',
-      'media-cdn.bnn.in.th',
-      'image.uniqlo.com',
-      'd2cva83hdk3bwc.cloudfront.net',
-      'bananapedia.wiki.gg',
-      'localhost',
-      // Add other domains for your product images
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'm.media-amazon.com',
+      },
+      // ... other domains
     ],
   },
 };
