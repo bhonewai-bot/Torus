@@ -3,14 +3,13 @@ import {validateBody, validateParams, validateQuery} from "@middlewares/validati
 import {
     postgresIdPathSchema,
 } from "@utils/validation";
-import {getAllOrders, getOrderById, updateOrderStatus} from "@controllers/admin/order.controller";
+import {getOrders, getOrder, updateOrderStatus} from "@controllers/admin/order.controller";
 import {orderQuerySchema, updateOrderStatusSchema} from "@utils/order/order.schema";
 
 const router = Router();
 
-router.get('/', validateQuery(orderQuerySchema), getAllOrders);
-router.get('/:id', validateParams(postgresIdPathSchema), getOrderById);
+router.get('/', validateQuery(orderQuerySchema), getOrders);
+router.get('/:id', validateParams(postgresIdPathSchema), getOrder);
 router.patch('/:id/status', validateParams(postgresIdPathSchema), validateBody(updateOrderStatusSchema), updateOrderStatus);
-// router.post('/:id/refund', validateParams(postgresIdPathSchema), refundOrder);
 
 export default router;

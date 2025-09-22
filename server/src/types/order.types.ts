@@ -1,4 +1,4 @@
-import {OrderStatus, PaymentMethod, PaymentStatus, ProductStatus} from "@prisma/client";
+import {OrderStatus, ProductStatus} from "@prisma/client";
 import { UserList } from "./user.types";
 import { ShippingAddress } from "./address.types";
 import { Payment } from "./payment.type";
@@ -48,4 +48,14 @@ export interface OrderDetail {
     payments: Payment[];
     createdAt: string;
     updatedAt: string;
+}
+
+export interface OrderFilter {
+    page?: number;
+    limit?: number;
+    orderStatus?: OrderStatus;
+    userId?: string;
+    search?: string;
+    sortBy?: "orderStatus" | "createdAt" | "total";
+    sortOrder?: "asc" | "desc";
 }

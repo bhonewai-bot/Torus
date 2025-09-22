@@ -5,11 +5,11 @@ import {orderQuerySchema, updateOrderStatusDto} from "@utils/order/order.schema"
 import { asyncHandler } from "@src/middlewares/error.handlers";
 import { ErrorFactory } from "@src/lib/errors";
 
-export const getAllOrders = asyncHandler(async(req: Request, res: Response) => {
+export const getOrders = asyncHandler(async(req: Request, res: Response) => {
 
     const validatedQuery = orderQuerySchema.parse(req.query);
 
-    const result = await orderService.getAllOrders(validatedQuery);
+    const result = await orderService.getOrders(validatedQuery);
 
     res.status(200).json(createSuccessResponse(
         "Orders fetched successfully",
@@ -20,14 +20,14 @@ export const getAllOrders = asyncHandler(async(req: Request, res: Response) => {
     ));
 })
 
-export const getOrderById = asyncHandler(async(req: Request, res: Response) => {
+export const getOrder = asyncHandler(async(req: Request, res: Response) => {
     const { id } = req.params;
 
     if (!id) {
         throw ErrorFactory.badRequest("Order ID is required", req);
     }
 
-    const order = await orderService.getOrderById(id);
+    const order = await orderService.getOrder(id);
 
     if (!order) {
         throw ErrorFactory.notFound("Order", req);

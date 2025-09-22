@@ -1,33 +1,23 @@
 import prisma from "@config/prisma";
-import {OrderStatus, Prisma} from "@prisma/client";
+import {Prisma} from "@prisma/client";
 import {orderDetailInclude, orderListInclude} from "@utils/order/order.include";
 import {calculatePagination} from "@utils/helpers";
 import {buildOrderWithWhereClause} from "@utils/order/order.helpers";
 import {formatOrderDetail, formatOrderList} from "@utils/order/order.transformer";
-import {OrderDetail} from "@src/types/order.types";
+import {OrderDetail, OrderFilter} from "@src/types/order.types";
 import {updateOrderStatusDto} from "@utils/order/order.schema";
 import { ErrorFactory } from "@src/lib/errors";
 
-export interface GetAllOrdersParams {
-    page?: number;
-    limit?: number;
-    orderStatus?: OrderStatus;
-    userId?: string;
-    search?: string;
-    sortBy?: "total" | "createdAt" | "orderNumber";
-    sortOrder?: "asc" | "desc";
-}
-
-export async function getAllOrders(params: GetAllOrdersParams = {}) {
+export async function getOrders(filters: OrderFilter = {}) {
     try {
         const {
             page = 1,
             limit = 10,
             sortBy = "createdAt",
             sortOrder = "desc",
-        } = params;
+        } = filters;
 
-        const where = buildOrderWithWhereClause(params);
+        const where = buildOrderWithWhereClause(filters);
 
         if (limit === -1) {
             const orders = await prisma.order.findMany({
@@ -77,7 +67,7 @@ export async function getAllOrders(params: GetAllOrdersParams = {}) {
     }
 }
 
-export async function getOrderById(id: string) {
+export async function getOrder(id: string) {
     try {
         const order = await prisma.order.findUnique({
             where: { id },

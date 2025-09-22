@@ -17,7 +17,7 @@ export const orderQuerySchema = z.object({
     userId: z.string().uuid().optional(),
     search: z.string().optional(),
 
-    sortBy: z.enum(["orderNumber", "createdAt", "total"]).default("createdAt"),
+    sortBy: z.enum(["orderStatus", "createdAt", "total"]).default("createdAt"),
     sortOrder: z.enum(["asc", "desc"]).default("desc"),
 })
 
