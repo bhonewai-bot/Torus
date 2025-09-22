@@ -7,7 +7,6 @@ export interface ProductImage {
     isMain: boolean;
 }
 
-// Core product interfaces
 export interface ProductList {
     id: string;
     sku: string;
@@ -33,4 +32,14 @@ export interface ProductDetail {
     status: ProductStatus;
     createdAt: string;
     updatedAt: string;
+}
+
+export interface ProductFilter {
+    page?: number;
+    limit?: number;
+    categoryId?: string;
+    status?: ProductStatus;
+    search?: string;
+    sortBy?: "title" | "price" | "createdAt" | "updatedAt";
+    sortOrder?: "asc" | "desc";
 }

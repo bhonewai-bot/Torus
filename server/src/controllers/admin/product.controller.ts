@@ -5,10 +5,10 @@ import { asyncHandler } from '@middlewares/error.handlers';
 import {createProductDto, productQuerySchema, updateProductDto} from "@utils/product/product.schema";
 import { ErrorFactory } from "@src/lib/errors";
 
-export const getAllProducts = asyncHandler(async (req: Request, res: Response) => {
+export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     const validatedQuery = productQuerySchema.parse(req.query);
 
-    const result = await productService.getAllProducts(validatedQuery);
+    const result = await productService.getProducts(validatedQuery);
 
     res.status(200).json(createSuccessResponse(
         'Products fetched successfully', 
@@ -19,14 +19,14 @@ export const getAllProducts = asyncHandler(async (req: Request, res: Response) =
     ));
 });
 
-export const getProductById = asyncHandler(async (req: Request, res: Response) => {
+export const getProduct = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
 
     if (!id) {
         throw ErrorFactory.badRequest("Product ID is required", req);
     }
 
-    const product = await productService.getProductById(id);
+    const product = await productService.getProduct(id);
 
     if (!product) {
         throw ErrorFactory.notFound('Product', req);

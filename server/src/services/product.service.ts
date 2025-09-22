@@ -7,29 +7,19 @@ import { formatProductDetail, formatProductList } from "@src/utils/product/produ
 import prisma from "@config/prisma";
 import {Prisma} from "@prisma/client";
 import {createProductDto, updateProductDto, updateProductImageDto} from "@utils/product/product.schema";
-import {ProductDetail} from "@src/types/product.types";
+import {ProductDetail, ProductFilter} from "@src/types/product.types";
 import { ErrorFactory } from "@src/lib/errors";
 
-export interface GetAllProductsParams {
-    page?: number;
-    limit?: number;
-    categoryId?: string;
-    status?: "ACTIVE" | "INACTIVE" | "DISCONTINUED";
-    search?: string;
-    sortBy?: "title" | "price" | "createdAt" | "updatedAt";
-    sortOrder?: "asc" | "desc";
-}
-
-export async function getAllProducts(params: GetAllProductsParams = {}) {
+export async function getProducts(filters: ProductFilter = {}) {
     try {
         const {
             page = 1,
             limit = 10,
             sortBy = "createdAt",
             sortOrder = "desc",
-        } = params;
+        } = filters;
     
-        const where = buildProductWhereClause(params);
+        const where = buildProductWhereClause(filters);
     
         if (limit === -1) {
             const products = await prisma.product.findMany({
@@ -79,7 +69,7 @@ export async function getAllProducts(params: GetAllProductsParams = {}) {
     }
 }
 
-export async function getProductById(id: string) {
+export async function getProduct(id: string) {
     try {
         const product = await prisma.product.findUnique({
             where: { id },
@@ -94,7 +84,7 @@ export async function getProductById(id: string) {
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             throw ErrorFactory.fromPrismaError(error, undefined, {
-                opeartion: "getProductById",
+                opeartion: "getProduct",
                 productId: id,
             });
         }

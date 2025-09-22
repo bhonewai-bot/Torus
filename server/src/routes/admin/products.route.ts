@@ -1,7 +1,7 @@
 import {Router} from "express";
 import {
-    getAllProducts,
-    getProductById,
+    getProducts,
+    getProduct,
     createProduct,
     updateProduct,
     deleteProduct,
@@ -15,8 +15,8 @@ import {bulkDeleteProductsSchema, createProductSchema, productQuerySchema, updat
 
 const router = Router();
 
-router.get('/', validateQuery(productQuerySchema), getAllProducts);
-router.get('/:id', validateParams(postgresIdPathSchema), getProductById);
+router.get('/', validateQuery(productQuerySchema), getProducts);
+router.get('/:id', validateParams(postgresIdPathSchema), getProduct);
 router.post('/', validateBody(createProductSchema), createProduct);
 router.put('/:id', validateParams(postgresIdPathSchema), validateBody(updateProductSchema), updateProduct);
 router.post('/bulk-delete', validateBody(bulkDeleteProductsSchema), bulkDeleteProducts);
