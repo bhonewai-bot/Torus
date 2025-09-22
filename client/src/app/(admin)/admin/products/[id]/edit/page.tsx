@@ -1,10 +1,8 @@
 "use client";
 
 import {CustomBreadcrumb} from "@/components/common/CustomBreadcrumb";
-import {ProductUpdateForm} from "@/features/products/components/admin/form/ProductUpdateForm";
 import {useProduct} from "@/features/products/hooks/useProducts";
 import React from "react";
-import {ProductDimensions} from "@/features/products/components/admin/form/ProductDimensions";
 import { ProductForm } from "@/features/products/components/admin/form/ProductForm";
 
 interface ProductUpdatePageProps {
