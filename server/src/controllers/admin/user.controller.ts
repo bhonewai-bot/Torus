@@ -3,11 +3,12 @@ import * as userService from '@services/user.service';
 import {createSuccessResponse} from "@utils/helpers";
 import { asyncHandler } from "@src/middlewares/error.handlers";
 import { updateUserRoleDto, updateUserStatusDto, userQuerySchema } from "@src/utils/user/user.schema";
+import { ErrorFactory } from "@src/lib/errors";
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
     const validatedQuery = userQuerySchema.parse(req.query);
 
-    const result = await userService.getAllUsers(validatedQuery);
+    const result = await userService.getUsers(validatedQuery);
 
     res.status(200).json(createSuccessResponse(
         'Users fetched successfully',
@@ -15,6 +16,25 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
             users: result.users,
             pagination: result.pagination
         }
+    ));
+});
+
+export const getUser = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (!id) {
+        throw ErrorFactory.badRequest("User ID is required", req);
+    }
+
+    const user = await userService.getUser(id);
+
+    if (!user) {
+        throw ErrorFactory.notFound("User", req);
+    }
+
+    res.status(200).json(createSuccessResponse(
+        'User fetched successfully',
+        user,
     ));
 });
 

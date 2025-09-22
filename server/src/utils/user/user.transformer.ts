@@ -12,6 +12,22 @@ export function formatUserList(user: any): UserList {
     }
 }
 
+export function formatUserDetail(user: any): UserDetail {
+    return {
+        id: user.id,
+        avatar: user.avatar ?? undefined,
+        name: user.name,
+        email: user.email,
+        phone: user.phone ?? undefined,
+        role: user.role,
+        status: user.status,
+        createdAt: user.createdAt ? user.createdAt.toISOString() : new Date().toISOString(),
+        updatedAt: user.updatedAt ? user.updatedAt.toISOString() : new Date().toISOString(),
+        addresses: user.addresses,
+        orders: user.orders
+    }
+}
+
 export function formatUserRole(user: any) {
     return {
         id: user.id,
@@ -27,14 +43,3 @@ export function formatUserStatus(user: any) {
         updatedAt: user.updatedAt
     }
 }
-
-/* export function formatUserDetail(user: any): UserDetail {
-    return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone ?? undefined,
-        enabled: user.enabled,
-        createdAt: user.createdAt.toISOString(),
-    }
-} */

@@ -22,7 +22,7 @@ export const userQuerySchema = z.object({
     sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
-export const createUserSchema = z.object({
+/* export const createUserSchema = z.object({
     name: z.string().min(2, "Name is required"),
     email: z.string().email("Invalid email"),
     password: z.string().min(6, "Password must be at least 6 characters"),
@@ -30,6 +30,8 @@ export const createUserSchema = z.object({
 });
 
 export const updateUserSchema = createUserSchema.partial();
+export type createUserDto = z.infer<typeof createUserSchema>;
+export type updateUserDto = z.infer<typeof updateUserSchema>; */
 
 export const updateUserRoleSchema = z.object({
     role: userRoleSchema,
@@ -39,7 +41,6 @@ export const updateUserStatusSchema = z.object({
     status: userStatusSchema,
 })
 
-export type createUserDto = z.infer<typeof createUserSchema>;
-export type updateUserDto = z.infer<typeof updateUserSchema>;
+
 export type updateUserRoleDto = z.infer<typeof updateUserRoleSchema>;
 export type updateUserStatusDto = z.infer<typeof updateUserStatusSchema>;
