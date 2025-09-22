@@ -15,6 +15,15 @@ export function useUsers(filters: UserFilters = {}) {
     });
 }
 
+export function useUser(id: string) {
+    return useQuery({
+        queryKey: userKeys.detail(id),
+        queryFn: () => userService.getUser(id),
+        enabled: !!id,
+        staleTime: 1000 * 60 * 5,
+    });
+}
+
 export function useUpdateUserRole(userId: string) {
     return useOptimisticUpdate({
         entityId: userId,

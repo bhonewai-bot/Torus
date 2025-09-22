@@ -3,6 +3,7 @@ import { UserFilters } from "../types/user.types";
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import api from "@/lib/api/client";
 import { updateUserRoleDto, updateUserStatusDto } from "../utils/user.schema";
+import { get } from "lodash";
 
 function buildQueryString(filters: UserFilters): string {
     const params = new URLSearchParams();
@@ -50,6 +51,51 @@ export async function getUsers(filters: UserFilters = {}) {
             (error as any).statusCode || 500,
             error,
             { operation: "getUsers" }
+        );
+        throw errorHandler.handle(processedError);
+    }
+}
+
+export async function getUser(id: string) {
+    if (!id) {
+        throw ErrorFactory.createValidationError(
+            [{ field: "id", message: "User ID is required", code: "required" }],
+            "User ID validation failed",
+            { operation: "getUser" }
+        )
+    }
+
+    try {
+        const response = await api.get(
+            API_ENDPOINTS.admin.users.get(id)
+        );
+
+        if (response.data.success && response.data.data) {
+            return response.data.data;
+        }
+
+        throw ErrorFactory.createServiceError(
+            "user",
+            "User not found",
+            404,
+            undefined,
+            { operation: "getUser", userId: id }
+        );
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            throw error;
+        }
+
+        const processedError = ErrorFactory.createServiceError(
+            "user",
+            "Failed to fetch user",
+            (error as any).statusCode || 500,
+            error,
+            {
+                operation: 'getUser',
+                userId: id,
+                endpoint: API_ENDPOINTS.admin.users.get(id)
+            }
         );
         throw errorHandler.handle(processedError);
     }
@@ -129,6 +175,7 @@ export async function updateUserStatus(id: string, data: updateUserStatusDto) {
 
 export const userService = {
     getUsers,
+    getUser,
     updateUserRole,
     updateUserStatus
 }

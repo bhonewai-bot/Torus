@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import { getUserRoleConfig, getUserStatusConfig } from "../../utils/user.ui.utils"
 import { cn } from "@/lib/utils";
+import { getUserRoleConfig, getUserStatusConfig } from "@/lib/utils/status.config";
 
 export const getUserRoleBadge = (status: string) => {
     const config = getUserRoleConfig(status);

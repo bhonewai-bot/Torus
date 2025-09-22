@@ -1,7 +1,7 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { UserList, UserRole, UserStatus } from "@/features/users/types/user.types";
+import { USER_STATUSES, UserList, UserRole, UserStatus } from "@/features/users/types/user.types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ReactNode, useState } from "react";
 import Image from "next/image";
@@ -18,8 +18,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Ban, Edit, Eye, MoreHorizontal, Shield, Trash2 } from "lucide-react";
 import { getUserRoleBadge, getUserStatusBadge } from "../UserBadge";
-import { formatUserDate } from "@/features/users/utils/user.ui.utils";
 import { useUpdateUserRole, useUpdateUserStatus } from "@/features/users/hooks/useUsers";
+import { formatUserDate } from "@/lib/utils/format.utils";
+import { validateUserOperation } from "@/features/users/utils/user.validation";
 
 type TableHeaderCellProps = {
     children: ReactNode;
@@ -61,7 +62,7 @@ function ProductCell({ user }: { user: any }) {
       </div>
 
       <Link
-        href={`/admin/products/${user.id}/details`}
+        href={`/admin/users/${user.id}`}
         className="max-w-[300px] truncate font-normal text-primary dark:text-primary hover:underline"
       >
         {user.name}
@@ -161,11 +162,27 @@ export const columns: ColumnDef<UserList>[] = [
 
             const handleToggleRole = () => {
                 const newRole: UserRole = user.role === "ADMIN" ? "USER" : "ADMIN";
+                const operation = newRole === "ADMIN" ? "PROMOTE" : "DEMOTE";
+
+                const validation = validateUserOperation(user, operation, user.id);
+                if (!validation.isValid) {
+                    toast.error(validation.message);
+                    return;
+                }
+
                 updateUserRole({ role: newRole })
             }
 
             const handleToggleStatus = () => {
                 const newStatus: UserStatus = user.status === "ACTIVE" ? "BANNED" : "ACTIVE";
+                const operation = newStatus === "BANNED" ? "BAN" : "UNBAN";
+
+                const validation = validateUserOperation(user, operation, user.id);
+                if (!validation.isValid) {
+                    toast.error(validation.message);
+                    return;
+                }
+
                 updateUserStatus({ status: newStatus })
             }
 
