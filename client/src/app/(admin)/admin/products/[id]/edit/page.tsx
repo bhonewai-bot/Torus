@@ -32,7 +32,7 @@ export default function ProductUpdatePage({ params }: ProductUpdatePageProps) {
         <div className={"flex flex-col gap-6 pb-4"}>
             <div className={"flex flex-col gap-4"}>
                 <CustomBreadcrumb item={"Update Product"} />
-                <h1 className={"text-3xl font-medium"}>Update Product</h1>
+                <h1 className={"text-3xl font-medium"}>{product.title}</h1>
             </div>
             <ProductForm mode="edit" product={product} />
         </div>
