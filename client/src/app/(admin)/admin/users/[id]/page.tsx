@@ -1,5 +1,6 @@
 "use client";
 
+import { CustomBreadcrumb } from "@/components/common/CustomBreadcrumb";
 import { Button } from "@/components/ui/button";
 import { UserAddressListCard } from "@/features/users/components/admin/details/UserAddressListCard";
 import { UserHeader } from "@/features/users/components/admin/details/UserHeader";
@@ -41,6 +42,7 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
     
     return (
         <div className="space-y-6 pb-6">
+            <CustomBreadcrumb item={"User Detail"} />
             <UserHeader user={user} />
 
             <UserSummaryCard user={user} />

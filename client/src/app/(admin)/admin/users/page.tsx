@@ -1,66 +1,71 @@
 "use client";
 
-import { CustomBreadcrumb } from "@/components/common/CustomBreadcrumb";
+import { AdminTableLayout } from "@/components/layout/AdminTableLayout";
 import { UserDataTable } from "@/features/users/components/admin/table/UserDataTable";
+import { UserTableFilters } from "@/features/users/components/admin/table/UserTableFilters";
 import { useUsers } from "@/features/users/hooks/useUsers";
-import { useState } from "react";
+import { UserFilters } from "@/features/users/types/user.types";
+import { useAdminDataTable } from "@/hooks/useAdminDataTable";
+
+interface ClientFilters {
+    search?: string;
+    role?: string;
+    status?: string;
+}
 
 export default function UsersPage() {
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
-
-    const { data, isLoading } = useUsers({ page, limit });
-    
-    // Extract users array and pagination from the response
-    const users = data?.users || [];
-    const pagination = data?.pagination;
-
-    const handlePageChange = (newPage: number) => {
-        setPage(newPage);
+    const initialServerFilters: UserFilters = {
+        page: 1,
+        limit: -1,
+        sortBy: "createdAt",
+        sortOrder: "desc",
     };
 
-    const handleLimitChange = (newLimit: number) => {
-        if (newLimit === -1) {
-            // Show all items
-            setLimit(pagination?.total || 1000);
-            setPage(1);
-        } else {
-            setLimit(newLimit);
-            setPage(1);
+    const initialClientFilters: ClientFilters = {};
+
+    const { data, isLoading, error, refetch } = useUsers(initialServerFilters);
+
+    const {
+        paginatedData: paginatedUsers,
+        paginationInfo,
+        allFilters,
+        handleFilterChange,
+        handlePageChange,
+        handleLimitChange
+    } = useAdminDataTable({
+        data: data?.users,
+        isLoading,
+        error,
+        refetch,
+        initialServerFilters,
+        initialClientFilters,
+        clientFilterKeys: ['search', 'role', 'status'],
+        searchFields: ['name', 'email'],
+        filterFunctions: {
+            role: (user, role) => user.role === role,
+            status: (user, status) => user.status === status
         }
-    };
-
-    if (isLoading) {
-        return (
-            <div className={"flex flex-col gap-6 mb-6"}>
-                <div className={"flex flex-col gap-4"}>
-                    <CustomBreadcrumb item={"Users"} />
-                    <div className="flex justify-between">
-                        <h1 className="text-3xl font-medium">Users</h1>
-                    </div>
-                </div>
-                <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-primary"></div>
-                </div>
-            </div>
-        );
-    }
+    });
 
     return (
-        <div className={"flex flex-col gap-6 mb-6"}>
-            <div className={"flex flex-col gap-4"}>
-                <CustomBreadcrumb item={"Users"} />
-                <div className="flex justify-between">
-                    <h1 className="text-3xl font-medium">Users</h1>
-                </div>
-            </div>
+        <AdminTableLayout
+            title="Users"
+            breadcrumbItem="Users"
+            isLoading={isLoading}
+            error={error}
+            onRetry={refetch}
+        >
+            <UserTableFilters 
+                filters={allFilters}
+                onFilterChange={handleFilterChange}
+            />
 
             <UserDataTable 
-                users={users} 
-                pagination={pagination}
+                users={paginatedUsers} 
+                pagination={paginationInfo}
                 onPageChange={handlePageChange}
                 onLimitChange={handleLimitChange}
             />
-        </div>
+        </AdminTableLayout>
     );
 }
