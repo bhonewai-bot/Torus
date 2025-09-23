@@ -8,6 +8,7 @@ import {OrderShippingAddresss} from "@/features/orders/components/admin/details/
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 import {OrderSummaryCard} from "@/features/orders/components/admin/details/OrderSummaryCard";
+import { CustomBreadcrumb } from "@/components/common/CustomBreadcrumb";
 
 interface OrderDetailPageProps {
     params: {
@@ -19,7 +20,6 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     const router = useRouter();
     const { id } = React.use(params) as { id: string };
     const { data: order, isLoading, error } = useOrder(id);
-    console.log(order);
 
     const onPrint = () => {
 
@@ -52,6 +52,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
     return (
         <div className="space-y-6 pb-6">
+            <CustomBreadcrumb item={"Order Detail"} />
             <OrderHeader order={order} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

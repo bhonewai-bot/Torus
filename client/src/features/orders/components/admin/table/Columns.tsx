@@ -19,6 +19,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {getOrderStatusBadge} from "@/features/orders/components/admin/details/OrderBadge";
 import Link from "next/link";
 import { OrderStatusUpdateDialog } from "@/features/products/components/admin/OrderStatusUpdateDialog";
+import { AvatarImage } from "@radix-ui/react-avatar";
+import { useRouter } from "next/navigation";
 
 type TableHeaderCellProps = {
     children: ReactNode;
@@ -104,6 +106,7 @@ export const columns: ColumnDef<OrderList>[] = [
             return (
                 <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8 border border-gray-200 dark:border-gray-700">
+                        <AvatarImage src={user.avatar} alt={user.name} />
                         <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                             {initials}
                         </AvatarFallback>
@@ -148,6 +151,7 @@ export const columns: ColumnDef<OrderList>[] = [
             const order = row.original;
             const [dropdownOpen, setDropdownOpen] = useState(false); 
             const [dialogOpen, setDialogOpen] = useState(false);   
+            const router = useRouter();
 
             const handleCopyId = async () => {
                 try {
@@ -164,6 +168,10 @@ export const columns: ColumnDef<OrderList>[] = [
                     setDialogOpen(true);
                 }, 100);
             };
+
+            const handleViewInvoice = () => {
+                router.push(`/admin/orders/${order.id}/invoice`);
+            }
 
             const orderDetail = {
                 ...order,
@@ -195,6 +203,10 @@ export const columns: ColumnDef<OrderList>[] = [
                             <DropdownMenuItem onClick={handleUpdateStatusClick}>
                                 <Edit className={"mr-2 h-4 w-4"} />
                                 Update Status
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleViewInvoice}>
+                                <Edit className={"mr-2 h-4 w-4"} />
+                                View Invoice
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 disabled
