@@ -4,6 +4,7 @@ export const orderListInclude = {
             id: true,
             name: true,
             email: true,
+            avatar: true
         },
     },
     _count: {

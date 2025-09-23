@@ -7,90 +7,25 @@ import { formatProductDetail, formatProductList } from "@src/utils/product/produ
 import prisma from "@config/prisma";
 import {Prisma} from "@prisma/client";
 import {createProductDto, updateProductDto, updateProductImageDto} from "@utils/product/product.schema";
-import {ProductDetail, ProductFilter} from "@src/types/product.types";
+import {ProductDetail, ProductFilter, ProductList} from "@src/types/product.types";
 import { ErrorFactory } from "@src/lib/errors";
+import { createService } from "./service.factory";
 
-export async function getProducts(filters: ProductFilter = {}) {
-    try {
-        const {
-            page = 1,
-            limit = 10,
-            sortBy = "createdAt",
-            sortOrder = "desc",
-        } = filters;
-    
-        const where = buildProductWhereClause(filters);
-    
-        if (limit === -1) {
-            const products = await prisma.product.findMany({
-                where,
-                include: productListInclude,
-                orderBy: {
-                    [sortBy]: sortOrder,
-                }
-            });
-    
-            const formattedProducts = products.map(formatProductList);
-            const pagination = calculatePagination(products.length, page, -1);
-    
-            return {
-                products: formattedProducts,
-                pagination
-            }
-        }
-    
-        const skip = (page - 1) * limit;
-    
-        const [products, total] = await prisma.$transaction([
-            prisma.product.findMany({
-                where,
-                include: productListInclude,
-                orderBy: {
-                    [sortBy]: sortOrder,
-                },
-                skip,
-                take: limit,
-            }),
-            prisma.product.count({ where }),
-        ]);
-    
-        const formattedProducts = products.map(formatProductList);
-        const pagination = calculatePagination(total, page, limit);
-    
-        return {
-            products: formattedProducts,
-            pagination
-        }
-    } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            throw ErrorFactory.fromPrismaError(error);
-        }
-        throw ErrorFactory.fromUnknownError(error);
-    }
-}
+const productService = createService<ProductList, ProductDetail, ProductFilter>({
+    model: prisma.product,
+    listInclude: productListInclude,
+    detailInclude: productDetailInclude,
+    listTransformer: formatProductList,
+    detailTransformer: formatProductDetail,
+    whereBuilder: buildProductWhereClause,
+    defaultSortBy: "createdAt",
+    smartPaginationThreshold: 100,
+    modelName: "Product",
+    listPropertyName: "products",
+});
 
-export async function getProduct(id: string) {
-    try {
-        const product = await prisma.product.findUnique({
-            where: { id },
-            include: productDetailInclude,
-        });
-
-        if (!product) {
-            return null;
-        }
-    
-        return formatProductDetail(product);
-    } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            throw ErrorFactory.fromPrismaError(error, undefined, {
-                opeartion: "getProduct",
-                productId: id,
-            });
-        }
-        throw ErrorFactory.fromUnknownError(error);
-    }
-}
+export const getProducts = productService.getMany;
+export const getProduct = productService.getById;
 
 export async function createProduct(data: createProductDto): Promise<ProductDetail | undefined> {
     try {
@@ -214,8 +149,6 @@ export async function updateProduct(id: string, data: updateProductDto): Promise
         throw ErrorFactory.fromUnknownError(error);
     }
 }
-
-
 
 export async function deleteProduct(id: string) {
     try {
