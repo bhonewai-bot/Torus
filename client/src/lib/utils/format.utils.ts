@@ -11,7 +11,7 @@ export const formatTime = (dateString: string, options: Intl.DateTimeFormatOptio
 export const formatOrderDate = (dateString: string) => 
     formatDate(dateString, {
         day: "2-digit",
-        month: "long", 
+        month: "short", 
         year: "numeric"
     });
 
